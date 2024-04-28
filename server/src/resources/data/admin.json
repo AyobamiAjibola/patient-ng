@@ -1,0 +1,9 @@
+{
+  "firstName": "iPatient",
+  "lastName": "Admin",
+  "email": "ipatient_admin@ipatient.com",
+  "phone": "2348031987665",
+  "password": "iPatient12",
+  "isAdmin": true,
+  "userType": [ "admin" ]
+}
