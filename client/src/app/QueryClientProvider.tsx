@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 
 const queryClient = new QueryClient();
 
-const QueryClientProviderWrapper = ({ children }) => {
+const QueryClientProviderWrapper = ({ children }: any) => {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
