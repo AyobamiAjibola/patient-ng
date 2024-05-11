@@ -14,6 +14,7 @@ import Generic from "../utils/Generic";
 import { IPaymentRequestModel } from "../models/PaymentRequest";
 import SendMailService from "../services/SendMailService";
 import mail_template from "../resources/template/email/password";
+import { IBankModel } from "../models/Bank";
 
 const paystackService = new PaystackService();
 const sendMailService = new SendMailService();
@@ -108,6 +109,51 @@ export default class TransactionController {
         return Promise.resolve(response);
 
     };
+
+    @TryCatch
+    public async getBanks(req: Request) {
+
+        axiosClient.defaults.baseURL = `${process.env.PAYMENT_GW_BASE_URL}`;
+        axiosClient.defaults.headers.common['Authorization'] = `Bearer ${process.env.PAYMENT_GW_SECRET_KEY}`;
+
+        const banks = await axiosClient.get('/bank');
+
+        const response: HttpResponse<IBankModel> = {
+            code: HttpStatus.OK.code,
+            message: 'Banks retrived successfully.',
+            results: banks.data.data,
+        };
+
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async verifyBank(req: Request) {
+
+        const { error, value } = Joi.object<any>({
+            accountNumber: Joi.string().required().label('account number'),
+            bankCode: Joi.string().required().label("bank code")
+        }).validate(req.body);
+console.log(value.accountNumber, value.bankCode, 'dfd')
+        const verificationData = await paystackService.verifyBankAccount(value.accountNumber, value.bankCode);
+
+        if (!verificationData) {
+            return Promise.reject(
+            CustomAPIError.response(
+                "Account number provided is invalid.",
+                HttpStatus.BAD_REQUEST.code
+            )
+            );
+        }
+
+        const response: HttpResponse<IBankModel> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfull.',
+            result: verificationData.data.account_name
+        };
+
+        return Promise.resolve(response);
+    }
 
     @TryCatch
     public async initTransactionCallback(req: Request) {

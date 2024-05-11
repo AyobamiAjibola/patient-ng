@@ -1,31 +1,53 @@
 'use client';
-import { useState } from 'react';
-import { Button, Modal } from 'antd';
 
-interface IModal {
-    onOpen: boolean,
-    onClose: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import { Backdrop, IconButton, useTheme } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
-const PModal = ({onOpen, onClose}: IModal) => {
-
-  const handleOk = () => {
-    onClose(false);
-  };
-
-  const handleCancel = () => {
-    onClose(false);
-  };
+const MModal = ({ onClose, open, width, children, props }: any) => {
+  const theme = useTheme();
 
   return (
-    <>
-      <Modal title="Basic Modal" open={onOpen} onOk={handleOk} onCancel={handleCancel}>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-      </Modal>
-    </>
+    <Modal
+      open={open}
+      onClose={onClose}
+      closeAfterTransition
+      slots={{ backdrop: Backdrop }}
+      slotProps={{
+        backdrop: {
+          timeout: 500,
+        },
+      }}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: width,
+          backgroundColor: '#fff',
+          boxShadow: theme.shadows[5],
+          p: theme.spacing(2),
+          borderRadius: theme.borderRadius.sm,
+          ...props,
+        }}
+      >
+        <Box width={'100%'} textAlign={'right'}>
+          <IconButton onClick={onClose} aria-label="close">
+            <Close
+              sx={{
+                color: 'red'
+              }}
+            />
+          </IconButton>
+        </Box>
+        <Box>{children}</Box>
+      </Box>
+    </Modal>
   );
 };
-
-export default PModal;
+export default MModal;

@@ -10,24 +10,24 @@ import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 import UserRepository from '../repository/UserRepository';
 import admin from '../resources/data/admin.json';
 import { IUserModel } from '../models/User';
-import BankRepository from '../repository/BankRepository';
-import Bank from '../models/Bank';
-import axiosClient from '../services/api/axiosClient';
-import IPayStackBank = appModelTypes.IPayStackBank;
+// import BankRepository from '../repository/BankRepository';
+// import Bank from '../models/Bank';
+// import axiosClient from '../services/api/axiosClient';
+// import IPayStackBank = appModelTypes.IPayStackBank;
 
 export default class CommandLineRunner {
   public static singleton: CommandLineRunner = new CommandLineRunner();
   private userRepository: AbstractCrudRepository;
-  private bankRepository: BankRepository;
+  // private bankRepository: BankRepository;
 
   constructor() {
     this.userRepository = new UserRepository();
-    this.bankRepository = new BankRepository();
+    // this.bankRepository = new BankRepository();
   }
 
   public static async run() {
     await this.singleton.loadDefaultUser();
-    await this.singleton.loadPayStackBanks();
+    // await this.singleton.loadPayStackBanks();
   }
 
   async createUploadDirectory() {
@@ -35,32 +35,32 @@ export default class CommandLineRunner {
     if (!dirExist) await fs.mkdir(UPLOAD_BASE_PATH);
   }
 
-  async loadPayStackBanks() {
-    await Bank.collection.drop();
+  // async loadPayStackBanks() {
+  //   await Bank.collection.drop();
 
-    axiosClient.defaults.baseURL = `${process.env.PAYMENT_GW_BASE_URL}`;
-    axiosClient.defaults.headers.common['Authorization'] = `Bearer ${process.env.PAYMENT_GW_SECRET_KEY}`;
+  //   axiosClient.defaults.baseURL = `${process.env.PAYMENT_GW_BASE_URL}`;
+  //   axiosClient.defaults.headers.common['Authorization'] = `Bearer ${process.env.PAYMENT_GW_SECRET_KEY}`;
 
-    const response = await axiosClient.get('/bank');
+  //   const response = await axiosClient.get('/bank');
 
-    const banks = response.data.data as IPayStackBank[];
+  //   const banks = response.data.data as IPayStackBank[];
 
-    const bankValues = banks.map(bank => ({
-      name: bank.name,
-      slug: bank.slug,
-      code: bank.code,
-      longCode: bank.longcode,
-      gateway: bank.gateway,
-      payWithBank: bank.pay_with_bank,
-      active: bank.active,
-      country: bank.country,
-      currency: bank.currency,
-      type: bank.type,
-      isDeleted: bank.is_deleted,
-    }));
+  //   const bankValues = banks.map(bank => ({
+  //     name: bank.name,
+  //     slug: bank.slug,
+  //     code: bank.code,
+  //     longCode: bank.longcode,
+  //     gateway: bank.gateway,
+  //     payWithBank: bank.pay_with_bank,
+  //     active: bank.active,
+  //     country: bank.country,
+  //     currency: bank.currency,
+  //     type: bank.type,
+  //     isDeleted: bank.is_deleted,
+  //   }));
 
-    await this.bankRepository.bulkCreate(bankValues as any);
-  }
+  //   await this.bankRepository.bulkCreate(bankValues as any);
+  // }
 
   async loadDefaultUser() {
     const adminUser = await this.userRepository.findOne({ email: admin.email });

@@ -190,7 +190,8 @@ export default class PodcastController {
                     category: Joi.string().required().label('Category'),
                     summary: Joi.string().required().label('Summary'),
                     producedBy: Joi.string().required().label('Produced by'),
-                    channels: Joi.string().required().label('Channels'),
+                    source: Joi.string().required().label('Podcast source'),
+                    link: Joi.string().required().label('Podcast link'),
                     image: Joi.any().label('Image'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -213,14 +214,14 @@ export default class PodcastController {
                     Generic.handleImage(files.image as File, basePath)
                 ]);
 
-                let channels;
-                if(value.channels) {
-                    channels = JSON.parse(value.channels)
-                }
+                const link = Generic.handlePodcastLink(value.source, value.link);
 
                 const payload = {
                     ...value,
-                    channels: channels.length > 0 ? channels : [],
+                    channels: {
+                        source: value.source,
+                        link: link
+                    },
                     category: category.name,
                     user: user?._id,
                     image: _image ? _image : ''
@@ -245,7 +246,8 @@ export default class PodcastController {
                     category: Joi.string().label('Category'),
                     summary: Joi.string().label('Summary'),
                     producedBy: Joi.string().label('Produced by'),
-                    channels: Joi.string().label('Channels'),
+                    source: Joi.string().label('Podcast source'),
+                    link: Joi.string().label('Podcast link'),
                     image: Joi.any().label('Image'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
@@ -272,15 +274,15 @@ export default class PodcastController {
                     Generic.handleImage(files.image as File, basePath)
                 ]);
 
-                let channels;
-                if(value.channels) {
-                    channels = JSON.parse(value.channels)
-                }
+                const link = Generic.handlePodcastLink(value.source, value.link)
 
                 const payload = {
                     title: value.title ? value.title : podcast.title,
                     category: value.category ? category.name : podcast.category,
-                    channels: channels.length > 0 ? channels : podcast.channels,
+                    channels: {
+                        source: value.source ? value.source : podcast.channels.source,
+                        link: value.link ? link : podcast.channels.link
+                    },
                     producedBy: value.producedBy ? value.producedBy : podcast.producedBy,
                     image: _image ? _image : podcast.image,
                     summary: value.summary ? value.summary : podcast.summary

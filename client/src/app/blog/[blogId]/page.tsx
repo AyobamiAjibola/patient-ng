@@ -49,7 +49,7 @@ const comments = [
 ]
 
 export default function Blog({ params }: any) {
-    const isMobile = useMediaQuery('(max-width: 959px)');
+    const isMobile = useMediaQuery('(max-width: 900px)');
     const theme = useTheme();
 
   return (

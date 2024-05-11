@@ -5,9 +5,9 @@ interface IPodcast {
     producedBy: string,
     summary: string,
     channels: {
-        name: string,
+        source: string,
         link: string
-    }[],
+    },
     image: string,
     category: string,
     user: mongoose.Types.ObjectId
@@ -19,7 +19,7 @@ const podcastSchema = new Schema<IPodcast>({
     summary: { type: String },
     channels: [
         {
-            name: { type: String },
+            source: { type: String },
             link: { type: String }
         }
     ],

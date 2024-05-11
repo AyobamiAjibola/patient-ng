@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import TransactionController from "../controller/TransactionController";
 import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
-import BankController from "../controller/BankController";
 
 const transactionController = new TransactionController();
-const bankController = new BankController();
 
 export const donateyHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await transactionController.donate(req);
@@ -37,7 +35,13 @@ export const makePaymentHandler = authenticateRouteWrapper(async (req, res) =>  
 });
 
 export const getBanksHandler = async (req: Request, res: Response) =>  {
-    const response = await bankController.getBanks(req);
+    const response = await transactionController.getBanks(req);
+
+    res.status(response.code).json(response);
+};
+
+export const verifyBankHandler = async (req: Request, res: Response) =>  {
+    const response = await transactionController.verifyBank(req);
 
     res.status(response.code).json(response);
 };

@@ -21,7 +21,11 @@ interface ICrowdFunding {
         accountName: string,
         bank: string,
         accountNumber: string,
-        bankCode: number
+        bankCode: string
+    };
+    location: {
+        state: string,
+        lga: string
     }
 }
 
@@ -46,7 +50,11 @@ const crowdFundingSchema = new Schema<ICrowdFunding>({
         accountName: { type: String },
         bank: { type: String },
         accountNumber: { type: String },
-        bankCode: { type: Number }
+        bankCode: { type: String }
+    },
+    location: {
+        state: { type: String },
+        lga: { type: String }
     }
 }, { timestamps: true });
 

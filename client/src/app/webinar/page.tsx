@@ -7,7 +7,7 @@ import Search from 'antd/es/input/Search';
 import MyCheckbox from "../components/CheckBox";
 import { useState } from "react";
 import Image from "next/image";
-import { characterBreaker, isEven, isOdd, isPrime } from "@/lib/helper";
+import { characterBreaker } from "@/lib/helper";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 

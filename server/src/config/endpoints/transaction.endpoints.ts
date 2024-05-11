@@ -6,7 +6,8 @@ import {
     getBanksHandler, 
     initTransactionCallbackHandler, 
     makePaymentHandler, 
-    requestPaymentHandler
+    requestPaymentHandler,
+    verifyBankHandler
 } from '../../routes/transactionRoute';
 
 const transactioEndpoints: RouteEndpoint  = [
@@ -45,6 +46,12 @@ const transactioEndpoints: RouteEndpoint  = [
         method: 'get',
         path: '/banks',
         handler: getBanksHandler
+    },
+    {
+        name: 'bank account verification',
+        method: 'post',
+        path: '/verify-bank-account',
+        handler: verifyBankHandler
     }
 ];
 

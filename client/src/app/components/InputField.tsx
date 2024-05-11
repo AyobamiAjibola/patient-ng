@@ -21,6 +21,7 @@ interface InputFieldProps {
     labelStyle?: any;
     multiline?: boolean;
     isBorder?: boolean;
+    rows?: number;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -40,6 +41,7 @@ const InputField: React.FC<InputFieldProps> = ({
     labelStyle,
     multiline = false,
     isBorder = false,
+    rows = 0,
     ...rest
   }) => {
     const theme = useTheme();
@@ -66,6 +68,7 @@ const InputField: React.FC<InputFieldProps> = ({
           margin="dense"
           disabled={disabled}
           multiline={multiline}
+          rows={rows}
           InputProps={{
             style: {
               fontSize: '14px',
@@ -74,11 +77,12 @@ const InputField: React.FC<InputFieldProps> = ({
               color: error
                 ? theme.palette.primary.main
                 : theme.palette.primary.base,
-              minHeight: '36px',
+              minHeight: '40px',
               paddingLeft: theme.spacing(2),
               border: `1px solid ${
                 error ? theme.palette.primary.main : theme.palette.border.main
               }`,
+              backgroundColor: 'white'
             },
             autoComplete: 'off',
             onChange: onChange,
@@ -105,6 +109,6 @@ const InputField: React.FC<InputFieldProps> = ({
         />
       </label>
     );
-  };
+};
 
-  export default InputField;
+export default InputField;

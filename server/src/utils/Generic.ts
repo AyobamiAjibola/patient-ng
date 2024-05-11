@@ -115,6 +115,27 @@ export default class Generic {
     return newPath;
   }
 
+  public static async handlePodcastLink(source: string, link: string) {
+    let result = '';
+
+    switch (source) {
+      case 'youtube':
+        result = `https://www.youtube.com/${link.split('https://youtu.be/')[1]}`;
+        break;
+      case 'apple':
+        result = `https://embed.podcasts.apple.com/us/podcast/${link.split('https://podcasts.apple.com/us/')[1]}&amp;itsct=podcast_box_player&amp;itscg=30200&amp;ls=1&amp;theme=auto`;
+        break;
+      case 'spotify':
+        result = `https://open.spotify.com/embed/episode/${link.split('https://open.spotify.com/episode/')[1]}?utm_source=generator`;
+        break;
+      default:
+        // Handle unknown sources
+        break;
+    }
+
+    return result;
+  }
+
   public static async handleImage(image: File, basePath: string) {
     if (!image) return '';
     const allowedFileTypes = ALLOWED_FILE_TYPES;

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Toolbar,
   IconButton,
@@ -14,13 +14,15 @@ import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useMediaQuery } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Container from './Container';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PButton from './PButton';
 import PModal from './Modal';
 import MenuDropDown from './MenuDropDown';
+import { useAtom } from 'jotai';
+import { setIndex } from '@/lib/atoms';
 
 interface PagesProps {
   id?: number;
@@ -60,19 +62,27 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const [toggle, setToggle] = useState(false);
   const isMobile = useMediaQuery('(max-width: 959px)');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [indx, setIndx] = useState(-1);
+  const [indx, setIndx] = useAtom(setIndex);
   const open = Boolean(anchorEl);
+  const pathname = usePathname()
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, idx: number) => {
-    setIndx(idx)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClick2 = (event: React.MouseEvent<HTMLButtonElement>, idx: number) => {
-    setIndx(idx)
-  };
-
   const onToggle = () => setToggle(!toggle);
+
+  useEffect(() => {
+    if(pathname === '/') {
+      setIndx(3)
+    } else if (pathname.includes('/advocacy')) {
+      setIndx(0)
+    } else if (pathname.includes('/crowdfunding')) {
+      setIndx(1)
+    } else if (pathname.includes('/insight')) {
+      setIndx(2)
+    }
+  },[pathname]);
 
   return (
     <Box sx={{ backgroundColor: theme.palette.background.white, borderBottom: '2px solid #F3F3F3' }}>
@@ -152,7 +162,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               {pages.map((item, index) => (
                 <li key={index}>
                   <Link href={item.href} className='flex flex-row items-center' 
-                    onClick={(e: any) => {item.name === 'Resources' ? handleClick(e, index) : handleClick2(e, index)}}
+                    onClick={(e: any) => {item.name === 'Resources' && handleClick(e)}}
                   >
                     <Typography
                       fontFamily={theme.fonts}
@@ -246,11 +256,6 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
           </List>
         </Drawer>
       </Container>
-
-      {/* <PModal
-        onOpen={open}
-        onClose={setOpen}
-      /> */}
       <MenuDropDown
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}

@@ -150,9 +150,11 @@ export default class CrowdFundingontroller {
                     body: Joi.string().required().label('Content'),
                     fundraisingFor: Joi.string().required().label('Fundraiser'),
                     accountNumber: Joi.string().required().label('Account Number'),
+                    accountName: Joi.string().required().label('Account Name'),
+                    bankCode: Joi.string().required().label('Bank Code'),
                     bank: Joi.string().required().label('Bank'),
-                    // bankCode: Joi.string().required().label('Bank Code'),
-                    // accountName: Joi.string().required().label('Account Name'),
+                    state: Joi.string().required().label('State'),
+                    lga: Joi.string().required().label('LGA'),
                     amountNeeded: Joi.string().required().label('Amount raised'),
                     image: Joi.any().label('Image'),
                     video: Joi.any().label('Video'),
@@ -177,28 +179,28 @@ export default class CrowdFundingontroller {
                     Generic.handleVideo(files.video as File, basePathVid)
                 ]);
 
-                const bank = await datasources.bankDAOService.findByAny({ name: value.bank });
-                if(!bank)
-                    return Promise.reject(CustomAPIError.response("Bank does not exist", HttpStatus.NOT_FOUND.code));
+                // const bank = await datasources.bankDAOService.findByAny({ name: value.bank });
+                // if(!bank)
+                //     return Promise.reject(CustomAPIError.response("Bank does not exist", HttpStatus.NOT_FOUND.code));
 
-                const verificationData = await paystackService.verifyBankAccount(value.accountNumber, bank.code);
+                // const verificationData = await paystackService.verifyBankAccount(value.accountNumber, bank.code);
 
-                if (!verificationData) {
-                    return Promise.reject(
-                    CustomAPIError.response(
-                        "Account number provided is invalid.",
-                        HttpStatus.BAD_REQUEST.code
-                    )
-                    );
-                }
+                // if (!verificationData) {
+                //     return Promise.reject(
+                //     CustomAPIError.response(
+                //         "Account number provided is invalid.",
+                //         HttpStatus.BAD_REQUEST.code
+                //     )
+                //     );
+                // }
 
                 const payload = {
                     ...value,
                     account: {
-                        accountName: verificationData.data.account_name,
+                        accountName: value.accountName,//verificationData.data.account_name,
                         accountNumber: value.accountNumber,
                         bank: value.bank,
-                        bankCode: bank.code
+                        bankCode: value.bankCode
                     },
                     image: _image ? _image : '',
                     video: _video ? _video : '',
