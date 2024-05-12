@@ -42,7 +42,7 @@ export default function page() {
     const router = useRouter();
     const [campaignImg, _] = useAtom(selectedImageArrayAtom);
     const [activeStep, setActiveStep] = useState(0);
-    const steps = sessionStorage.getItem('step');
+    const steps = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('step');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
@@ -69,8 +69,16 @@ export default function page() {
         bankCode: ''
     })
 
-    const serializedData = sessionStorage.getItem('fundraiserData');
-    const screenHeight = window.innerHeight;
+    const serializedData = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('fundraiserData');
+    const getHeight = () => {
+    if (typeof window !== 'undefined') {
+        return window.innerHeight;
+    }
+    // Return a default height or handle the case where window is not available
+        return 0;
+    };
+
+    const screenHeight = getHeight();
 
     const closeToastify = () => {
         setSnackbarOpen(false);
@@ -1190,7 +1198,7 @@ export default function page() {
                             transBg={true} 
                             bg={false} 
                             width='100px' 
-                            disabled={sessionStorage.getItem('step') === '0'}
+                            disabled={typeof sessionStorage !== 'undefined' && sessionStorage.getItem('step') === '0'}
                             onClick={handleBack}
                         >
                             <Typography
