@@ -189,14 +189,15 @@ export default function CrowdFundings() {
                 gap: 3, alignItems: 'center'
               }}
             >
-              <PButton bg={true} transBg={false} width='200px'>
+              <PButton bg={true} transBg={false} width='200px' onClick={() => router.push('/crowdfunding/new-campaign')}>
                 Start a Crowdfunding
               </PButton>
-              <Typography
+              <Typography onClick={() => router.push('/crowdfunding/campaigns')}
                 sx={{
                   fontSize: theme.typography.labelxs.fontSize,
                   fontWeight: theme.typography.labelxs.fontWeight,
-                  color: theme.palette.primary.main
+                  color: theme.palette.primary.main,
+                  cursor: 'pointer'
                 }}
               >
                 See Campaigns
