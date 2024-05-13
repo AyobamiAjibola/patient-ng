@@ -1,5 +1,7 @@
+'use client';
+
 import { InputAdornment, TextField, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface InputFieldProps {
@@ -45,9 +47,28 @@ const InputField: React.FC<InputFieldProps> = ({
     ...rest
   }) => {
     const theme = useTheme();
-  
     const inputPlaceholder = error ? errorMessage : placeholder;
-  
+    const [errorMsg, setErrorMsg] = useState<string>('');
+
+    useEffect(() => {
+      let intervalId: NodeJS.Timeout;
+      if(errorMsg) {
+        intervalId = setTimeout(() => {
+          setErrorMsg('')
+        },4000)
+      }
+      
+      return () => {
+        clearInterval(intervalId)
+      }
+    },[errorMsg]);
+
+    useEffect(() => {
+      if(error) {
+        setErrorMsg(errorMessage as string)
+      }
+    },[error])
+
     return (
       <label>
         {label && (
@@ -80,7 +101,7 @@ const InputField: React.FC<InputFieldProps> = ({
               minHeight: '40px',
               paddingLeft: theme.spacing(2),
               border: `1px solid ${
-                error ? theme.palette.primary.main : theme.palette.border.main
+                error ? theme.palette.state.error : theme.palette.border.main
               }`,
               backgroundColor: 'white'
             },
@@ -107,6 +128,17 @@ const InputField: React.FC<InputFieldProps> = ({
           {...register}
           {...rest}
         />
+        {errorMsg && (
+          <Typography
+            color={'red'}
+            sx={{
+              fontSize: theme.typography.labelxs.fontSize,
+              mt: -3
+            }}
+          >
+            {errorMsg}
+          </Typography>
+        )}
       </label>
     );
 };

@@ -9,6 +9,7 @@ import {
   useTheme,
   Box,
   TextField,
+  Avatar,
 } from '@mui/material';
 import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -23,6 +24,8 @@ import PModal from './Modal';
 import MenuDropDown from './MenuDropDown';
 import { useAtom } from 'jotai';
 import { setIndex } from '@/lib/atoms';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import MenuDropDown2 from './MenuDropDown2';
 
 interface PagesProps {
   id?: number;
@@ -34,7 +37,7 @@ const pages: PagesProps[] = [
   {
     id: 1,
     name: 'Advocacy',
-    href: '/',
+    href: '/advocacy',
   },
   {
     id: 2,
@@ -44,7 +47,7 @@ const pages: PagesProps[] = [
   {
     id: 3,
     name: 'Insight',
-    href: '/boarding',
+    href: '/insight',
   },
   {
     id: 3,
@@ -62,12 +65,19 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const [toggle, setToggle] = useState(false);
   const isMobile = useMediaQuery('(max-width: 959px)');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
   const [indx, setIndx] = useAtom(setIndex);
   const open = Boolean(anchorEl);
-  const pathname = usePathname()
+  const open2 = Boolean(anchorEl2);
+  const pathname = usePathname();
+  const isLogged = true;
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleClick2 = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl2(event.currentTarget);
   };
 
   const onToggle = () => setToggle(!toggle);
@@ -181,13 +191,58 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             </ul>
           )}
 
-          {!isMobile && (<Box className='flex flex-row gap-1 items-center'>
-            <PButton bg={false} transBg={true}>
-              Sign Up
-            </PButton>
-            <PButton bg={true} width='100px' transBg={false}>
-              {'Log In'}
-            </PButton>
+          {!isMobile && !isLogged && (<Box className='flex flex-row gap-1 items-center'>
+                <PButton bg={false} transBg={true}>
+                  Sign Upxx
+                </PButton>
+                <PButton bg={true} width='100px' transBg={false}>
+                  {'Log In'}
+                </PButton>
+              </Box>
+          )}
+          {!isMobile && isLogged && (<Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            <Avatar
+              src='/model.png'
+              alt='profile image'
+              style={{
+                width: '40px',
+                height: '40px',
+                marginRight: 12
+              }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: theme.typography.labelxs.fontSize,
+                  fontWeight: theme.typography.labelxs.fontWeight
+                }}
+              >
+                Abayomi Oluwo
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: theme.typography.labelxs.fontSize,
+                  color: theme.palette.secondary.light, mt: -1
+                }}
+              >
+                email@gmail.com
+              </Typography>
+            </Box>
+
+            <IconButton onClick={(e: any) => handleClick2(e)}>
+                {open2 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            </IconButton>
           </Box>)}
         </Toolbar>
 
@@ -245,14 +300,57 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               ))}
             </ul>
 
-            <Box className='flex flex-row gap-1 items-center' sx={{mt: '80px'}}>
-              <PButton bg={false} transBg={true}>
-                Sign Up
-              </PButton>
-              <PButton bg={true} width='100px' transBg={false}>
-                {'Log In'}
-              </PButton>
-            </Box>
+            {!isLogged 
+              ? (<Box className='flex flex-row gap-1 items-center' sx={{mt: '80px'}}>
+                  <PButton bg={false} transBg={true}>
+                    Sign Up
+                  </PButton>
+                  <PButton bg={true} width='100px' transBg={false}>
+                    {'Log In'}
+                  </PButton>
+                </Box>
+              ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  alignItems: 'center', mt: 6
+                }}
+              >
+                <Avatar
+                  src='/model.png'
+                  alt='profile image'
+                  style={{
+                    width: '30px',
+                    height: '30px'
+                  }}
+                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: theme.typography.labelxs.fontSize,
+                      fontWeight: theme.typography.labelxs.fontWeight
+                    }}
+                  >
+                    Abayomi Oluwo
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: theme.typography.labelxs.fontSize,
+                      color: theme.palette.secondary.light
+                    }}
+                  >
+                    email@gmail.com
+                  </Typography>
+                </Box>
+                <KeyboardArrowDown/>
+              </Box>
+            )}
           </List>
         </Drawer>
       </Container>
@@ -261,6 +359,13 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
         setAnchorEl={setAnchorEl}
         open={open}
         handleClick={handleClick}
+      />
+
+      <MenuDropDown2
+        anchorEl={anchorEl2}
+        setAnchorEl={setAnchorEl2}
+        open={open2}
+        handleClick={handleClick2}
       />
     </Box>
   );

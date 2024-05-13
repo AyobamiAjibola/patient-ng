@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar, Box, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import { AccountBalanceWalletOutlined, ExitToAppOutlined, FavoriteBorderOutlined, MedicationOutlined, PersonOutlineOutlined } from "@mui/icons-material";
 import { useAtom } from "jotai";
@@ -8,14 +8,15 @@ import { setMenuIndex } from "@/lib/atoms";
 
 export default function layout({ children }: any) {
     const theme = useTheme();
-    const [currentIndex, setCurrentIndex] = useAtom(setMenuIndex)
+    const [currentIndex, setCurrentIndex] = useAtom(setMenuIndex);
+    const isMobile = useMediaQuery('(max-width: 900px)');
 
     const menu = [
         'Account Information',
         'Crowdfunding',
         'Hospital Reviews',
         'Finance',
-    ]
+    ];
 
     return (
         <>
@@ -24,14 +25,14 @@ export default function layout({ children }: any) {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    px: '90px'
+                    px: isMobile ? '10px' : '90px'
                 }}
             >
                 <Typography
                     sx={{
                         fontSize: theme.typography.h5.fontSize,
                         fontWeight: theme.typography.h5.fontWeight,
-                        my: 6
+                        my: 4
                     }}
                 >
                     Account
@@ -39,7 +40,7 @@ export default function layout({ children }: any) {
                 <Box
                     sx={{
                         display: 'flex',
-                        gap: '40px',
+                        gap: isMobile ? '10px' : '40px',
                         width: '100%'
                     }}
                 >
@@ -48,10 +49,10 @@ export default function layout({ children }: any) {
                             display: 'flex',
                             flexDirection: 'column',
                             width: '20%',
-                            height: 'auto',
+                            height: '420px',
                             px: 2, py: 4,
                             border: `1px solid ${theme.palette.secondary.lighter}`,
-                            borderRadius: theme.borderRadius.sm,
+                            borderRadius: theme.borderRadius.sm
                         }}
                     >
                         <Box
@@ -74,27 +75,28 @@ export default function layout({ children }: any) {
                             <Typography
                                 sx={{
                                     fontSize: theme.typography.labelsm.fontSize,
-                                    fontWeight: theme.typography.labelsm.fontWeight
+                                    fontWeight: theme.typography.labelsm.fontWeight,
+                                    textAlign: 'center'
                                 }}
                             >
                                 Olowu Abayomi
                             </Typography>
-                            <Typography
+                            {!isMobile && (<Typography
                                 sx={{
                                     fontSize: theme.typography.labelxs.fontSize,
                                     color: theme.palette.secondary.light
                                 }}
                             >
                                 abayomi@patient.ng
-                            </Typography>
-                            <Box 
+                            </Typography>)}
+                            {!isMobile && (<Box 
                                 sx={{
                                     width: '90%',
                                     height: '1px', 
                                     backgroundColor: theme.palette.secondary.lighter,
                                     mt: 3
                                 }}
-                            />
+                            />)}
                             <Box sx={{display: 'flex', gap: 2, flexDirection: 'column', mt: 3}}>
                                 {
                                     menu.map((item, index) => (
@@ -145,14 +147,14 @@ export default function layout({ children }: any) {
                                                     />
                                             }
 
-                                            <Typography
+                                            {!isMobile && (<Typography
                                                 sx={{
                                                     fontSize: theme.typography.labelsm.fontSize,
                                                     color: index === currentIndex ? theme.palette.primary.main : theme.palette.secondary.main,
                                                 }}
                                             >
                                                 {item}
-                                            </Typography>
+                                            </Typography>)}
                                         </Box>
                                     ))
                                 }
@@ -177,14 +179,14 @@ export default function layout({ children }: any) {
                                     }}
                                 >
                                     <ExitToAppOutlined />
-                                    <Typography
+                                    {!isMobile && (<Typography
                                         sx={{
                                             fontSize: theme.typography.labelsm.fontSize,
                                             color: theme.palette.secondary.main,
                                         }}
                                     >
                                         Log Out
-                                    </Typography>
+                                    </Typography>)}
                                 </Box>
                             </Box>
                         </Box>
@@ -192,8 +194,9 @@ export default function layout({ children }: any) {
 
                     <Box
                         sx={{
-                            flex: 1,
-                            flexDirection: 'column'
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '80%'
                         }}
                     >
                         {currentIndex === 0 && (<Typography
