@@ -44,11 +44,9 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
           horizontal: 'right',
         }}
       >
-        <MenuItem onClick={() => handleClose('/')} className='cursor-pointer'>
+        <MenuItem onClick={() => handleClose('/blog')} className='cursor-pointer'>
           <Box className='flex flex-col'>
-            <Box className='flex gap-4 justify-start cursor-pointer'
-              onClick={() => router.push('/')}
-            >
+            <Box className='flex gap-4 justify-start cursor-pointer'>
               <Image
                 src='/blog.png'
                 alt='blog'
@@ -59,7 +57,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                 sx={{
                   color: theme.palette.secondary.main,
                   fontSize: theme.typography.labelbase.fontSize,
-                  fontWeight: 500//theme.typography.labelsm.fontWeight,
+                  fontWeight: 500
                 }}
               >
                 Blog
@@ -92,7 +90,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                 sx={{
                   color: theme.palette.secondary.main,
                   fontSize: theme.typography.labelbase.fontSize,
-                  fontWeight: 500//theme.typography.labelsm.fontWeight,
+                  fontWeight: 500
                 }}
               >
                 Patient stories

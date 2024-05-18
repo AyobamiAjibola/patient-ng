@@ -105,7 +105,7 @@ export default function page() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                py: 6, px: '64px'
+                py: 6, px: isMobile ? '20px' : '90px'
             }}
         >
             <Box sx={{width: isMobile ? '100%' : '30%', alignSelf: 'flex-end', mb: 5, mr: '3%'}}>
@@ -124,7 +124,7 @@ export default function page() {
                 sx={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: 2, justifyContent: 'center'
+                    gap: isMobile ? 4 : 2, justifyContent: 'center'
                 }}
             >
                 { filteredData.map((fundraiser: any, index: number) => {
@@ -135,8 +135,8 @@ export default function page() {
                         sx={{
                             display: 'flex',
                             flexDirection: 'column',
-                            height: '450px',
-                            width: '23%',
+                            minHeight: '450px',
+                            width: isMobile ? '100%' : '23%',
                             border: `1px solid ${theme.palette.secondary.lighter}`,
                             borderRadius: theme.borderRadius.sm
                         }}

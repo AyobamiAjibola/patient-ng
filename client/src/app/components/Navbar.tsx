@@ -83,7 +83,12 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const onToggle = () => setToggle(!toggle);
 
   useEffect(() => {
-    if(pathname === '/') {
+    if(pathname === '/blog' || 
+        pathname === '/webinar' || 
+        pathname === '/patient-stories' ||
+        pathname === '/award' ||
+        pathname === '/podcast'
+      ) {
       setIndx(3)
     } else if (pathname.includes('/advocacy')) {
       setIndx(0)
@@ -91,11 +96,18 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       setIndx(1)
     } else if (pathname.includes('/insight')) {
       setIndx(2)
+    } else if(pathname === '/') {
+      setIndx(-1)
     }
   },[pathname]);
 
   return (
-    <Box sx={{ backgroundColor: theme.palette.background.white, borderBottom: '2px solid #F3F3F3' }}>
+    <Box 
+      sx={{ 
+        backgroundColor: pathname === '/' ? 'rgba(0, 0, 0, 0.5)' : theme.palette.background.white, 
+        borderBottom: pathname === '/' ? 'none' : '2px solid #F3F3F3', position: 'relative'
+      }}
+    >
       <Container>
         <Toolbar
           style={{
@@ -109,21 +121,21 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             gap: !isMobile ? '' : '50px'
           }}
         >
-          <Box className='flex flex-row items-center gap-4'>
-            <Link href="/">
+          <Box className='flex flex-row items-center gap-4 cursor-pointer'
+            onClick={() => router.push('/')}
+          >
               <Image
                 src='/logo.png'
                 alt='logo'
                 height={40}
                 width={40}
               />
-            </Link>
             <Typography
               fontFamily={theme.fonts}
               sx={{
                 fontSize: theme.typography.h5.fontSize,
                 fontWeight: theme.typography.h5.fontWeight,
-                color: theme.palette.primary.darker
+                color: pathname === '/' ? 'white' : theme.palette.primary.darker
               }}
             >
               Patient.ng
@@ -162,7 +174,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               {toggle ? (
                 <CloseIcon sx={{ fontSize: 20 }} />
               ) : (
-                <MenuIcon sx={{ fontSize: 20 }} />
+                <MenuIcon sx={{ fontSize: 20, color: pathname === '/' ? 'white' : 'black' }} />
               )}
             </IconButton>
           ) : null}
@@ -176,7 +188,12 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                   >
                     <Typography
                       fontFamily={theme.fonts}
-                      color={index === indx ? theme.palette.primary.main : theme.palette.secondary.main}
+                      color={index === indx 
+                              ? theme.palette.primary.main 
+                              : pathname === '/' 
+                                ? 'white'
+                                : theme.palette.secondary.main
+                            }
                       fontWeight={theme.typography.labelxl.fontWeight}
                       sx={{
                         '&:hover': { color: theme.palette.primary.main }
@@ -184,7 +201,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                     >
                       {item.name}
                     </Typography>
-                    {item.name === "Resources" && (<ExpandMoreIcon/>)}
+                    {item.name === "Resources" && (<ExpandMoreIcon sx={{color: pathname === '/' ? 'white' : theme.palette.secondary.main}}/>)}
                   </Link>
                 </li>
               ))}
@@ -193,7 +210,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
 
           {!isMobile && !isLogged && (<Box className='flex flex-row gap-1 items-center'>
                 <PButton bg={false} transBg={true}>
-                  Sign Upxx
+                  Sign Up
                 </PButton>
                 <PButton bg={true} width='100px' transBg={false}>
                   {'Log In'}
@@ -225,7 +242,8 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               <Typography
                 sx={{
                   fontSize: theme.typography.labelxs.fontSize,
-                  fontWeight: theme.typography.labelxs.fontWeight
+                  fontWeight: theme.typography.labelxs.fontWeight,
+                  color: pathname === '/' ? 'white' : 'black'
                 }}
               >
                 Abayomi Oluwo
@@ -233,7 +251,8 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               <Typography
                 sx={{
                   fontSize: theme.typography.labelxs.fontSize,
-                  color: theme.palette.secondary.light, mt: -1
+                  color: pathname === '/' ? 'white' : theme.palette.secondary.light, 
+                  mt: -1
                 }}
               >
                 email@gmail.com

@@ -9,6 +9,7 @@ import { wordBreaker } from "@/lib/helper";
 import { PlayArrow } from "@mui/icons-material";
 import Pagination from "../components/Pagination";
 import { useRouter } from "next/navigation";
+import Footer from "@/modules/client/components/Footer";
 
 const channels = [
     '/apple-pod.png',
@@ -464,8 +465,9 @@ export default function Podcasts() {
                         onPageChange={handlePageChange}
                     />)}
                 </Box>
-                
             </Box>
+
+            <Footer/>
         </>
     )
 }

@@ -5,6 +5,7 @@ import { Provider } from 'jotai';
 import NextAuthSessionProvider from './providers/sessionProvider';
 import QueryClientProviderWrapper from './QueryClientProvider';
 import CustomThemeWrapper from "./components/CustomThemeWrapper";
+import Footer from "@/modules/client/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 

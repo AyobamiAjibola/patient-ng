@@ -10,6 +10,7 @@ import Image from "next/image";
 import { characterBreaker } from "@/lib/helper";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import Footer from "@/modules/client/components/Footer";
 
 const topics = [
     "Nutrition and Diet",
@@ -223,7 +224,6 @@ export default function Webinars() {
                                             p: 3, justifyContent: 'space-between', cursor: 'pointer'
                                         }}
                                     >
-                                        
                                         <Image
                                             src={index % 2 === 0 ? '/ipatient-logo2.png' : '/ipatient-logo.png'}
                                             alt='logo'
@@ -258,17 +258,30 @@ export default function Webinars() {
                                             {`${characterBreaker(webinar.description, 160)}...`}
                                         </Typography>
 
-                                        {!isLoggedIn && (<Typography
-                                                    sx={{
-                                                        color: theme.palette.primary.main,
-                                                        fontSize: theme.typography.labelxs.fontSize,
-                                                        fontWeight: theme.typography.labelxs.fontWeight,
-                                                        mt: 3, cursor: 'pointer'
-                                                    }}
-                                                >
-                                                    Signup <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
-                                                </Typography>
-                                            )}
+                                        {!isLoggedIn ? 
+                                            (<Typography
+                                            sx={{
+                                                color: theme.palette.primary.main,
+                                                fontSize: theme.typography.labelxs.fontSize,
+                                                fontWeight: theme.typography.labelxs.fontWeight,
+                                                cursor: 'pointer'
+                                            }}
+                                            >
+                                                Signup <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
+                                            </Typography>
+                                            ) : (
+                                            <Typography
+                                                sx={{
+                                                color: theme.palette.primary.main,
+                                                fontSize: theme.typography.labelxs.fontSize,
+                                                fontWeight: theme.typography.labelxs.fontWeight,
+                                                cursor: 'pointer'
+                                                }}
+                                            >
+                                                Open <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
+                                            </Typography>
+                                            )
+                                        }
                                     </Box>
                                 </Box>
                             ))
@@ -312,6 +325,8 @@ export default function Webinars() {
             </Box>
             
         </Box>
+
+        <Footer/>
       </>
     )
   }

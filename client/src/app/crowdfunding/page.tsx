@@ -11,6 +11,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Mousewheel, Keyboard } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import Footer from "@/modules/client/components/Footer";
 
 const crowdCampaign = [
   {
@@ -153,7 +154,7 @@ export default function CrowdFundings() {
             height: 'auto',
             background: theme.palette.secondary.lightest,
             display: 'flex',
-            gap: 6, px: '64px', py: 6
+            gap: 6, px: isMobile ? '20px' : '90px', py: 6
           }}
         >
           <Box
@@ -216,7 +217,7 @@ export default function CrowdFundings() {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            py: 6, px: '64px'
+            py: 6, px: isMobile ? '20px' : '90px'
           }}
         >
           <Box
@@ -272,8 +273,13 @@ export default function CrowdFundings() {
           <Box
             sx={{
               display: 'flex',
-              flexWrap: 'wrap',
-              gap: 4, mt: '60px'
+              gap: 4, mt: '60px',
+              overflowX: 'scroll',
+              whiteSpace: 'nowrap',
+              '&::-webkit-scrollbar': {
+                display: 'none',
+              },
+              scrollbarWidth: 'none',
             }}
           >
             { crowdCampaign.slice(0, 3).map((fundraiser: any, index: number) => {
@@ -285,7 +291,8 @@ export default function CrowdFundings() {
                     display: 'flex',
                     flexDirection: 'column',
                     height: '550px',
-                    width: isMobile ? '100%' : '30%',
+                    minWidth: '300px',
+                    width: isMobile ? '100%' : '32%',
                     border: `1px solid ${theme.palette.secondary.lighter}`,
                     borderRadius: theme.borderRadius.sm
                   }}
@@ -306,92 +313,100 @@ export default function CrowdFundings() {
                       px: '10px',
                       pt: '10px',
                       display: 'flex',
-                      flexDirection: 'column'
+                      flexDirection: 'column',
+                      height: '70%', justifyContent: 'space-evenly'
                     }}
                   >
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelxs.fontSize,
-                        fontWeight: theme.typography.labelxs.fontWeight,
-                        ml: -1
-                      }}
-                    >
-                      <LocationOn 
+                    <Box>
+                      <Typography
                         sx={{
-                          color: theme.palette.primary.main, 
-                          fontSize: '16px'
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelxs.fontWeight,
+                          ml: -1
                         }}
-                      /> { fundraiser.location }
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelsm.fontSize,
-                        fontWeight: theme.typography.labelxs.fontWeight,
-                        my: 1
-                      }}
-                    >
-                      { characterBreaker(fundraiser.name, 20)}
-                    </Typography>
+                      >
+                        <LocationOn
+                          sx={{
+                            color: theme.palette.primary.main, 
+                            fontSize: '16px'
+                          }}
+                        /> { fundraiser.location }
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelsm.fontSize,
+                          fontWeight: theme.typography.labelxs.fontWeight,
+                          my: 1
+                        }}
+                      >
+                        { characterBreaker(fundraiser.name, 20)}
+                      </Typography>
+                    </Box>
+
                     <Typography
                       sx={{
                         fontSize: theme.typography.labelxs.fontSize,
                         lineHeight: theme.typography.labelxs.lineHeight,
-                        color: theme.palette.secondary.light
+                        color: theme.palette.secondary.light,
+                        whiteSpace: 'pre-wrap'
                       }}
                     >
                       { wordBreaker(fundraiser.story, 10) }...
                     </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        gap: 1, mt: 3
-                      }}
-                    >
-                      <Typography
+                  
+                    <Box>
+                      <Box
                         sx={{
-                          color: theme.palette.secondary.light,
-                          fontSize: theme.typography.labelxs.fontSize
+                          display: 'flex',
+                          gap: 1, mt: 3
                         }}
                       >
-                        Last donation
-                      </Typography>
-                      <Typography
+                        <Typography
+                          sx={{
+                            color: theme.palette.secondary.light,
+                            fontSize: theme.typography.labelxs.fontSize
+                          }}
+                        >
+                          Last donation
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: theme.typography.labelxs.fontSize,
+                            fontWeight: theme.typography.labelxs.fontWeight
+                          }}
+                        >
+                          { fundraiser.lastDonation }
+                        </Typography>
+                      </Box>
+                      <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
+                      <Box
                         sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelxs.fontWeight
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1
                         }}
                       >
-                        { fundraiser.lastDonation }
-                      </Typography>
-                    </Box>
-                    <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxxs.fontSize
-                        }}
-                      >
-                        {formAmount(+fundraiser.raised)} raised
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxxs.fontSize,
-                          color: theme.palette.secondary.light
-                        }}
-                      >
-                        of {formAmount(+fundraiser.amountNeeded)}
-                      </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: theme.typography.labelxxs.fontSize
+                          }}
+                        >
+                          {formAmount(+fundraiser.raised)} raised
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: theme.typography.labelxxs.fontSize,
+                            color: theme.palette.secondary.light
+                          }}
+                        >
+                          of {formAmount(+fundraiser.amountNeeded)}
+                        </Typography>
+                      </Box>
                     </Box>
                   </Box>
                   <Box
                     sx={{
-                      flex: 1, mt: 3,
+                      height: '30%', mt: 3,
                       backgroundColor: theme.palette.secondary.lightest,
                       borderBottomRightRadius: theme.borderRadius.sm,
                       borderBottomLeftRadius: theme.borderRadius.sm,
@@ -422,6 +437,7 @@ export default function CrowdFundings() {
               )})
             }
           </Box>
+
         </Box>
 
         <Box
@@ -431,7 +447,7 @@ export default function CrowdFundings() {
             gap: 4, mt: '60px',
             flexDirection: 'column',
             backgroundColor: theme.palette.secondary.lighter,
-            height: 'auto', py: 6, px: '64px'
+            height: 'auto', py: 6, px: isMobile ? '20px' : '90px'
           }}
         >
           <Typography
@@ -455,7 +471,7 @@ export default function CrowdFundings() {
           
           <Swiper
             slidesPerView={isMobile ? 2 : 4}
-            spaceBetween={isMobile ? 3 : 10}
+            spaceBetween={isMobile ? 10 : 15}
             mousewheel={true}
             keyboard={true}
             cssMode={true}
@@ -478,60 +494,61 @@ export default function CrowdFundings() {
                 color: theme.palette.primary.main
               }}
             />
-            {
-              stories.map((story, index) => (
-                <SwiperSlide key={`${index}`}
-                  className="bg-[white] shadow-md p-4 w-[237px] h-[auto] mb-6"
-                  style={{
-                    borderRadius: theme.borderRadius.sm,
-                    backgroundColor: 'white',
-                    display: 'flex', gap: 10,
-                    flexDirection: 'column'
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight
+              {
+                stories.map((story, index) => (
+                  <SwiperSlide key={`${index}`}
+                    className="bg-[white] shadow-md p-4 h-[auto] mb-6"
+                    style={{
+                      borderRadius: theme.borderRadius.sm,
+                      backgroundColor: 'white',
+                      display: 'flex', gap: 10,
+                      flexDirection: 'column',
+                      minWidth: '300px'
                     }}
                   >
-                    {story.title}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      color: theme.palette.secondary.light
-                    }}
-                  >
-                    {story.story}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      gap: 2,
-                      alignItems: 'center'
-                    }}
-                  >
-                    <Avatar
-                      src={story.image}
-                      alt="story image"
+                    <Typography
                       sx={{
-                        width: 30,
-                        height: 30
-                      }}
-                    />
-                      <Typography
-                      sx={{
-                        fontSize: theme.typography.labelxxs.fontSize,
+                        fontSize: theme.typography.labelsm.fontSize,
                         fontWeight: theme.typography.labelsm.fontWeight
                       }}
                     >
-                      {story.name}
+                      {story.title}
                     </Typography>
-                  </Box>
-                </SwiperSlide>
-              ))
-            }
+                    <Typography
+                      sx={{
+                        fontSize: theme.typography.labelxs.fontSize,
+                        color: theme.palette.secondary.light
+                      }}
+                    >
+                      {isMobile ? wordBreaker(story.story, 20) : wordBreaker(story.story, 40)}...
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 2,
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Avatar
+                        src={story.image}
+                        alt="story image"
+                        sx={{
+                          width: 30,
+                          height: 30
+                        }}
+                      />
+                        <Typography
+                        sx={{
+                          fontSize: theme.typography.labelxxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight
+                        }}
+                      >
+                        {story.name}
+                      </Typography>
+                    </Box>
+                  </SwiperSlide>
+                ))
+              }
           </Swiper>
         </Box>
 
@@ -541,7 +558,7 @@ export default function CrowdFundings() {
             flexWrap: 'wrap',
             gap: 4, mt: '60px',
             flexDirection: 'column',
-            height: 'auto', pt: 6, pl: '64px'
+            height: 'auto', pt: 6, pl: isMobile ? '20px' : '90px'
           }}
         >
             <Typography
@@ -560,7 +577,7 @@ export default function CrowdFundings() {
               mb: 2
             }}
           >
-            Learn how crowdfunding helps fund critical health initiatives.
+            Learn seehow crowdfunding helps fund critical health initiatives.
           </Typography>
 
           <Box
@@ -572,17 +589,17 @@ export default function CrowdFundings() {
             <Box
               sx={{
                 display: 'flex',
-                gap: 5
+                gap: isMobile ? 2 : 5
               }}
             >
-              <Box sx={{width: '50%'}}>
+              <Box sx={{width: isMobile ? '100%' : '50%'}}>
                 {
                   crowdFundingWork.map((data, index) => (
                     <Box
                       key={index}
                       sx={{
                         display: 'flex',
-                        gap: 5, mb: '30px'
+                        gap: isMobile ? 2 : 5, mb: '30px'
                       }}
                     >
                       <Box
@@ -590,7 +607,7 @@ export default function CrowdFundings() {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          width: '60px', height: '50px',
+                          width: isMobile ? '60px' : '60px', height: isMobile ? '30px' : '50px',
                           backgroundColor: theme.palette.secondary.lightest,
                           border: `1px solid ${theme.palette.secondary.lighter}`,
                           borderRadius: '50%'
@@ -599,7 +616,7 @@ export default function CrowdFundings() {
                         <Typography
                           sx={{
                             fontWeight: theme.typography.labelsm.fontWeight,
-                            fontSize: theme.typography.labelxl.fontSize
+                            fontSize: theme.typography.labelsm.fontSize
                           }}
                         >
                           {index + 1}
@@ -608,12 +625,13 @@ export default function CrowdFundings() {
                       <Box
                         sx={{
                           display: 'flex',
-                          flexDirection: 'column'
+                          flexDirection: 'column',
+                          pr: isMobile ? 3 : 0
                         }}
                       >
                         <Typography
                           sx={{
-                            fontSize: theme.typography.labelxl.fontSize,
+                            fontSize: isMobile ? theme.typography.labellg.fontSize : theme.typography.labelxl.fontSize,
                             fontWeight: theme.typography.labellg.fontWeight
                           }}
                         >
@@ -621,7 +639,7 @@ export default function CrowdFundings() {
                         </Typography>
                         <Typography
                           sx={{
-                            fontSize: theme.typography.labellg.fontSize,
+                            fontSize: isMobile ? theme.typography.labelsm.fontSize : theme.typography.labellg.fontSize,
                             color: theme.palette.secondary.light
                           }}
                         >
@@ -631,7 +649,7 @@ export default function CrowdFundings() {
                     </Box>
                   ))
                 }
-                <Box sx={{width: '200px', mt: '70px', ml: '80px'}}>
+                <Box sx={{width: '200px', mt: isMobile ? '50px' : '70px', ml: isMobile ? '60px' : '80px'}}>
                   <PButton transBg={false} bg={true} width="100%"
                     onClick={() => router.push('/crowdfunding/campaigns')}
                   >
@@ -660,7 +678,7 @@ export default function CrowdFundings() {
           </Box>
         </Box>
 
-        <Box sx={{px: '64px', py: 6}}>
+        <Box sx={{px: isMobile ? '20px' : '90px', py: 6}}>
           <Box
             sx={{
               display: 'flex',
@@ -668,7 +686,9 @@ export default function CrowdFundings() {
               backgroundColor: theme.palette.primary.darker,
               width: '100%', height: 'auto',
               borderRadius: theme.borderRadius.md,
-              justifyContent: isMobile ? 'flex-start' : 'space-between'
+              justifyContent: isMobile ? 'flex-start' : 'space-between',
+              flexDirection: isMobile ? 'column' : 'row',
+              gap: 2
             }}
           >
             <Box>
@@ -707,6 +727,8 @@ export default function CrowdFundings() {
           </Box>
         </Box>
       </Box>
+
+      <Footer/>
     </>
   )
 }
