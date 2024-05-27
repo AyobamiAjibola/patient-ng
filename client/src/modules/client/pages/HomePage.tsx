@@ -285,93 +285,88 @@ export default function HomePage() {
         sx={{
           width: '100%',
           height: isMobile ? imgHeight : '800px',
-          marginTop: '-80px'
+          marginTop: '-80px',
+          position: 'relative',
+          mb: isMobile ? '-4rem' : '28rem',
+          zIndex: '-1'
         }}
       >
-        <img
-          src='/home-img.png'
-          alt='home page image'
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        />
-        <Box
-          sx={{
-            width: '100%',
-            pl: isMobile ? '20px' : '90px',
-            pr: isMobile ? '5px' : '0px',
-            position: 'absolute',
-            mt: isMobile ? '-450px' : '-600px',
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: isMobile ? theme.typography.h4.fontSize : theme.typography.h2.fontSize,
-              fontWeight: theme.typography.h2.fontWeight,
-              color: 'white', mb: -2
+        <Box>
+          <img
+            src='/home-img.png'
+            alt='home page image'
+            style={{
+              width: '100%',
+              height: '100%',
             }}
-          >
-            Empowering Patients,
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: isMobile ? theme.typography.h4.fontSize : theme.typography.h2.fontSize,
-              fontWeight: theme.typography.h2.fontWeight,
-              color: 'white', mb: 4
-            }}
-          >
-            Transforming Healthcare.
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize,
-              color: 'white'
-            }}
-          >
-            We believe in putting patients at the center of their healthcare journey. Discover a community-driven 
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize,
-              color: 'white'
-            }}
-          >
-            platform dedicated to providing support, resources, and advocacy for patients across Nigeria.
-          </Typography>
+          />
           <Box
             sx={{
+              width: '100%',
+              pl: isMobile ? '20px' : '90px',
+              pr: isMobile ? '5px' : '0px',
+              position: 'absolute',
               display: 'flex',
-              gap: 3, mt: 4
+              flexDirection: 'column',
+              top: isMobile ? 100 : 170
             }}
           >
-            <PButton transBg={false} bg={true}>
-              Contact Us
-            </PButton>
-            <PButton transBg={true} bg={false}>
-              About Us
-            </PButton>
+            <Typography 
+              variant={isMobile ? 'labelsm' : 'h2'}
+              sx={{
+                color: 'white',
+                mb: isMobile ? 1 : 4,
+                width: isMobile ? '100%' : '50%'
+              }}
+            >
+              Empowering Patients, Transforming Healthcare.
+            </Typography>
+            <Typography
+              variant={isMobile ? 'paragraphxxs' : 'paragraphsm'}
+              sx={{
+                color: theme.palette.secondary.lighter,//'white',
+                width: isMobile ? '100%' : '70%'
+              }}
+            >
+              We believe in putting patients at the center of their healthcare journey. Discover a community-driven platform dedicated to providing support, resources, and advocacy for patients across Nigeria.
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 3, mt: isMobile ? 2 : 6
+              }}
+            >
+              <PButton transBg={false} bg={true}>
+                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+                  Contact Us
+                </Typography>
+              </PButton>
+              <PButton transBg={true} bg={false}>
+                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+                  About Us
+                </Typography>
+              </PButton>
+            </Box>
           </Box>
         </Box>
-      </Box>
-      
-      <Box
-        sx={{
-          height: isMobile ? '250px' : '700px',
-          mx: isMobile ? '20px' : '90px',
-          marginTop: isMobile ? '-8rem' : '-15rem'
-        }}
-      >
-        <img
-          src='/home-img2.png'
-          alt='home page image'
-          style={{
-            width: '100%',
-            height: '100%',
+
+        <Box
+          sx={{
+            height: isMobile ? '250px' : '700px',
+            mx: isMobile ? '20px' : '90px',
+            position: 'absolute',
+            top: isMobile ? '14rem' : '35rem'
           }}
-        />
+        >
+          <img
+            src='/home-img2.png'
+            alt='home page image'
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+          />
+        </Box>
       </Box>
 
       <Box
@@ -396,17 +391,17 @@ export default function HomePage() {
           Crowdfunding
         </Typography>
         <Typography
+          variant={ isMobile ? 'labellg' : 'h3' }
           sx={{
-            fontSize: theme.typography.h3.fontSize,
-            fontWeight: theme.typography.h3.fontWeight,
-            alignSelf: 'center', mb: 2
+            alignSelf: 'center', mb: 2,
+            textAlign: isMobile ? 'center' : 'left'
           }}
         >
           Support Health Initiatives, Make a Difference
         </Typography>
         <Typography
+          variant={isMobile ? 'paragraphsm' : 'paragraphlg'}
           sx={{
-            fontSize: theme.typography.labellg.fontSize,
             color: theme.palette.secondary.light, textAlign: 'center',
             alignSelf: 'center', width: isMobile ? '100%' : '80%'
           }}
@@ -417,7 +412,7 @@ export default function HomePage() {
         <Box
           sx={{
             display: 'flex',
-            gap: 4, mt: '60px',
+            gap: 4, mt: isMobile ? '20px' : '60px',
             overflowX: 'scroll',
             whiteSpace: 'nowrap',
             '&::-webkit-scrollbar': {
@@ -619,17 +614,16 @@ export default function HomePage() {
           Featured blogs
         </Typography>
         <Typography
+          variant={ isMobile ? 'labellg' : 'h3' }
           sx={{
-            fontSize: theme.typography.h3.fontSize,
-            fontWeight: theme.typography.h3.fontWeight,
             alignSelf: 'center', mb: 2
           }}
         >
           Latest Blog Posts
         </Typography>
         <Typography
+          variant={isMobile ? 'paragraphsm' : 'paragraphlg'}
           sx={{
-            fontSize: theme.typography.labellg.fontSize,
             color: theme.palette.secondary.light, textAlign: 'center',
             alignSelf: 'center', width: isMobile ? '100%' : '80%', mb: 4
           }}

@@ -317,8 +317,8 @@ export default function page() {
               If you need assistance making a complaint about an experience you had in a Public Acute Hospital.
             </Typography>
             <InputField
-              label="First Name"
-              placeholder="First name"
+              label="Hospital Name"
+              placeholder="Hospital name"
               isBorder={true}
               labelStyle={{
                 fontSize: theme.typography.labelxs.fontSize,
@@ -329,8 +329,8 @@ export default function page() {
               register={register('nameOfHospital')}
             />
             <InputField
-              label="First Name"
-              placeholder="First name"
+              label="Address"
+              placeholder="Hospital address"
               isBorder={true}
               labelStyle={{
                 fontSize: theme.typography.labelxs.fontSize,
@@ -341,8 +341,8 @@ export default function page() {
               register={register('addressOfHospital')}
             />
             <InputField
-              label="First Name"
-              placeholder="First name"
+              label="Complaints"
+              placeholder="Your complain"
               isBorder={true}
               labelStyle={{
                 fontSize: theme.typography.labelxs.fontSize,

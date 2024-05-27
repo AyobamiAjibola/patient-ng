@@ -3,10 +3,12 @@
 import InputField from "@/app/components/InputField";
 import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
-import PButton from "@/app/components/PButton";
+import PButton, { NButton } from "@/app/components/PButton";
+import { useAdminUser, useCrowdStatus } from "@/lib/atoms";
 import { formAmount } from "@/lib/helper";
 import { Person, Reply } from "@mui/icons-material";
 import { Avatar, Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
+import { useAtom } from "jotai";
 import { useState } from "react";
 
 const donations = [
@@ -43,7 +45,9 @@ export default function CrowdFunding() {
   const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>('');
   const [showDonations, setShowDonations] = useState<boolean>(true);
-
+  const [isAdmin, _] = useAtom(useAdminUser);
+  const [status, __] = useAtom(useCrowdStatus);
+console.log(isAdmin, status, 'atom')
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 7,
     borderRadius: 5,
@@ -230,7 +234,17 @@ export default function CrowdFunding() {
               >
                 200 donations
               </Typography>
-              <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
+              {status !== '' && (<NButton
+                textcolor={!status ? theme.palette.state.success : theme.palette.state.error}
+                bordercolor={!status ? theme.palette.state.success : theme.palette.state.error}
+              >
+                <Typography variant="labelxs">
+                  {
+                    status ? 'Disable' : 'Activate'
+                  }
+                </Typography>
+              </NButton>)}
+              {!isAdmin && (<Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
                 <PButton transBg={false} bg={true} width='100%'
                   onClick={handleDonateNow}
                 >
@@ -255,7 +269,7 @@ export default function CrowdFunding() {
                     Share
                   </Typography>
                 </PButton>
-              </Box>
+              </Box>)}
 
               <Typography
                 sx={{
@@ -329,12 +343,14 @@ export default function CrowdFunding() {
               </Box>
             </Box>
           </Box>
-          <MModal onClose={handleCloseModal} open={open} width={'30%'}>
+          <MModal onClose={handleCloseModal} open={open} width={isMobile ? '80%' : '30%'}>
             <Box
               sx={{
                 px: 4, pb: 2,
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                height: '60vh',
+                overflow: 'scroll'
               }}
             >
               { showDonations && (<>
@@ -403,7 +419,7 @@ export default function CrowdFunding() {
                 </>
               )}
 
-              <Box 
+              {!isAdmin && (<Box 
                 sx={{
                   border: `1px solid ${theme.palette.secondary.lighter}`,
                   backgroundColor: theme.palette.secondary.lightest,
@@ -478,7 +494,7 @@ export default function CrowdFunding() {
                     ))
                   }
                 </Box>
-              </Box>
+              </Box>)}
             </Box>
           </MModal>
         </Box>

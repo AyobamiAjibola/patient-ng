@@ -148,7 +148,7 @@ export default function Reviews() {
                   value={review.rating}
                   precision={0.5}
                   readOnly
-                  sx={{ color: '#FFCB00' }}
+                  sx={{ color: theme.palette.state.warning }}
                 />
               </Box> 
             </Box>

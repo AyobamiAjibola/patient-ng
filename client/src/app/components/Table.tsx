@@ -76,10 +76,12 @@ const PTable: React.FC = ({data}: any) => {
     },
   ];
 
+  const dataWithKeys = data.map((item: any, index: number) => ({ ...item, key: index }));
+
   return (
     <Table 
       columns={columns} 
-      dataSource={data} 
+      dataSource={dataWithKeys} 
       style={{
         overflowY: 'scroll'
       }}

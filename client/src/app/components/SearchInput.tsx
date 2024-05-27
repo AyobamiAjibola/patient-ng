@@ -7,10 +7,10 @@ function Search() {
 
   return (
     <Input.Group compact 
-        style={{
-            display: 'flex',
-            alignItems: 'center'
-        }}
+      style={{
+        display: 'flex',
+        alignItems: 'center'
+      }}
     >
       
       <Input
@@ -20,10 +20,10 @@ function Search() {
       />
       <SearchOutlined 
         style={{
-            fontSize: '20px', 
-            color: theme.palette.secondary.light,
-            position: 'absolute',
-            marginLeft: '10px'
+          fontSize: '20px', 
+          color: theme.palette.secondary.light,
+          position: 'absolute',
+          marginLeft: '10px'
         }}
     />
       {/* <Button

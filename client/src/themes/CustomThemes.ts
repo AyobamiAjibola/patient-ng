@@ -8,7 +8,7 @@ import { createTheme } from '@mui/material';
 const ipatientTheme: IPatientTypes = createTheme({
     palette: {
       //@ts-ignore
-      primary: { main: '#05CC7E', darker: '#004146' },
+      primary: { main: '#05CC7E', darker: '#004146', lightest: '#CDF4E5' },
       secondary: {
         main: "#252525",
         light: "#68727D",
@@ -19,11 +19,12 @@ const ipatientTheme: IPatientTypes = createTheme({
       background: {
         //@ts-ignore
         main: '#05CC7E',
-        white: '#FFFFFF'
+        white: '#FFFFFF',
+        default: 'white',
       },
       state: {
         success: '#05CC7E',
-        warning: '#EAA108',
+        warning: '#FFCB00',
         error: '#EF4444',
         information: '#06ACD4',
         away: '#EAA108',
@@ -35,6 +36,7 @@ const ipatientTheme: IPatientTypes = createTheme({
         main: '#D1D5DB',
       }
     },
+    drawerWidth: 240,
     typography: {
         h1: {
           fontSize: '60px',
@@ -148,7 +150,7 @@ const ipatientTheme: IPatientTypes = createTheme({
     },
     spacing: [0, 4, 8, 16, 24, 32, 64, 84, 98, 120, 144],
     // @ts-ignore
-    fonts: 'Roboto Condensed, sans-serif',
+    fonts: 'Roboto Condensed, sans-serif'
 });
 
 export interface IPatientTypes{
@@ -215,6 +217,7 @@ export interface Background {
     primary: string;
     secondary: string;
     white: string;
+    default?: string; 
 }
 
 export interface Danger {

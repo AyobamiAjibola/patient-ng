@@ -9,6 +9,10 @@ export function wordBreaker(sentence: string, maxWords: number): string {
     return resultWords.join(' ');
 }
 
+export function formatNumberWithCommas(number: number) {
+  return number.toLocaleString();
+}
+
 export function characterBreaker(sentence: string, maxWords: number): string {
   const words = sentence?.split('');
 

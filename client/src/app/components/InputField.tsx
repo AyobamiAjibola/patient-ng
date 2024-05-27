@@ -132,7 +132,7 @@ const InputField: React.FC<InputFieldProps> = ({
           <Typography
             color={'red'}
             sx={{
-              fontSize: theme.typography.labelxs.fontSize,
+              fontSize: '12px',
               mt: -3
             }}
           >

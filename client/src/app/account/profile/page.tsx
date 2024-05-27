@@ -4,7 +4,7 @@ import InputField from "@/app/components/InputField";
 import PButton from "@/app/components/PButton";
 import { customStyles } from "@/constant/customStyles";
 import { stateLga } from "@/constant/state";
-import { FileDownloadOutlined, PlusOneOutlined, Upload } from "@mui/icons-material";
+import { FileDownloadOutlined, Upload } from "@mui/icons-material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
