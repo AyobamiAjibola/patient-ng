@@ -28,11 +28,11 @@ const items = {
             link: '/admin/crowdfunding',
             iconName: FavoriteBorderOutlined
         },
-        {
-            title: 'Healthcare Mgt',
-            link: '/admin/healthcare',
-            iconName: MedicationOutlined
-        },
+        // {
+        //     title: 'Healthcare Mgt',
+        //     link: '/admin/healthcare',
+        //     iconName: MedicationOutlined
+        // },
         {
             title: 'Advocacy',
             link: '/admin/advocacy',

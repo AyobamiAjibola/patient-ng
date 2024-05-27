@@ -1,9 +1,9 @@
 'use client';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import { Avatar, Box, Button, IconButton, Typography, useMediaQuery } from '@mui/material/';
+import { Avatar, Box, IconButton, Typography, useMediaQuery } from '@mui/material/';
 import MuiDrawer from '@mui/material/Drawer';
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, LogoutOutlined } from '@mui/icons-material';
