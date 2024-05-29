@@ -6,6 +6,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { formAmount } from '@/lib/helper';
 import Image from 'next/image';
+import capitalize from 'capitalize';
 
 const UsersAdminTable: React.FC = ({data}: any) => {
   const router = useRouter();
@@ -63,6 +64,22 @@ const UsersAdminTable: React.FC = ({data}: any) => {
           >
             {record.phoneNumber}
           </Typography>
+      )},
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      render: (_, record) => {
+        return (
+          <Tag
+            style={{
+              color: record.status === "active"
+                      ? theme.palette.primary.main  
+                      : theme.palette.state.error
+            }}
+          >
+            {capitalize.words(record.status)}
+          </Tag>
       )},
     },
     {

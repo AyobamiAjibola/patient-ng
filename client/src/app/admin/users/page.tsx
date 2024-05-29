@@ -4,7 +4,7 @@ import UsersAdminTable from "@/app/components/UsersAdminTable";
 import { SearchOutlined } from "@mui/icons-material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 const item = [
   "All users",
@@ -12,10 +12,10 @@ const item = [
   "Inactive users"
 ]
 
-const users = [
+const usersData = [
   {
     _id: 1,
-    name: "Lisa Steve",
+    name: "Eliz Steve",
     email: "lisa@gmail.com",
     phoneNumber: '08043434343',
     gender: "Female",
@@ -154,7 +154,8 @@ export default function page() {
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.down('md'));
   const [currentItem, setCurrentItem] = useState<string>('All users');
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [users, setUsers] = useState<any>([]);
 
   const filteredData =
     users &&
@@ -165,8 +166,8 @@ export default function page() {
       item.state.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-  const activeUsers = filteredData.filter((user) => user.status === "active");
-  const inactiveUsers = filteredData.filter((user) => user.status === "inactive");
+  // const activeUsers = filteredData.filter((user) => user.status === "active");
+  // const inactiveUsers = filteredData.filter((user) => user.status === "inactive");
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -174,6 +175,18 @@ export default function page() {
 
     setSearchQuery(cleanedInput);
   };
+
+  useEffect(() => {
+    if(currentItem === "All users") {
+      setUsers(usersData)
+    } else if(currentItem === "Active users") {
+      const filteredData = usersData.filter((data) => data.status === "active");
+      setUsers(filteredData)
+    } else if(currentItem === "Inactive users") {
+      const filteredData = usersData.filter((data) => data.status === "inactive");
+      setUsers(filteredData)
+    }
+  },[currentItem]);
 
   return (
     <Box
@@ -242,49 +255,17 @@ export default function page() {
           </Box>
         </Box>
 
-        {
-          currentItem === "All users"
-            ? (
-                <Box
-                  sx={{
-                    width: '100%',
-                    px: 2
-                  }}
-                >
-                  <UsersAdminTable
-                    //@ts-ignore
-                    data={filteredData}
-                  />
-                </Box>
-              )
-            : currentItem === "Active users" 
-              ? (
-                  <Box
-                    sx={{
-                      width: '100%',
-                      px: 2
-                    }}
-                  >
-                    <UsersAdminTable
-                      //@ts-ignore
-                      data={activeUsers}
-                    />
-                  </Box>
-                )
-              : (
-                  <Box
-                    sx={{
-                      width: '100%',
-                      px: 2
-                    }}
-                  >
-                    <UsersAdminTable
-                      //@ts-ignore
-                      data={inactiveUsers}
-                    />
-                  </Box>
-                )
-        }
+        <Box
+          sx={{
+            width: '100%',
+            px: 2
+          }}
+        >
+          <UsersAdminTable
+            //@ts-ignore
+            data={filteredData}
+          />
+        </Box>
       </Box>
     </Box>
   )

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useAtom } from 'jotai';
 import { selectedImageArrayAtom } from '@/lib/atoms';
 import Image from 'next/image';
@@ -12,6 +12,9 @@ interface ImageUploaderProps {
   showImageName?: boolean;
   allowMultiple?: boolean;
   onImageUpload?: (files: File[]) => void;
+  showDomiImage?: boolean;
+  spacebtwimgtypes?: number;
+  title?: boolean;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -20,12 +23,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   showImageName = false,
   allowMultiple = false,
   onImageUpload,
+  showDomiImage = true,
+  spacebtwimgtypes = 6,
+  title = true
 }) => {
   const theme = useTheme();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
   const [selectedImageArray, setSelectedImageArray] = useState<File[]>([]);
   const [_, setImages] = useAtom(selectedImageArrayAtom);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -97,32 +104,75 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             justifyContent: 'center',
             gap: theme.spacing(2),
             alignItems: 'center',
+            px: isMobile ? 3 : 0
           }}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
-          <Image
+          {showDomiImage && (<Image
             src='/photo.png'
             alt='photo'
             width={40}
             height={40}
-          />
-          <Typography
-            color={theme.palette.secondary.light}
-            sx={{
-              mb: 2
-            }}
-          >
-            Drag or upload a photo here
-            {/* <button
-              onClick={handleButtonClick}
-              style={{
-                color: '#006FEE',
-                marginLeft: theme.spacing(1),
+          />)}
+          {title && (
+          <>
+            <Typography
+              color={theme.palette.secondary.light}
+              sx={{
+                mb: 2
               }}
             >
-              Browse
-            </button> */}
+              Drag and Drop or upload a photo here
+              <input
+                type="file"
+                ref={inputRef}
+                accept="image/jpeg, image/png"
+                style={{ display: 'none' }}
+                onChange={handleFileInputChange}
+              />
+            </Typography>
+            <PButton transBg={true} bg={false} width='150px' onClick={handleButtonClick}>
+              <Typography sx={{fontSize: theme.typography.labelsm.fontSize}}>
+                Browse
+              </Typography>
+            </PButton>
+          </>)}
+          {!title && (
+          <Box 
+            sx={{
+              display: 'flex', 
+              gap: 1,
+              flexDirection: isMobile ? 'column' : 'row',
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Typography
+              color={theme.palette.secondary.light}
+              sx={{
+                mb: isMobile ? -2 : 2
+              }}
+            >
+              Drag and Drop or 
+            </Typography>
+            <Typography color={theme.palette.primary.main} onClick={handleButtonClick}
+              sx={{
+                cursor: 'pointer',
+                mb: isMobile ? -2 : 0
+              }}
+            >
+              choose your file
+            </Typography>
+            <Typography
+              color={theme.palette.secondary.light}
+              sx={{
+                mb: isMobile ? 0 : 2
+              }}
+            >
+              for upload
+            </Typography>
             <input
               type="file"
               ref={inputRef}
@@ -130,17 +180,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               style={{ display: 'none' }}
               onChange={handleFileInputChange}
             />
-          </Typography>
-          <PButton transBg={true} bg={false} width='150px' onClick={handleButtonClick}>
-            <Typography sx={{fontSize: theme.typography.labelsm.fontSize}}>
-                Browse
-            </Typography>
-          </PButton>
+          </Box>)}
           <Typography
             color={theme.palette.secondary.light}
             sx={{
-              mt: 6,
-              fontSize: theme.typography.labelxs.fontSize
+              mt: spacebtwimgtypes,
+              fontSize: theme.typography.labelxs.fontSize,
+              textAlign: isMobile ? 'left' : 'center',
+              width: '100%'
             }}
           >
             File should be in (png, jpeg or jpg) format
@@ -162,6 +209,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                   alignItems: 'center',
                   px: theme.spacing(3),
                   minHeight: '36px',
+                  mx: 2,
                   borderRadius: theme.borderRadius.md,
                 }}
               >
@@ -188,7 +236,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                   <Cancel
                     sx={{
                       width: theme.iconSize.sm,
-                      color: theme.palette.primary.main
+                      color: theme.palette.state.error
                     }}
                   />
                 </button>

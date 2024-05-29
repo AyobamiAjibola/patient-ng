@@ -90,6 +90,7 @@ const items = [
 export default function page() {
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.down('md'));
+  const sm = useMediaQuery(theme.breakpoints.down('sm'));
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentItem, setCurrentItem] = useState<string>('Pending');
   const [crowdfunding, setCrowdfunding] = useState<any>([]);
@@ -153,12 +154,13 @@ export default function page() {
             width: '100%',
             gap: 4, mt: 2,
             alignItems: 'center',
-            px: 2, mb: 2
+            px: 2, mb: 2,
+            flexDirection: sm ? 'column' : 'row'
           }}
         >
           <Box 
             sx={{
-              width: "70%",
+              width: sm ? "100%" : "70%",
               display: 'flex',
               gap: 4
             }}
@@ -180,7 +182,7 @@ export default function page() {
               </Typography>
             ))}
           </Box>
-          <Box sx={{width: "30%"}}>
+          <Box sx={{width: sm ? "100%" : "30%"}}>
             <Input
               size="large" 
               placeholder="Search" 

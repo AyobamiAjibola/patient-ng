@@ -311,14 +311,7 @@ export default function page() {
                                         allowMultiple={false}
                                     />
                                     ) : (
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column'
-                                            }}
-                                        >
-                                            <ImagePreviewSingle image={campaignImg[0]} />
-                                        </Box>
+                                        <ImagePreviewSingle image={campaignImg[0]} />
                                     )}
                             </Box>
                         </Box>

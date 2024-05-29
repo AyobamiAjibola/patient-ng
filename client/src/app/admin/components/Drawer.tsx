@@ -238,7 +238,7 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
                           {createElement(iconName, {
                             style: {
                                 fontSize: '14px',
-                                color: link === activeLink 
+                                color: activeLink.includes(link)
                                     ? theme.palette.primary.main
                                     : theme.palette.secondary.light
                             }
