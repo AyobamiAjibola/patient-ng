@@ -46,7 +46,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       render: (_, record) => {
         return (
           <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.author}
+            {record.publicationDate}
           </Typography>
       )},
     },

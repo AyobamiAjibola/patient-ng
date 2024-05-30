@@ -24,6 +24,8 @@ interface InputFieldProps {
     multiline?: boolean;
     isBorder?: boolean;
     rows?: number;
+    showBorder?: boolean;
+    bgcolor?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -44,6 +46,8 @@ const InputField: React.FC<InputFieldProps> = ({
     multiline = false,
     isBorder = false,
     rows = 0,
+    showBorder = true,
+    bgcolor = true,
     ...rest
   }) => {
     const theme = useTheme();
@@ -100,10 +104,13 @@ const InputField: React.FC<InputFieldProps> = ({
                 : theme.palette.primary.base,
               minHeight: '40px',
               paddingLeft: theme.spacing(2),
-              border: `1px solid ${
-                error ? theme.palette.state.error : theme.palette.border.main
-              }`,
-              backgroundColor: 'white'
+              paddingRight: theme.spacing(2),
+              border: showBorder ? `1px solid ${
+                error 
+                  ? theme.palette.state.error 
+                  : theme.palette.border.main
+              }` : 'none',
+              backgroundColor: bgcolor ? 'white' : 'transparent'
             },
             autoComplete: 'off',
             onChange: onChange,

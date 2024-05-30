@@ -155,12 +155,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 mb: isMobile ? -2 : 2
               }}
             >
-              Drag and Drop or 
+              Drag and drop or 
             </Typography>
             <Typography color={theme.palette.primary.main} onClick={handleButtonClick}
               sx={{
                 cursor: 'pointer',
-                mb: isMobile ? -2 : 0
+                mb: isMobile ? -2 : 2
               }}
             >
               choose your file

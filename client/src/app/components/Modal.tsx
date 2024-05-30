@@ -5,7 +5,7 @@ import Modal from '@mui/material/Modal';
 import { Backdrop, IconButton, useTheme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
-const MModal = ({ onClose, open, width, children, props }: any) => {
+const MModal = ({ onClose, open, width, showCloseIcon = true, children, props }: any) => {
   const theme = useTheme();
 
   return (
@@ -36,7 +36,7 @@ const MModal = ({ onClose, open, width, children, props }: any) => {
           ...props,
         }}
       >
-        <Box width={'100%'} textAlign={'right'}>
+        {showCloseIcon && (<Box width={'100%'} textAlign={'right'}>
           <IconButton onClick={onClose} aria-label="close">
             <Close
               sx={{
@@ -44,7 +44,7 @@ const MModal = ({ onClose, open, width, children, props }: any) => {
               }}
             />
           </IconButton>
-        </Box>
+        </Box>)}
         <Box>{children}</Box>
       </Box>
     </Modal>
