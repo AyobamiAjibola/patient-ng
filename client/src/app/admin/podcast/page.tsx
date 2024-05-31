@@ -259,7 +259,7 @@ export default function page() {
             sx={{
               height: screenHeight/100 * 80,
               bgcolor: theme.palette.secondary.lightest,
-              overflow: 'scroll'
+              overflow: 'scroll', 
             }}
           >
             <Box
@@ -291,8 +291,7 @@ export default function page() {
             <Box
               sx={{
                 flex: 1,
-                px: 2,
-                py: 4
+                p: 4
               }}
             >
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -493,6 +492,15 @@ export default function page() {
                 px: 2, py: 2
               }}
             >
+              {isEdit && (
+                <NButton
+                  bkgcolor={theme.palette.state.error}
+                  textcolor="white"
+                  bordercolor={theme.palette.state.error}
+                >
+                  Remove
+                </NButton>
+              )}
               <NButton
                 bkgcolor={'white'}
                 textcolor="black"

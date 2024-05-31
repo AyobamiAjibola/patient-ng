@@ -125,7 +125,7 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
       columns={columns} 
       dataSource={dataWithKeys}
       style={{
-        overflowY: 'scroll'
+        overflow: 'scroll'
       }}
     />
   )};

@@ -19,7 +19,8 @@ export default function page() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          position: 'relative'
         }}
       >
         <Box
@@ -33,7 +34,8 @@ export default function page() {
           sx={{
             position: 'absolute',
             backgroundColor: 'white',
-            mt: '6rem',
+            top: '8em',
+            // mt: '6rem',
             width: !isMobile ? '60%' : '90%',
             display: 'flex',
             borderRadius: theme.borderRadius.sm,
