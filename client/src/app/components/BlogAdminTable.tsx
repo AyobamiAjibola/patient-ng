@@ -2,9 +2,9 @@
 
 import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { ChatBubbleOutlineRounded, Delete, FavoriteBorderOutlined, RemoveRedEyeOutlined } from '@mui/icons-material';
+import { ChatBubbleOutlineRounded, FavoriteBorderOutlined, RemoveRedEyeOutlined } from '@mui/icons-material';
 import capitalize from 'capitalize';
 
 const BlogAdminTable: React.FC = ({data}: any) => {

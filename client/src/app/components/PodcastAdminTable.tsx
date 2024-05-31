@@ -2,12 +2,11 @@
 
 import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { Box, Typography, useTheme } from '@mui/material';
 import capitalize from 'capitalize';
 import OnlineBadge from './OnlineBadge';
 
-const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
+const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
   const theme = useTheme();
 
   const handleWebinarEdit = () => {
@@ -17,43 +16,33 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
 
   const columns: TableProps<any>['columns'] = [
     {
-      title: 'Webinar Name',
-      key: 'name',
+      title: 'Podcast title',
+      key: 'title',
       render: (_, record) => {
         return (
           <Typography variant='labelxs'>
-            {record.name}
+            {record.title}
           </Typography>
       )},
     },
     {
-      title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
+      title: 'Release date',
+      dataIndex: 'releaseDate',
+      key: 'releaseDate',
       render: (_, record) => {
         return (
           <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.author}
+            {record.releaseDate}
           </Typography>
       )},
     },
     {
-      title: 'Date and Time',
+      title: 'Duration',
       render: (_, record) => {
         return (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            <Typography variant='labelxs'>
-              {record.date}
-            </Typography>
-            <Typography variant='labelxs' color={theme.palette.secondary.light}>
-              {record.time}
-            </Typography>
-          </Box>
+          <Typography variant='labelxs'>
+            {record.duration}
+          </Typography>
       )},
     },
     {
@@ -62,7 +51,7 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
       render: (_, record) => {
         return (
           <>
-          { record.status === 'on-going' 
+          { record.status === 'on-going'
             ? (<OnlineBadge>
                 <Tag
                   style={{
@@ -75,11 +64,12 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
             ) : (
               <Tag
                 style={{
-                  color: record.status === "completed"
+                  color: record.status === "draft"
                           ? theme.palette.primary.darker  
-                          : record.status === "pending"
-                            ? theme.palette.state.warning
-                            : theme.palette.border.main
+                          : record.status === 'published' 
+                            ? theme.palette.primary.main  
+                            : theme.palette.state.error
+
                 }}
               >
                 {capitalize.words(record.status)}
@@ -108,11 +98,8 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
                 }
               }}
             >
-              Open
+              View details
             </Typography>
-            <IconButton>
-              <Delete sx={{color: 'red', fontSize: theme.typography.labelsm}}/>
-            </IconButton>
           </Box>
       )},
     },
@@ -130,4 +117,4 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
     />
   )};
 
-export default WebinarAdminTable;
+export default PodcastAdminTable;

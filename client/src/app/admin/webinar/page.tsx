@@ -4,12 +4,18 @@ import InputField from "@/app/components/InputField";
 import MModal from "@/app/components/Modal";
 import { NButton } from "@/app/components/PButton";
 import WebinarAdminTable from "@/app/components/WebinarAdminTable";
-import { Add, AddCircle, Close, Remove, SearchOutlined } from "@mui/icons-material";
-import { Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Add, Close, SearchOutlined } from "@mui/icons-material";
+import { Box, Divider, IconButton, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+import { DesktopTimePicker } from '@mui/x-date-pickers/DesktopTimePicker';
 
 const webinarData = [
   {
@@ -75,6 +81,9 @@ export default function page() {
     speakerName: '',
     occupation: ''
   }]);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedTime, setSelectedTime] = useState(dayjs());
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const item = [
     "All",
@@ -105,6 +114,11 @@ export default function page() {
     newSpeakers.splice(index, 1);
     setSpeakers(newSpeakers);
   };
+
+  const handleModalClose = () => {
+    setIsEdit(false)
+    setOpenModal(false)
+  }
 
   const filteredData =
     webinars &&
@@ -137,7 +151,9 @@ export default function page() {
 
     const payload = {
         ...data,
-        speakers
+        speakers,
+        date: selectedDate.toDate(),
+        time: selectedTime.toDate(),
     }
 
     console.log(payload)
@@ -251,41 +267,43 @@ export default function page() {
           <WebinarAdminTable
             //@ts-ignore
             data={filteredData}
+            setIsEdit={setIsEdit}
+            setOpenModal={setOpenModal}
           />
         </Box>
       </Box>
 
       <MModal
-        onClose={() => setOpenModal(false)}
+        onClose={handleModalClose}
         open={openModal}
         width={sm ? '95%' : '60%'}
         showCloseIcon={false}
       >
           <Box className="flex flex-col"
-              sx={{
-                height: screenHeight/100 * 80,
-                bgcolor: theme.palette.secondary.lightest,
-                overflow: 'scroll'
-              }}
+            sx={{
+              height: screenHeight/100 * 80,
+              bgcolor: theme.palette.secondary.lightest,
+              overflow: 'scroll'
+            }}
           >
             <Box
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 width: '100%',
-                height: '10%',
+                height: '15%',
                 bgcolor: 'white',
                 borderBottom: `1px solid ${theme.palette.border.main}`,
                 alignItems: 'center',
                 px: 2
               }}
             >
-               <Typography variant='labelsm'>
-                  Create webinar
+               <Typography variant='labellg'>
+                  {isEdit ? 'Update webinar' : 'Create webinar'}
               </Typography>
               <IconButton>
                 <Close 
-                  onClick={() => setOpenModal(false)}
+                  onClick={handleModalClose}
                   sx={{
                     fontSize: '20px',
                     color: theme.palette.secondary.light
@@ -297,7 +315,8 @@ export default function page() {
             <Box
               sx={{
                 flex: 1,
-                px: 2
+                px: 2,
+                py: 4
               }}
             >
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -320,7 +339,7 @@ export default function page() {
                         placeholder="Webinar name"
                         isBorder={true}
                         labelStyle={{
-                          fontSize: theme.typography.labelbase.fontSize,
+                          fontSize: theme.typography.labelsm.fontSize,
                           fontWeight: 500
                         }}
                         errorMessage={errors.webinarName?.message}
@@ -339,7 +358,7 @@ export default function page() {
                         placeholder="description"
                         isBorder={true}
                         labelStyle={{
-                          fontSize: theme.typography.labelbase.fontSize,
+                          fontSize: theme.typography.labelsm.fontSize,
                           fontWeight: 500
                         }}
                         multiline={true}
@@ -352,7 +371,7 @@ export default function page() {
                   <Box
                     sx={{
                       width: '100%',
-                      my: 2
+                      // mb: 2
                     }}
                   >
                       <InputField
@@ -360,7 +379,7 @@ export default function page() {
                         placeholder="webinar link"
                         isBorder={true}
                         labelStyle={{
-                          fontSize: theme.typography.labelbase.fontSize,
+                          fontSize: theme.typography.labelsm.fontSize,
                           fontWeight: 500
                         }}
                         errorMessage={errors.webinarLink?.message}
@@ -371,11 +390,99 @@ export default function page() {
 
                   <Box
                     sx={{
+                      width: '100%',
                       display: 'flex',
-                      gap: 3
+                      flexDirection: sm ? 'column' : 'row',
+                      gap: sm ? 3 : 3
                     }}
                   >
-
+                    <Box
+                      sx={{
+                        width: sm ? '100%' : '40%'
+                      }}
+                    >
+                      <Typography variant="labelxs">
+                        Date
+                      </Typography>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DatePicker']} sx={{width: '100%'}}>
+                          <DatePicker
+                            value={selectedDate}
+                            onChange={(newValue: any) => setSelectedDate(newValue)}
+                            slots={{ textField: (params) => (
+                              <TextField
+                                {...params}
+                                variant="outlined"
+                                sx={{ height: 40, width: '100%' }}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  style: { 
+                                    height: 40,
+                                    fontSize: '14px',
+                                    fontWeight: 400,
+                                    borderRadius: theme.borderRadius.sm,
+                                    backgroundColor: 'white'
+                                  }
+                                }}
+                              />
+                            )}}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: sm ? '100%' : '40%'
+                      }}
+                    >
+                      <Typography variant="labelxs">
+                        Time
+                      </Typography>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={['DesktopTimePicker']}>
+                          <DesktopTimePicker
+                            value={selectedTime}
+                            onChange={(newValue: any) => setSelectedTime(newValue)}
+                            slots={{ textField: (params) => (
+                              <TextField
+                                {...params}
+                                variant="outlined"
+                                sx={{ height: 40, width: '100%' }}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  style: { 
+                                    height: 40,
+                                    fontSize: '14px',
+                                    fontWeight: 400,
+                                    borderRadius: theme.borderRadius.sm,
+                                    backgroundColor: 'white'
+                                  }
+                                }}
+                              />
+                            )}}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: sm ? '100%' : '30%',
+                        mt: 1
+                      }}
+                    >
+                      <InputField
+                        label="Duration"
+                        placeholder="duration"
+                        isBorder={true}
+                        labelStyle={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: 500, mb: -1
+                        }}
+                        errorMessage={errors.duration?.message}
+                        error={!!errors.duration}
+                        register={register('duration')}
+                      />
+                    </Box>
                   </Box>
 
                   <Box
@@ -383,6 +490,7 @@ export default function page() {
                     alignItems={'end'}
                     justifyContent={'end'}
                     gap={theme.spacing(0)}
+                    mr={2} mt={2}
                   >
                     <Typography variant="labelxs"
                       color={theme.palette.primary.main}
@@ -396,14 +504,12 @@ export default function page() {
                     >
                       Add speaker
                     </Typography>
-
                   </Box>
                   {
                     speakers.map((speaker, index) => (
                       <Box
                         sx={{
                           display: 'flex',
-                          // flexDirection: sm ? 'column' : 'row',
                           gap: 3,
                           width: '100%',
                           alignItems: 'center'
@@ -421,6 +527,10 @@ export default function page() {
                               newSpeakers[index].speakerName = e.target.value;
                               setSpeakers(newSpeakers);
                             }}
+                            labelStyle={{
+                              fontSize: theme.typography.labelsm.fontSize,
+                              fontWeight: 500
+                            }}
                           />
                         </Box>
                         <Box sx={{width: '50%'}}>
@@ -434,6 +544,10 @@ export default function page() {
                               const newSpeakers = [...speakers];
                               newSpeakers[index].occupation = e.target.value;
                               setSpeakers(newSpeakers);
+                            }}
+                            labelStyle={{
+                              fontSize: theme.typography.labelsm.fontSize,
+                              fontWeight: 500
                             }}
                           />
                         </Box>
@@ -461,7 +575,7 @@ export default function page() {
                 display: 'flex',
                 justifyContent: 'flex-end',
                 width: '100%',
-                height: '10%',
+                height: '15%',
                 bgcolor: 'white',
                 borderTop: `1px solid ${theme.palette.border.main}`,
                 alignItems: 'center',
