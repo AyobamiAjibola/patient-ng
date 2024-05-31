@@ -152,7 +152,11 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Blog
         </Typography>
-        <NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => router.push('/admin/blog/new-blog')}>
+        <NButton 
+          textcolor="white" 
+          bkgcolor={theme.palette.primary.main} 
+          onClick={() => router.push('/admin/blog/new-blog')}
+        >
           <Add/> New blog post
         </NButton>
       </Box>

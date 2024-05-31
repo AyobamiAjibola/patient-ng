@@ -7,11 +7,14 @@ import { NButton } from '@/app/components/PButton';
 import { selectedImageArrayAtom } from '@/lib/atoms';
 import { ArrowBackRounded, DescriptionOutlined, RemoveRedEyeOutlined, SendOutlined } from '@mui/icons-material';
 import { Box, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
-import JoditEditor from 'jodit-react';
+// import JoditEditor from 'jodit-react';
 import { useAtom } from 'jotai';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+
+const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
 type FormValues = {
     title: string;
@@ -238,7 +241,7 @@ export default function page() {
                             border: `1px solid ${theme.palette.border.main}`,
                             p: 3, flexDirection: 'column',
                             gap: 2,
-                            height: isMobile ? '150px' : '100px',
+                            height: isMobile ? '150px' : '120px',
                             mt: isMobile ? 1 : '2.8em'
                         }}
                     >
@@ -259,7 +262,7 @@ export default function page() {
                                 onClick={() => setOpenModal(true)}
                             >
                                 <Typography variant='labelxs'>
-                                    <RemoveRedEyeOutlined sx={{fontSize: '14px', mb: '0.5px'}}/> Preview
+                                    <RemoveRedEyeOutlined sx={{fontSize: '14px'}}/> Preview
                                 </Typography>
                             </NButton>
                             <NButton 
