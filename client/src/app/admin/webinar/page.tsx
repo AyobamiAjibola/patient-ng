@@ -261,7 +261,8 @@ export default function page() {
         <Box
           sx={{
             width: '100%',
-            px: 2
+            px: 2,
+            overflow: 'scroll'
           }}
         >
           <WebinarAdminTable
@@ -315,8 +316,7 @@ export default function page() {
             <Box
               sx={{
                 flex: 1,
-                px: 2,
-                py: 4
+                p: 4
               }}
             >
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
