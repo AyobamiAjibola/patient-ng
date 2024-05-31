@@ -9,12 +9,14 @@ interface ImagePreviewSingleProps {
   image?: File;
   label?: string;
   props?: any;
+  showButton?: boolean;
 }
 
 const ImagePreviewSingle: React.FC<ImagePreviewSingleProps> = ({
   image,
   label,
-  props,
+  showButton = true,
+  props
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -54,7 +56,7 @@ const ImagePreviewSingle: React.FC<ImagePreviewSingleProps> = ({
               width: '100%'
             }}
           >
-            <Button onClick={() => setCampaignImg([])}
+            {showButton && (<Button onClick={() => setCampaignImg([])}
               sx={{
                 textTransform: 'none',
                 borderRadius: theme.borderRadius.xs,
@@ -70,7 +72,7 @@ const ImagePreviewSingle: React.FC<ImagePreviewSingleProps> = ({
               }}
             >
               Remove <Close sx={{fontSize: '16px'}}/>
-            </Button>
+            </Button>)}
             
           </Box>
           

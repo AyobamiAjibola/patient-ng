@@ -9,6 +9,7 @@ import { ArrowBackRounded, ChatBubbleOutlineSharp, DeleteOutlineOutlined, Descri
 import { Box, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
 import JoditEditor from 'jodit-react';
 import { useAtom } from 'jotai';
+import { useRouter } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -27,6 +28,7 @@ export default function page() {
     const editor = useRef(null);
     const [content, setContent] = useState("");
     const [openModal, setOpenModal] = useState<boolean>(false);
+    const router = useRouter();
 
     const {
         handleSubmit,
@@ -70,8 +72,6 @@ export default function page() {
     //     setLink(`/${restaurantName.replaceAll(/\s+/g, '-').trim().toLowerCase()}`);
     // }, []);
 
-    console.log(screenHeight/100 * 80, 'percentage')
-
     return (
         <Box
             sx={{
@@ -89,7 +89,7 @@ export default function page() {
                     gap: 3
                 }}
             >
-                <Typography variant="labelsm" 
+                <Typography variant="labelsm" onClick={() => router.back()}
                     sx={{
                         cursor: 'pointer',
                         '&:hover': {
