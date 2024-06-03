@@ -35,14 +35,18 @@ export const customStyles = {
     menuList: (base) => ({
       ...base,
       // kill the white space on first and last option
-      padding: 0
+      padding: 0,
+      height: '8em'
     }),
   
     control: (provided, state) => ({
       ...provided,
       background: "white",
       height: "40px",
-      borderRadius: "10px"
+      borderRadius: "10px",
+      "&:hover": {
+        borderColor: "#05CC7E",
+      }
     }),
   };
   

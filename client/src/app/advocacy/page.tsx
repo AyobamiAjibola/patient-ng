@@ -2,11 +2,13 @@
 
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
-import PButton from "../components/PButton";
+import PButton, { NButton } from "../components/PButton";
 import { ArrowDownward, ChatBubbleOutline } from "@mui/icons-material";
 import Footer from "@/modules/client/components/Footer";
 import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
+import Search from 'antd/es/input/Search';
+import { Button } from "antd";
 
 const advocacy = [
   "Informal Complaint (Stage 1)",
@@ -82,9 +84,29 @@ export default function page() {
           >
             Your trusted ally in healthcare, advocating for your rights and well-being. Let us guide you through every step of your healthcare journey with expertise and compassion.
           </Typography>
-          <PButton transBg={false} bg={true} width="300px">
-            How to make complaints <ArrowDownward sx={{fontSize: '16px'}}/>
-          </PButton>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexDirection: isMobile ? 'column' : 'row'
+            }}
+          >
+            <NButton 
+              textcolor={"white"}
+              bkgcolor={theme.palette.primary.main}
+            >
+              How to make complaints <ArrowDownward sx={{fontSize: '16px'}}/>
+            </NButton>
+            <NButton 
+              textcolor={theme.palette.primary.main}
+              bordercolor={theme.palette.primary.main}
+              bkgcolor="white"
+              hoverbordercolor={theme.palette.primary.main}
+            >
+              Sign up as an advocate
+            </NButton>
+          </Box>
+          
         </Box>
         {!isMobile && (<Box
           sx={{
@@ -358,6 +380,43 @@ export default function page() {
               Send your complaints
             </PButton>
           </form>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          backgroundColor: '#FFF7D9',
+          pb: '4em'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 2,
+            py: 6,
+            px: 2,
+            backgroundColor: 'white'
+          }}
+        >
+          <Typography variant={isMobile ? "h5" : "h4"}>
+            Sign up as an advocate today
+          </Typography>
+          <Typography variant="paragraphsm" mb={4} color={theme.palette.secondary.light}>
+            Just a few clicks can make a difference. Sign up now.
+          </Typography>
+          <Search
+            placeholder="Enter your email"
+            style={{
+              width: isMobile ? '80%' : '30%'
+            }}
+            allowClear
+            enterButton={<Button style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
+            size="large"
+            // onSearch={onSearch}
+          />
         </Box>
       </Box>
 

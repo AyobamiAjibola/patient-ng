@@ -28,7 +28,7 @@ export default function Webinar({ params }: any) {
       <Box
         sx={{
           display: 'flex',
-          gap: 4, py: 10, px: '60px'
+          gap: 4, py: 10, px: isMobile ? '20px' : '90px'
         }}
       >
         <Box

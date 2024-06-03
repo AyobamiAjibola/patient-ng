@@ -2,7 +2,7 @@
 
 import Navbar from "@/app/components/Navbar";
 import { Reply } from "@mui/icons-material";
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Image from "next/image";
 
 const socials = [
@@ -26,6 +26,7 @@ const socials = [
 
 export default function PatientStory({ params }: any) {
   const theme = useTheme();
+  const md = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <>
@@ -36,7 +37,7 @@ export default function PatientStory({ params }: any) {
           gap: 4, height: '100vh'
         }}
       >
-        <img
+        {!md && (<img
           src='/p_patient.png'
           alt='patient'
           crossOrigin='anonymous'
@@ -44,12 +45,13 @@ export default function PatientStory({ params }: any) {
             width: '40%',
             height: '100%'
           }}
-        />
+        />)}
         <Box
           sx={{
             display: 'flex',
             pr: 5, flexDirection: 'column',
-            py: 4, overflow: 'auto'
+            py: 4, overflow: 'auto',
+            pl: md ? 4 : 0
           }}
         >
           <Typography

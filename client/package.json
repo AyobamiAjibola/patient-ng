@@ -16,6 +16,7 @@
     "@mui/material": "^5.15.15",
     "@mui/styles": "^5.15.16",
     "@mui/x-date-pickers": "^7.6.1",
+    "@uidotdev/usehooks": "^2.4.1",
     "antd": "^5.16.2",
     "axios": "^1.6.8",
     "capitalize": "^2.0.4",

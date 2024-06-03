@@ -142,7 +142,7 @@ export default function Podcasts() {
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        px: isMobile ? '20px' : '60px'
+                        px: isMobile ? '20px' : '90px'
                     }}
                 >
                     <Typography
