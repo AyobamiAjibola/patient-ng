@@ -10,6 +10,7 @@ import {
   Box,
   TextField,
   Avatar,
+  Divider,
 } from '@mui/material';
 import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -56,6 +57,29 @@ const pages: PagesProps[] = [
   },
 ];
 
+const resources = [
+  {
+    name: "Blog",
+    link: "/blog"
+  },
+  {
+    name: "Patient stories",
+    link: "/patient-stories"
+  },
+  {
+    name: "Webinar",
+    link: "/webinar"
+  },
+  {
+    name: "Podcast",
+    link: "/podcast"
+  },
+  {
+    name: "Award",
+    link: "/award"
+  }
+]
+
 interface NavbarProps {
   showSearchBar?: boolean;
 }
@@ -71,6 +95,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const open2 = Boolean(anchorEl2);
   const pathname = usePathname();
   const isLogged = true;
+  const [showResources, setShowResources] = useState(false)
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -79,6 +104,10 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const handleClick2 = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl2(event.currentTarget);
   };
+
+  const handleOpenResources = () => {
+    setShowResources(true)
+  }
 
   const onToggle = () => setToggle(!toggle);
 
@@ -112,7 +141,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
         <Toolbar
           style={{
             display: 'flex',
-            justifyContent: isMobile ? 'center' : 'space-between',
+            justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
             minHeight: 80,
@@ -127,14 +156,12 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               <Image
                 src='/logo.png'
                 alt='logo'
-                height={40}
-                width={40}
+                height={isMobile ? 30 : 40}
+                width={isMobile ? 30 : 40}
               />
-            <Typography
+            <Typography variant={isMobile ? 'h6' : 'h5'}
               fontFamily={theme.fonts}
               sx={{
-                fontSize: theme.typography.h5.fontSize,
-                fontWeight: theme.typography.h5.fontWeight,
                 color: pathname === '/' ? 'white' : theme.palette.primary.darker
               }}
             >
@@ -260,7 +287,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             </Box>
 
             <IconButton onClick={(e: any) => handleClick2(e)}>
-                {open2 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+              {open2 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </IconButton>
           </Box>)}
         </Toolbar>
@@ -310,14 +337,55 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             >
               {pages.map((item, ind) => (
                 <li key={ind}>
-                  <Link href={item.href}>
-                    <Typography sx={{fontSize: 20}} color={theme.palette.primary.main}>
+                  <Link href={item.href} onClick={(e: any) => {item.name === 'Resources' && handleOpenResources()}}>
+                    <Typography variant='paragraphbase'
+                      color={theme.palette.primary.main}
+                    >
                       {item.name}
                     </Typography>
+                    {item.name === 'Resources' && (<IconButton>
+                      {showResources ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                    </IconButton>)}
                   </Link>
                 </li>
               ))}
             </ul>
+
+            {isMobile && showResources && (
+              <Box
+                sx={{
+                  width: '40%',
+                  bgcolor: theme.palette.secondary.lightest,
+                  border: `1px solid ${theme.palette.secondary.lighter}`,
+                  borderRadius: theme.borderRadius.sm,
+                  alignSelf: 'center',
+                  display: 'flex',
+                  justifyContent: 'flex-left',
+                  alignItems: 'flex-left',
+                  p: 3, gap: 2,
+                  flexDirection: 'column'
+                }}
+              >
+                {
+                  resources.map((item, index) => (
+                    <Box key={index}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+                      <Link href={item.link} onClick={() => setToggle(false)}>
+                        <Typography variant='paragraphxs'
+                          color={theme.palette.primary.darker}
+                        >
+                          {item.name}
+                        </Typography>
+                      </Link>
+                    </Box>
+                  ))
+                }
+              </Box>
+            )}
 
             {!isLogged 
               ? (<Box className='flex flex-row gap-1 items-center' sx={{mt: '80px'}}>
@@ -367,7 +435,9 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                     email@gmail.com
                   </Typography>
                 </Box>
-                <KeyboardArrowDown/>
+                <IconButton onClick={(e: any) => handleClick2(e)}>
+                  {open2 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                </IconButton>
               </Box>
             )}
           </List>

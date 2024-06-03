@@ -2,7 +2,7 @@
 
 import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
-import { AccountBalanceWalletOutlined, ExitToAppOutlined, FavoriteBorderOutlined, MedicationOutlined, PersonOutlineOutlined } from "@mui/icons-material";
+import { ExitToAppOutlined, FavoriteBorderOutlined, FlagOutlined, MedicationOutlined, PersonOutlineOutlined } from "@mui/icons-material";
 import { useAtom } from "jotai";
 import { setMenuIndex } from "@/lib/atoms";
 
@@ -15,7 +15,7 @@ export default function layout({ children }: any) {
         'Account Information',
         'Crowdfunding',
         'Hospital Reviews',
-        'Finance',
+        'Advocacy',
     ];
 
     return (
@@ -139,7 +139,7 @@ export default function layout({ children }: any) {
                                                     />
                                             }
                                             { index === 3 
-                                                && <AccountBalanceWalletOutlined 
+                                                && <FlagOutlined 
                                                         sx={{
                                                             fontSize: '22px',
                                                             color: currentIndex === 3 ? theme.palette.primary.main : theme.palette.secondary.main

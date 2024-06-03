@@ -309,7 +309,7 @@ export default function Blog() {
             sx={{
               flexWrap: !isMobile ? 'wrap' : 'unset',
               display: 'flex', width: '100%',
-              gap: 2, flexDirection: 'row', mx: isMobile ? '20px' : '60px',
+              gap: 2, flexDirection: 'row', mx: isMobile ? '20px' : '64px',
               justifyContent: 'center',
               mt: '10px',
               overflowX: isMobile ? 'scroll' : 'unset',
@@ -323,8 +323,8 @@ export default function Blog() {
             {latest.map((blog, index) => (
               <Box key={index}
                 sx={{
-                  width: isMobile ? '100%' : '32%',
-                  // minHeight: isMobile ? '300px' : '400px',
+                  minWidth: isMobile ? '70%' : '32%',
+                  width: isMobile ? '70%' : '32%',
                   height: 'auto',
                   backgroundColor: theme.palette.secondary.lightest,
                   border: `1px solid ${theme.palette.secondary.lighter}`,
@@ -344,7 +344,7 @@ export default function Blog() {
                 <Typography
                   sx={{
                     color: theme.palette.primary.main,
-                    mt: 4, mx: 4,
+                    mt: 4, mx: isMobile ? 2 : 4,
                     whiteSpace: isMobile ? 'pre-wrap' : 'none',
                   }}
                 >
@@ -352,7 +352,7 @@ export default function Blog() {
                 </Typography>
                 <Typography
                   sx={{
-                    mx: 4,
+                    mx: isMobile ? 2 : 4,
                     fontSize: isMobile ? theme.typography.labelsm : theme.typography.labellg, 
                     whiteSpace: isMobile ? 'pre-wrap' : 'none',
                   }}
@@ -361,7 +361,7 @@ export default function Blog() {
                 </Typography>
                 <Typography
                   sx={{
-                    mx: 4,
+                    mx: isMobile ? 2 : 4,
                     color: theme.palette.secondary.light,
                     fontSize: theme.typography.labelsm.fontSize,
                     whiteSpace: isMobile ? 'pre-wrap' : 'none',
@@ -372,7 +372,7 @@ export default function Blog() {
                 <Typography
                   onClick={() => router.push(`/blog/${index }`)}
                   sx={{
-                    mx: 4,
+                    mx: isMobile ? 2 : 4,
                     color: theme.palette.primary.main,
                     fontSize: '12px', mt: 2,
                     cursor: 'pointer'

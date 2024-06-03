@@ -53,7 +53,7 @@ const patientStories = [
 ]
 
 export default function PatientStories() {
-    const isMobile = useMediaQuery('(max-width: 959px)');
+    const isMobile = useMediaQuery('(max-width: 900px)');
     const theme = useTheme();
     const router = useRouter();
 
@@ -63,7 +63,7 @@ export default function PatientStories() {
         <Box
             sx={{
                 height: 'auto',
-                px: '60px', py: 6,
+                px: isMobile ? '20px' : '64px', py: isMobile ? 4 : 6,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 8
@@ -193,34 +193,26 @@ export default function PatientStories() {
             >
                 {
                     patientStories.map((story: any, index: number) => (
-                        <Box sx={{display: 'flex', flexDirection: 'column'}}>
-                            <Image
+                        <Box sx={{display: 'flex', flexDirection: 'column'}} key={index}>
+                            <img
                                 src={story.image}
                                 alt='story'
-                                width={250}
-                                height={400}
+                                style={{
+                                    width: isMobile ? '100%' : 250,
+                                    height: isMobile ? 450 : 400
+                                }}
                                 crossOrigin="anonymous"
                             />
-                            <Typography 
-                                sx={{
-                                    fontSize: theme.typography.labelxs.fontSize,
-                                    fontWeight: theme.typography.labelxl.fontWeight
-                                }}
-                            >
+                            <Typography variant={isMobile ? 'labelsm' : 'labelxs'}>
                                 {`${characterBreaker(story.title, 45)}...`}
                             </Typography>
-                            <Typography 
-                                sx={{
-                                    fontSize: theme.typography.labelxs.fontSize,
-                                    color: theme.palette.secondary.light
-                                }}
-                            >
+                            <Typography variant={isMobile ? 'labelsm' : 'labelxs'}>
                                 by {story.publisher}
                             </Typography>
                             <Typography onClick={() => router.push(`/patient-stories/1`)}
+                                variant="paragraphxs"
                                 sx={{
                                     mt: 2, cursor: 'pointer',
-                                    fontSize: theme.typography.labelxxs.fontSize,
                                     color: theme.palette.primary.main
                                 }}
                             >

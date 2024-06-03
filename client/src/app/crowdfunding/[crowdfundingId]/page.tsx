@@ -6,7 +6,7 @@ import Navbar from "@/app/components/Navbar";
 import PButton, { NButton } from "@/app/components/PButton";
 import { useAdminUser, useCrowdStatus } from "@/lib/atoms";
 import { formAmount } from "@/lib/helper";
-import { Person, Reply } from "@mui/icons-material";
+import { Favorite, Person, Reply } from "@mui/icons-material";
 import { Avatar, Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { useAtom } from "jotai";
 import { useState } from "react";
@@ -47,7 +47,7 @@ export default function CrowdFunding() {
   const [showDonations, setShowDonations] = useState<boolean>(true);
   const [isAdmin, _] = useAtom(useAdminUser);
   const [status, __] = useAtom(useCrowdStatus);
-console.log(isAdmin, status, 'atom')
+
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 7,
     borderRadius: 5,
@@ -257,18 +257,30 @@ console.log(isAdmin, status, 'atom')
                     Donate now
                   </Typography>
                 </PButton>
-                <PButton transBg={true} bg={false} width='100%'>
-                  <Reply sx={{color: 'black', mr: 1, mb: 1, fontSize: '18px'}}/>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      color: theme.palette.secondary.light,
-                      fontWeight: theme.typography.labelsm.fontWeight
-                    }}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: 2
+                  }}
+                >
+                  <NButton
+                    textcolor="black"
+                    bordercolor={theme.palette.border.main}
+                    bkgcolor="white"
+                    width="50%"
                   >
-                    Share
-                  </Typography>
-                </PButton>
+                    <Reply sx={{color: 'black', fontSize: '16px'}}/> Share
+                  </NButton>
+                  <NButton
+                    textcolor="black"
+                    bordercolor={theme.palette.border.main}
+                    bkgcolor="white"
+                    width="50%"
+                  >
+                    <Favorite sx={{color: theme.palette.state.error, fontSize: '16px'}}/> Like 200
+                  </NButton>
+                </Box>
               </Box>)}
 
               <Typography
@@ -346,10 +358,10 @@ console.log(isAdmin, status, 'atom')
           <MModal onClose={handleCloseModal} open={open} width={isMobile ? '80%' : '30%'}>
             <Box
               sx={{
-                px: 4, pb: 2,
+                px: isMobile ? 1 : 4, pb: 2,
                 display: 'flex',
                 flexDirection: 'column',
-                height: '60vh',
+                height: isMobile ? '30vh' : '60vh',
                 overflow: 'scroll'
               }}
             >

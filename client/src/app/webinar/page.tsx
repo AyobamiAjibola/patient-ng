@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import { Button } from 'antd';
 import Search from 'antd/es/input/Search';
@@ -62,6 +62,7 @@ export default function Webinars() {
     const isLoggedIn = false;
     const router = useRouter();
     const [checkedTopics, setCheckedTopics] = useState<string[]>([]);
+    const md = useMediaQuery(theme.breakpoints.down('md'));
 
     const handleCheckboxChange = (topic: string, checked: boolean) => {
       if (checked) {
@@ -71,6 +72,8 @@ export default function Webinars() {
       }
     };
 
+    
+
     return (
       <>
         <Navbar/>
@@ -78,7 +81,7 @@ export default function Webinars() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                py: 6, px: '60px', width: '100%'
+                py: md ? 4 : 6, px: md ? '20px' : '90px', width: '100%'
             }}
         >
             <Typography
@@ -92,7 +95,8 @@ export default function Webinars() {
             <Box
                 sx={{
                     display: 'flex',
-                    width: '100%'
+                    width: '100%',
+                    flexDirection: md ? 'column' : 'row'
                 }}
             >
                 <Box
@@ -100,7 +104,7 @@ export default function Webinars() {
                         display: 'flex',
                         gap: 3, mt: 4,
                         flexDirection: 'column',
-                        width: '20%'
+                        width: md ? '100%' : '20%'
                     }}
                 >
                     <Box
@@ -136,7 +140,7 @@ export default function Webinars() {
                             </Box>
                         </Box>
                     </Box>
-                    <Box
+                    {!md && (<Box
                         sx={{
                             display: 'flex',
                             width: '100%',
@@ -182,7 +186,7 @@ export default function Webinars() {
                                 ))
                             }
                         </Box>
-                    </Box>
+                    </Box>)}
                 </Box>
                 <Box
                     sx={{
@@ -190,7 +194,7 @@ export default function Webinars() {
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        width: '80%', mt: 5
+                        width: md ? '100%' : '80%', mt: 5
                     }}
                 >
                     <Box
@@ -207,8 +211,8 @@ export default function Webinars() {
                             webinars.map((webinar: any, index: number) => (
                                 <Box key={index}
                                     sx={{
-                                        width: '280px',
-                                        height: '350px',
+                                        width: md ? '100%' : '280px',
+                                        height: '400px',
                                         borderRadius: theme.borderRadius.sm,
                                         border: `1px solid ${theme.palette.secondary.lighter}`
                                     }}
@@ -230,11 +234,8 @@ export default function Webinars() {
                                             height={100}
                                             width={100}
                                         />
-                                        <Typography
+                                        <Typography variant='labelsm'
                                             sx={{
-                                                fontWeight: theme.typography.labelsm.fontWeight,
-                                                fontSize: theme.typography.labelsm.fontSize,
-                                                lineHeight: theme.typography.labelsm.lineHeight,
                                                 color: index % 2 === 0 ? 'white' : theme.palette.secondary.main
                                             }}
                                         >
@@ -248,10 +249,8 @@ export default function Webinars() {
                                             p: 3
                                         }}
                                     >
-                                        <Typography
+                                        <Typography variant='paragraphsm'
                                             sx={{
-                                                fontSize: theme.typography.labelxs.fontSize,
-                                                lineHeight: theme.typography.labelxs.lineHeight,
                                                 color: theme.palette.secondary.light
                                             }}
                                         >
@@ -259,12 +258,10 @@ export default function Webinars() {
                                         </Typography>
 
                                         {!isLoggedIn ? 
-                                            (<Typography
+                                            (<Typography variant='labelxs'
                                             sx={{
                                                 color: theme.palette.primary.main,
-                                                fontSize: theme.typography.labelxs.fontSize,
-                                                fontWeight: theme.typography.labelxs.fontWeight,
-                                                cursor: 'pointer'
+                                                cursor: 'pointer', mt: 2
                                             }}
                                             >
                                                 Signup <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
