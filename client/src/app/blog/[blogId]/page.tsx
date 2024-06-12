@@ -2,7 +2,7 @@
 import InputField from '@/app/components/InputField';
 import Navbar from '@/app/components/Navbar';
 import { characterBreaker } from '@/lib/helper';
-import Footer from '@/modules/client/components/Footer';
+import Footer from '@/app/components/Footer';
 import { ChatBubble, ChatBubbleOutline, Favorite, Share, ThumbUpOffAlt } from '@mui/icons-material';
 import { Avatar, Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Image from 'next/image';

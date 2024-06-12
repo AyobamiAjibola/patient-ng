@@ -2,7 +2,7 @@
 
 import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 import { ArrowForward, Close, Star } from "@mui/icons-material";
 import { Avatar, Box, Divider, IconButton, LinearProgress, Rating, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { useState } from "react";

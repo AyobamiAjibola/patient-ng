@@ -25,7 +25,7 @@ export default class UserController {
             return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
         const users = await datasources.userDAOService.findAll({});
-        const filteredUsers = users.filter(user => !user.isAdmin);
+        const filteredUsers = users.filter(user => user.email !== "ipatient_admin@ipatient.com");
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
@@ -80,17 +80,15 @@ export default class UserController {
 
     @TryCatch
     public async updateUserOnboarding (req: Request) {
-        const userId = req.params.userId;
+        // const userId = req.params.userId;
+        const userId = req.user._id;
 
         const { error, value } = Joi.object<any>({
-            email: Joi.string().label('Email'),
-            firstName: Joi.string().label('First Name'),
-            lastName: Joi.string().label('Last Name'),
-            phone: Joi.string().label('Phone Number'),
             age: Joi.string().label('Age'),
-            gender: Joi.string().label('Gender'),
+            gender: Joi.string().required().label('Gender'),
             address: Joi.string().label('Address'),
-            healthInterests: Joi.string().label('Health Interests')
+            state: Joi.string().label('State'),
+            lga: Joi.string().label('LGA'),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -98,55 +96,52 @@ export default class UserController {
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
 
-        let phone = '';
-        if(value.phone) {
-            phone = value.phone.replace(/(^\+?(234)?0?)/, '234');
+        // let phone = '';
+        // if(value.phone) {
+        //     phone = value.phone.replace(/(^\+?(234)?0?)/, '234');
 
-            const user_phone = await datasources.userDAOService.findByAny({
-                phone: phone
-            });
+        //     const user_phone = await datasources.userDAOService.findByAny({
+        //         phone: phone
+        //     });
             
-            if(user.phone && user.phone !== phone){
-                if(user_phone) {
-                    return Promise.reject(CustomAPIError.response('User with this phone number already exists.', HttpStatus.NOT_FOUND.code))
-                }
-            };
-        }
+        //     if(user.phone && user.phone !== phone){
+        //         if(user_phone) {
+        //             return Promise.reject(CustomAPIError.response('User with this phone number already exists.', HttpStatus.NOT_FOUND.code))
+        //         }
+        //     };
+        // }
 
-        if(value.email) {
-            const user_email = await datasources.userDAOService.findByAny({
-                email: value.email.toLowerCase()
-            });
+        // if(value.email) {
+        //     const user_email = await datasources.userDAOService.findByAny({
+        //         email: value.email.toLowerCase()
+        //     });
             
-            if(user.email && user.email !== value.email.toLowerCase()){
-                if(user_email) {
-                    return Promise.reject(CustomAPIError.response('User with this email address already exists.', HttpStatus.NOT_FOUND.code))
-                }
-            };
-        }
+        //     if(user.email && user.email !== value.email.toLowerCase()){
+        //         if(user_email) {
+        //             return Promise.reject(CustomAPIError.response('User with this email address already exists.', HttpStatus.NOT_FOUND.code))
+        //         }
+        //     };
+        // }
 
-        let healthInterests;
-        if(value.healthInterests) {
-            healthInterests = JSON.parse(value.healthInterests)
-        }
+        // let healthInterests;
+        // if(value.healthInterests) {
+        //     healthInterests = JSON.parse(value.healthInterests)
+        // }
 
         const payload: Partial<IUserModel> = {
-            email: value.email ? value.email.toLowerCase() : user.email,
-            firstName: value.firstName ? value.firstName : user.firstName,
-            lastName: value.lastName ? value.lastName : user.lastName,
-            phone: value.phone ? phone : user.phone,
+            state: value.state,
+            lga: value.lga,
             age: value.age ? value.age : user.age,
             gender: value.gender ? value.gender : user.gender,
-            healthInterests: value.healthInterests ? healthInterests : user.healthInterests,
-            address: value.address ? value.address : user.address
+            address: value.address ? value.address : user.address,
+            level: 2
         };
 
-        const newUser = await datasources.userDAOService.create(payload as IUserModel)
+        await datasources.userDAOService.updateByAny({_id: user._id}, payload as IUserModel)
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successful.',
-            result: newUser
+            message: 'Successful.'
         };
 
         return Promise.resolve(response);
@@ -179,9 +174,11 @@ export default class UserController {
                     age: Joi.string().label('Age'),
                     gender: Joi.string().label('Gender'),
                     address: Joi.string().label('Address'),
-                    healthInterests: Joi.string().label('Health Interests'),
+                    // healthInterests: Joi.string().label('Health Interests'),
                     image: Joi.any().label('image'),
-                    userType: Joi.string().label('user type')
+                    userType: Joi.string().label('user type'),
+                    state: Joi.string().label('State'),
+                    lga: Joi.string().label('LGA'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -203,10 +200,10 @@ export default class UserController {
                     await Generic.deleteExistingImage(user.image, basePath, imagePath);
                 };
 
-                let healthInterests;
-                if(value.healthInterests) {
-                    healthInterests = JSON.parse(value.healthInterests)
-                }
+                // let healthInterests;
+                // if(value.healthInterests) {
+                //     healthInterests = JSON.parse(value.healthInterests)
+                // }
 
                 let userType;
                 if(value.userType) {
@@ -224,8 +221,10 @@ export default class UserController {
                     age: value.age ? value.age : user.age,
                     gender: value.gender ? value.gender : user.gender,
                     address: value.address ? value.address : user.address,
-                    healthInterests: healthInterests.length > 0 ? healthInterests : user.healthInterests,
-                    userType: userType.length > 0 ? userType : user.userType
+                    // healthInterests: healthInterests.length > 0 ? healthInterests : user.healthInterests,
+                    userType: userType.length > 0 ? userType : user.userType,
+                    state: value.state ? value.state : user.state,
+                    lga: value.lga ? value.lga : user.lga
                 }
 
                 const updatedUser: any = await datasources.userDAOService.updateByAny({_id: user._id}, payload as IUserModel);

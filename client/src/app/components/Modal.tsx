@@ -5,13 +5,13 @@ import Modal from '@mui/material/Modal';
 import { Backdrop, IconButton, useTheme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
-const MModal = ({ onClose, open, width, showCloseIcon = true, children, props }: any) => {
+const MModal = ({ onClose, open, width, showCloseIcon = true, onClickOut = true, children, props }: any) => {
   const theme = useTheme();
 
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={onClickOut ? onClose : null}
       closeAfterTransition
       slots={{ backdrop: Backdrop }}
       slotProps={{
@@ -33,7 +33,9 @@ const MModal = ({ onClose, open, width, showCloseIcon = true, children, props }:
           boxShadow: theme.shadows[5],
           p: theme.spacing(2),
           borderRadius: theme.borderRadius.sm,
-          ...props,
+          height: '80%',
+          overflow: 'scroll',
+          ...props
         }}
       >
         {showCloseIcon && (<Box width={'100%'} textAlign={'right'}>

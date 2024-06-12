@@ -24,26 +24,25 @@ export default function authenticateRouteWrapper(handler: AsyncWrapper) {
 
     let authorization = '';
     if (token.startsWith('Bearer')) {
-      // return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
       authorization = token.split(' ')[1].trim();
     } else {
       authorization = token
     }
-    
+  
     try {
       const key = <string>settings.jwtAccessToken.key;
-      const decodedToken = verify(token, key) as CustomJwtPayload;
-      const user = await userRepository.findOne({ userId: decodedToken.userId });
+      const decodedToken = verify(authorization, key) as CustomJwtPayload;
+      const user = await userRepository.findById(decodedToken.userId);
 
       if (!user) {
+        logger.error(`User not found: ${decodedToken.userId}`);
         return next(CustomAPIError.response(HttpStatus.UNAUTHORIZED.value, HttpStatus.UNAUTHORIZED.code));
       }
-
-      // if(decodedToken.expired_at)
 
       req.user = user;
       await handler(req, res, next);
     } catch (error: any) {
+      logger.error(`Authentication error: ${error.message}`);
       return next(CustomAPIError.response(error, HttpStatus.INTERNAL_SERVER_ERROR.code));
     }
   };

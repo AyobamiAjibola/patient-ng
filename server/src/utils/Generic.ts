@@ -196,6 +196,14 @@ export default class Generic {
     }
   }
 
+  public static async handleAllowedAdvocateUser(userType: any) {
+    if(userType.includes('admin') || userType.includes('advocacy')) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   public static async handleImages(items: any[], basePath: string) {
     const promises = items.map(async (item) => {
         let imagePath;
@@ -372,7 +380,7 @@ export default class Generic {
   // }
 
   public static generatePasswordResetLink(limit: number) {
-    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ';
     let randomString = '';
     for (let i = 0; i < limit; i++) {
       const randomNum = Math.floor(Math.random() * letters.length);

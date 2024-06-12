@@ -1,6 +1,6 @@
 'use client';
 
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 import Navbar from "../components/Navbar";
 import { Box, Divider, IconButton, Rating, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Close, Language, LocalPhone, MailOutline, Star, ToggleOff, ToggleOn } from "@mui/icons-material";
@@ -17,7 +17,7 @@ import { NButton } from "../components/PButton";
 import MModal from "../components/Modal";
 import { useWindowSize } from "@uidotdev/usehooks";
 import InputField from "../components/InputField";
-import { characterBreaker, wordBreaker } from "@/lib/helper";
+import { wordBreaker } from "@/lib/helper";
 
 const rates = [
     "All",
@@ -528,9 +528,9 @@ export default function Insight() {
                 showCloseIcon={false}
             >
                 <Box className="flex flex-col p-2 gap-3"
-                sx={{
-                    height: 'auto'
-                }}
+                    sx={{
+                        height: 'auto'
+                    }}
                 >
                 <Box
                     sx={{

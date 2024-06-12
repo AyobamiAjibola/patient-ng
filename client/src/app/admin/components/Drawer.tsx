@@ -3,7 +3,7 @@ import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import { Avatar, Box, IconButton, Typography, useMediaQuery } from '@mui/material/';
 import MuiDrawer from '@mui/material/Drawer';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, LogoutOutlined } from '@mui/icons-material';
@@ -106,11 +106,11 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
   const pathname = usePathname();
   const isMobile = useMediaQuery('(max-width: 900px)');
   const [_, setOpen] = useAtom(setDrawerOpen);
+  const { data: session } = useSession();
 
   const handleLogout = async () => {
     await signOut();
     router.push(`/`);
-    // router.push(`${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`);
   };
 
   useEffect(() => {

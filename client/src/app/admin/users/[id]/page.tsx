@@ -13,6 +13,10 @@ import { stateLga } from "@/constant/state";
 import { customStyles } from "@/constant/customStyles";
 import Select from "react-select";
 import { formAmount } from "@/lib/helper";
+import { useFetchSingleUser, useUpdateUser } from "../../hooks/userHook/useUser";
+import { useSession } from "next-auth/react";
+import MultiSelectComponent from "../../components/MultiSelect";
+import capitalize from "capitalize";
 
 const item = [
     "User information",
@@ -138,6 +142,11 @@ type FormValues = {
     newPassword?: string
 }
 
+type OptionType = {
+    label: string;
+    value: string;
+};
+
 export default function page({ params }: any) {
     const router = useRouter();
     const theme = useTheme();
@@ -150,7 +159,12 @@ export default function page({ params }: any) {
     const [state, setState] = useState([]);
     const [district, setDistrict] = useState<any[]>([]);
     const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+    const [selectedGender, setSelectedGender] = useState<string>('');
     const percent = (+100000/+500000) * 100;
+    const getUserMutation = useFetchSingleUser();
+    const {data: session} = useSession();
+    const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
+    const updateUserMutation = useUpdateUser();
 
     //Advocacy pagination
     const itemsPerPage = advocacy.length ? 10 : advocacy.length;
@@ -197,10 +211,23 @@ export default function page({ params }: any) {
     };
 
     const onSubmit = async (data: FormValues) => {
-        const payload = {
-          ...data
+        let perms: string[] = []
+        if(selectedOptions) {
+            selectedOptions.forEach(obj => {
+                perms.push(obj.value)
+            });
         }
-        console.log(payload, 'data')
+
+        const payload = {
+          ...data,
+          userType: perms,
+          gender: selectedGender,
+          state: selectedState,
+          lga: selectedDistrict,
+          userId: params.id
+        }
+
+        updateUserMutation.mutateAsync(payload)
     }
 
     const onSubmitPass = async (data: FormValues) => {
@@ -228,6 +255,7 @@ export default function page({ params }: any) {
         handleSubmit,
         register,
         formState: { errors },
+        setValue
     } = useForm<FormValues>({
         defaultValues: {
           firstName: '',
@@ -239,15 +267,6 @@ export default function page({ params }: any) {
           address: ''
         },
     });
-
-    const getHeight = () => {
-        if (typeof window !== 'undefined') {
-            return window.innerWidth;
-        }
-            return 0;
-    };
-    
-    const screenWidth = getHeight();
 
     useEffect(() => {
         let stateArray: any = [];
@@ -261,6 +280,40 @@ export default function page({ params }: any) {
         });
         setState(stateArray);
     }, []);
+
+    useEffect(() => {
+        if(params) {
+            getUserMutation.mutateAsync(params.id)
+        }
+    },[params, session])
+    
+    useEffect(() => {
+        if(getUserMutation.isSuccess) {
+            const data = getUserMutation.data?.result
+            setValue('firstName', data.firstName || '');
+            setValue('lastName', data.lastName || '');
+            setValue('email', data.email || '');
+            setValue('phone', data.phone || '');
+            setValue('age', data.age || 0);
+            setValue('address', data.address || '');
+            setSelectedState(data.state || '');
+            setSelectedDistrict(data.lga || '');
+            setSelectedGender(data.gender || '');
+            if(data.userType.length > 0) {
+                let type = data.userType.map((item: any) => ({
+                    label: capitalize.words(item),
+                    value: item
+                }));
+                setSelectedOptions(type)
+            }
+        }
+    },[getUserMutation.isSuccess]);
+
+    useEffect(() => {
+        if(updateUserMutation.isSuccess) {
+            getUserMutation.mutateAsync(params.id)
+        }
+    },[updateUserMutation.isSuccess, params, session])
 
     return (
         <Box
@@ -878,20 +931,28 @@ export default function page({ params }: any) {
                                                                             </Box>
                                                                             <Box
                                                                                 sx={{
-                                                                                    width: isMobile ? '100%' : '50%'
+                                                                                width: isMobile ? '100%' : '50%'
                                                                                 }}
                                                                             >
-                                                                                <InputField
-                                                                                    label="Gender"
-                                                                                    placeholder="Gender"
-                                                                                    isBorder={true}
-                                                                                    labelStyle={{
-                                                                                        fontSize: theme.typography.labelxs.fontSize,
-                                                                                        fontWeight: theme.typography.labelsm.fontWeight
+                                                                               <Typography variant="labelxs" mb={2}>
+                                                                                    Gender
+                                                                                </Typography>
+                                                                                <Select
+                                                                                    className="w-full h-10 font-light"
+                                                                                    options={[
+                                                                                        {value: "male", label: "Male"},
+                                                                                        {value: "female", label: "Female"}
+                                                                                    ]}
+                                                                                    styles={customStyles}
+                                                                                    placeholder="Select Gender"
+                                                                                    name="gender"
+                                                                                    onChange={(item) => {
+                                                                                        setSelectedGender(String(item?.value))
                                                                                     }}
-                                                                                    errorMessage={errors.gender?.message}
-                                                                                    error={!!errors.gender}
-                                                                                    register={register('gender')}
+                                                                                    value={{
+                                                                                        value: selectedGender,
+                                                                                        label: selectedGender,
+                                                                                    }}
                                                                                 />
                                                                             </Box>
                                                                         </Box>
@@ -970,10 +1031,26 @@ export default function page({ params }: any) {
                                                                                 />
                                                                             </Box>
                                                                         </Box>
+                                                                        <Box
+                                                                            sx={{
+                                                                                width: '100%',
+                                                                                mb: 4
+                                                                            }}
+                                                                        >
+                                                                            <MultiSelectComponent
+                                                                                setSelectedOptions={setSelectedOptions}
+                                                                                labelStyle={{
+                                                                                    fontSize: theme.typography.labelbase.fontSize,
+                                                                                    fontWeight: 500
+                                                                                }}
+                                                                                label="Select user permissions"
+                                                                                selectedOptions={selectedOptions}
+                                                                            />
+                                                                        </Box>
                                                                         
                                                                         <PButton transBg={false} bg={true} width="100%" type="submit">
                                                                             <Typography sx={{fontSize: theme.typography.labelsm.fontSize}}>
-                                                                                <FileDownloadOutlined/> Save Changes
+                                                                                <FileDownloadOutlined/> {updateUserMutation.isLoading ? 'Saving...' : 'Save Changes'}
                                                                             </Typography>
                                                                         </PButton>
                                                                     </form>

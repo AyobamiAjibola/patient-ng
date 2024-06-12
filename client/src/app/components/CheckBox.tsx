@@ -61,9 +61,15 @@ const MyCheckbox = ({ children, onChange, checked }: IProps) => {
     };
     return (
         <StyledCheckbox checked={check} onChange={handleChange}>
-            {children}
+          {children}
         </StyledCheckbox>
     );
 };
+
+export const MyCheckbox2 = ({checked, setChecked}: any) => {
+  return (
+    <StyledCheckbox checked={checked} onChange={(e) => setChecked(e.target.checked) }/>
+  )
+}
 
 export default MyCheckbox;

@@ -7,7 +7,7 @@ import { ArrowDownward, ArrowForward, ChatBubbleOutline } from "@mui/icons-mater
 import PButton from "../components/PButton";
 import { characterBreaker } from "@/lib/helper";
 import { useRouter } from "next/navigation";
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 
 const patientStories = [
     {

@@ -6,14 +6,14 @@ import axios from "axios";
 
 const useAxiosAuth = () => {
   const { data: session, update } = useSession();
-  const refreshToken = "";
+  const refreshToken = session?.user.refreshToken;
   
   useEffect(() => {
     const requestIntercept = axiosAuth.interceptors.request.use(
       (config: any) => {
 
         if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = session?.user?.token;
+          config.headers["Authorization"] = session?.user?.accessToken;
         }
         return config;
       },
@@ -24,8 +24,8 @@ const useAxiosAuth = () => {
       (response: any) => response,
       async (error: any) => {
         const prevRequest = error?.config;
-
-        if (error?.response?.status === 401 && !prevRequest?.sent) {
+        prevRequest.sent = false;
+        if (error?.response?.data.message.includes('TokenExpiredError') || error?.response?.status === 401 && !prevRequest?.sent) {
           prevRequest.sent = true;
 
           if(refreshToken) {
@@ -46,7 +46,7 @@ const useAxiosAuth = () => {
                     ...session,
                     user: {
                       ...session?.user,
-                      token: idToken
+                      accessToken: idToken
                     },
                   });
                 }

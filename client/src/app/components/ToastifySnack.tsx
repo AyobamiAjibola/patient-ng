@@ -1,6 +1,5 @@
-'use client';
-import React from 'react';
-import { Snackbar, SnackbarContent, useTheme } from '@mui/material';
+import React, { useEffect } from 'react';
+import { notification } from 'antd';
 
 interface IProp {
   open: boolean;
@@ -10,73 +9,42 @@ interface IProp {
   success?: boolean;
 }
 
-const ToastifySnack = ({
+const Toastify = ({
   open,
   onClose,
   message,
   error = false,
   success = false,
 }: IProp) => {
-  const theme = useTheme();
 
-  return (
-    <Snackbar
-      open={open}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      autoHideDuration={4000}
-      onClose={onClose}
-    >
-      <SnackbarContent
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: theme.borderRadius.sm,
-          color: error ? 'red' : success ? theme.palette.primary.main : '',
-          fontSize: 12,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        message={message}
-      />
-    </Snackbar>
-  );
+  useEffect(() => {
+    if (open) {
+      if (error) {
+        notification.error({
+          message: 'Error',
+          description: message,
+          placement: 'topRight',
+          onClose: onClose,
+        });
+      } else if (success) {
+        notification.success({
+          message: 'Success',
+          description: message,
+          placement: 'topRight',
+          onClose: onClose,
+        });
+      } else {
+        notification.info({
+          message: 'Info',
+          description: message,
+          placement: 'topRight',
+          onClose: onClose,
+        });
+      }
+    }
+  }, [open, message, error, success, onClose]);
+
+  return null;
 };
 
-export const Toastify = ({
-  open,
-  onClose,
-  message,
-  error = false,
-  success = false,
-}: IProp) => {
-  const theme = useTheme();
-
-  return (
-    <Snackbar
-      open={open}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      autoHideDuration={4000}
-      onClose={onClose}
-    >
-      <SnackbarContent
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: theme.borderRadius.sm,
-          color: error ? theme.palette.primary.main : success ? '#004c00' : '',
-          fontSize: 12,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        message={message}
-      />
-    </Snackbar>
-  );
-};
-export default ToastifySnack;
+export default Toastify;

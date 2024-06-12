@@ -167,9 +167,9 @@ export default class CrowdFundingontroller {
                 if(!user)
                     return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
 
-                const allowedUser = Generic.handleAllowedCrowdFundUser(user?.userType);
-                if(!allowedUser) 
-                    return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+                // const allowedUser = Generic.handleAllowedCrowdFundUser(user?.userType);
+                // if(!allowedUser) 
+                //     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
                 const basePathVid = `${UPLOAD_BASE_PATH}/video`;
@@ -246,9 +246,9 @@ export default class CrowdFundingontroller {
                 if(!user)
                     return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
 
-                const allowedUser = Generic.handleAllowedCrowdFundUser(user.userType);
-                if(!allowedUser) 
-                    return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+                // const allowedUser = Generic.handleAllowedCrowdFundUser(user.userType);
+                // if(!allowedUser) 
+                //     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
                 const basePathVid = `${UPLOAD_BASE_PATH}/video`;

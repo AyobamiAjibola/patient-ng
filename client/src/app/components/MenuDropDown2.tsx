@@ -4,7 +4,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useAtom } from 'jotai';
-import Image from 'next/image';
+import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 interface IProps {
@@ -23,6 +23,11 @@ export default function MenuDropDown2({ anchorEl, setAnchorEl, open, handleClick
     setIndx(-1)
     router.push(path)
     setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push(`/`);
   };
 
   return (
@@ -65,7 +70,7 @@ export default function MenuDropDown2({ anchorEl, setAnchorEl, open, handleClick
             </Box>
           </Box>
         </MenuItem>
-        <MenuItem onClick={() => handleClose('/account')} className='cursor-pointer'>
+        <MenuItem onClick={handleLogout} className='cursor-pointer'>
           <Box className='flex flex-col'>
             <Box className='flex gap-4 justify-start cursor-pointer'
               onClick={() => router.push('/')}

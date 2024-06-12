@@ -10,7 +10,7 @@ import Image from "next/image";
 import { characterBreaker } from "@/lib/helper";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 
 const topics = [
     "Nutrition and Diet",

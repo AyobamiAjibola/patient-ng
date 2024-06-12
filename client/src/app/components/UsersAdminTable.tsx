@@ -4,7 +4,6 @@ import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { formAmount } from '@/lib/helper';
 import Image from 'next/image';
 import capitalize from 'capitalize';
 
@@ -26,13 +25,13 @@ const UsersAdminTable: React.FC = ({data}: any) => {
             }}
           >
             <Image
-              src={record.status === "active" ? "/active-user.png" : "/inactive-user.png"}
+              src={record.active ? "/active-user.png" : "/inactive-user.png"}
               alt="active/inactive user"
               width={20}
               height={20}
             />
             <Typography variant='labelxs'>
-              {record.name}
+              {capitalize.words(record.firstName)} {capitalize.words(record.lastName)}
             </Typography>
           </Box>
       )},
@@ -53,8 +52,8 @@ const UsersAdminTable: React.FC = ({data}: any) => {
     },
     {
       title: 'Phone Number',
-      dataIndex: 'phoneNumber',
-      key: 'phoneNumber',
+      dataIndex: 'phone',
+      key: 'phone',
       render: (_, record) => {
         return (
           <Typography variant='labelxs'
@@ -62,7 +61,7 @@ const UsersAdminTable: React.FC = ({data}: any) => {
               color: theme.palette.secondary.light
             }}
           >
-            {record.phoneNumber}
+            {record.phone || ''}
           </Typography>
       )},
     },
@@ -73,12 +72,12 @@ const UsersAdminTable: React.FC = ({data}: any) => {
         return (
           <Tag
             style={{
-              color: record.status === "active"
+              color: record.active
                       ? theme.palette.primary.main  
                       : theme.palette.state.error
             }}
           >
-            {capitalize.words(record.status)}
+            {record.active ? "Active" : "Inactive"}
           </Tag>
       )},
     },
@@ -93,7 +92,7 @@ const UsersAdminTable: React.FC = ({data}: any) => {
               color: record.gender === "Male" ? "black" : "#CCA200"
             }}
           >
-            {record.gender}
+            {record.gender || ''}
           </Typography>
       )},
     },
@@ -108,7 +107,7 @@ const UsersAdminTable: React.FC = ({data}: any) => {
               color: theme.palette.secondary.light
             }}
           >
-            {record.state}
+            {record.state || ''}
           </Typography>
       )},
     },
@@ -135,7 +134,7 @@ const UsersAdminTable: React.FC = ({data}: any) => {
     },
   ];
 
-  const dataWithKeys = data.map((item: any) => ({ ...item, key: item._id }));
+  const dataWithKeys = data?.map((item: any) => ({ ...item, key: item._id }));
 
   return (
     <Table 

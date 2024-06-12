@@ -128,8 +128,9 @@ export default class AuthenticationController {
             firstName: Joi.string().required().label('First Name'),
             lastName: Joi.string().required().label('Last Name'),
             phone: Joi.string().required().label('Phone Number'),
+            isAdvocate: Joi.boolean().required().label('Advocate'),
             password: Joi.string()
-                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
                 .messages({
                 "string.pattern.base": `Password does not meet requirement.`,
                 })
@@ -144,15 +145,24 @@ export default class AuthenticationController {
             ...value,
             password: password,
             email: value.email.toLowerCase(),
-            userType: [ 'user' ]
+            userType: value.isAdvocate ? ['user', 'advocacy'] : [ 'user' ]
         }
 
         const user = await datasources.userDAOService.create(payload as IUserModel);
+
+        const { accessToken, refreshToken }: TokenTypes = await Generic.generateJWT({
+            userId: user._id,
+            level: 1,
+            isAdmin: user.isAdmin,
+            userType: user.userType,
+            fullName: `${user.firstName} ${user.lastName}`
+        });
 
         const response: HttpResponse<IUserModel> = {
             message: `User created successfully.`,
             code: HttpStatus.OK.code,
             result: user,
+            tokens: {accessToken, refreshToken}
           };
     
         return Promise.resolve(response);
@@ -166,41 +176,35 @@ export default class AuthenticationController {
             email: Joi.string().required().label('Email'),
             firstName: Joi.string().required().label('First Name'),
             lastName: Joi.string().required().label('Last Name'),
-            password: Joi.string()
-                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
-                .messages({
-                "string.pattern.base": `Password does not meet requirement.`,
-                })
-                .required()
-                .label("password"),
-            userType: Joi.string().required().label('user type')
+            userType: Joi.array().required().label('user type')
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
         const adminUser = await datasources.userDAOService.findById(loggedInUser);
-        if(adminUser && adminUser.isAdmin)
+
+        if(adminUser && !adminUser.isAdmin)
             return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
-        const password = await this.passwordEncoder?.encode(value.password as string);
+        const existingUser = await datasources.userDAOService.findByAny({ email: value.email.toLowerCase() });
+        if(existingUser)
+            return Promise.reject(CustomAPIError.response("User with this email already exist.", HttpStatus.FORBIDDEN.code));
 
-        let userType;
-        if(value.userType) {
-            userType = JSON.parse(value.userType)
-        }
+        const password = await this.passwordEncoder?.encode("Password12@" as string);
 
         const payload: Partial<IUserModel> = {
             ...value,
             password: password,
             email: value.email.toLowerCase(),
-            userType: userType
+            userType: value.userType,
+            isPasswordDefault: true,
+            isAdmin: true
         }
 
-        const user = await datasources.userDAOService.create(payload as IUserModel);
+        await datasources.userDAOService.create(payload as IUserModel);
 
         const response: HttpResponse<IUserModel> = {
             message: `User created successfully.`,
             code: HttpStatus.OK.code,
-            result: user,
           };
     
         return Promise.resolve(response);
@@ -211,7 +215,7 @@ export default class AuthenticationController {
         const { error, value } = Joi.object<any>({
             email: Joi.string().required().label('Email'),
             password: Joi.string()
-                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
                 .messages({
                 "string.pattern.base": `Password does not meet requirement.`,
                 })
@@ -223,7 +227,7 @@ export default class AuthenticationController {
         const user = await datasources.userDAOService.findByAny({email: value.email});
         if(!user) return Promise.reject(CustomAPIError.response("User with this email does not exist.", HttpStatus.BAD_REQUEST.code));
 
-        if(user && user.isAdmin) return Promise.reject(CustomAPIError.response("Admin can not log in here, please use the admin portal.", HttpStatus.UNAUTHORIZED.code));
+        // if(user && user.isAdmin) return Promise.reject(CustomAPIError.response("Admin can not log in here, please use the admin portal.", HttpStatus.UNAUTHORIZED.code));
 
         const hash = user.password as string;
         const password = value.password as string;
@@ -238,7 +242,10 @@ export default class AuthenticationController {
 
         const { accessToken, refreshToken }: TokenTypes = await Generic.generateJWT({
             userId: user._id,
-            level: user.level
+            level: user.level,
+            isAdmin: user.isAdmin,
+            userType: user.userType,
+            fullName: `${user.firstName} ${user.lastName}`
         });
 
         const response: HttpResponse<any> = {
@@ -379,7 +386,7 @@ export default class AuthenticationController {
         });
 
         const response: HttpResponse<any> = {
-            message: `Password changed successfully.`,
+            message: `Successful.`,
             code: HttpStatus.OK.code,
             result: accessToken
         };
@@ -390,23 +397,24 @@ export default class AuthenticationController {
 
     @TryCatch
     public async sendPasswordResetLink(req: Request) {
+
         const { error, value } = Joi.object<any>({
             email: Joi.string().required().label('Email')
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-        const resetPasswordLink = `${process.env.CLIENT_URL}/${Generic.generatePasswordResetLink(10)}`;
+        const resetPasswordLink = `${Generic.generatePasswordResetLink(4)}`;
         const currentDate = new Date();
 
         const user = await datasources.userDAOService.findByAny({email: value.email.toLowerCase()});
         if(!user) return Promise.reject(CustomAPIError.response("User with the provided email not found.", HttpStatus.NOT_FOUND.code));
-
+ 
         await datasources.userDAOService.updateByAny(
             { _id: user._id },
             {
                 passwordReset: {
                     code: resetPasswordLink,
-                    exp: new Date(currentDate.getTime() + (20 * 60 * 1000)) //20 min
+                    exp: new Date(currentDate.getTime() + (20 * 60 * 1000)) //5 min
                 }
             }
         )
@@ -425,7 +433,7 @@ export default class AuthenticationController {
               name: 'iPatient',
               address: <string>process.env.SMTP_EMAIL_FROM,
             },
-            subject: `iPatient has sent a password reset link.`,
+            subject: `iPatient has sent a password reset otp.`,
             html: mail,
             bcc: [<string>process.env.SMTP_BCC]
         })
@@ -444,7 +452,7 @@ export default class AuthenticationController {
         const { error, value } = Joi.object<any>({
             resetCode: Joi.string().required().label('Reset code'),
             password: Joi.string()
-                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+                .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
                 .messages({
                 "string.pattern.base": `Password does not meet requirement.`,
                 })
@@ -457,14 +465,14 @@ export default class AuthenticationController {
         const date = new Date()
 
         const user = await datasources.userDAOService.findByAny({'passwordReset.code': value.resetCode});
-        if(!user) return Promise.reject(CustomAPIError.response("You are trying to recover password for a user that does not exist", HttpStatus.NOT_FOUND.code));
+        if(!user) return Promise.reject(CustomAPIError.response("Reset code is not correct.", HttpStatus.NOT_FOUND.code));
 
         if(user && user.passwordReset.exp !== null && user.passwordReset.exp < date)
             return Promise.reject(CustomAPIError.response("This link has expired. Please restart the password reset process.", HttpStatus.BAD_REQUEST.code));
 
         const password = await this.passwordEncoder?.encode(value.password as string);
 
-        await datasources.userDAOService.deleteByAny(
+        await datasources.userDAOService.updateByAny(
             { _id: user._id },
             {
                 passwordReset: {
