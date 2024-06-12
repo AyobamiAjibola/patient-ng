@@ -2,7 +2,7 @@
 
 import Navbar from '@/app/components/Navbar'
 import { wordBreaker } from '@/lib/helper';
-import Footer from '@/modules/client/components/Footer';
+import Footer from '@/app/components/Footer';
 import { Box, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { Button } from 'antd';
 import Search from 'antd/es/input/Search';

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-const userTypes = ['blogger', 'admin', 'user', 'webinar', 'podcast', 'crowedfunding'];
+const userTypes = ['blogger', 'admin', 'user', 'webinar', 'podcast', 'crowedfunding', 'advocacy'];
 
 interface IUser {
     firstName: string,
@@ -20,7 +20,10 @@ interface IUser {
     level: number,
     active: boolean,
     image: string,
-    userType: string[]
+    userType: string[],
+    isPasswordDefault: boolean,
+    state: string,
+    lga: string
 }
 
 const userSchema = new Schema<IUser>({
@@ -41,7 +44,10 @@ const userSchema = new Schema<IUser>({
   isAdmin: { type: Boolean, default: false },
   level: { type: Number, default: 0 },
   active: { type: Boolean, default: true },
-  userType: [{ type: String, enum: userTypes }]
+  userType: [{ type: String, enum: userTypes }],
+  isPasswordDefault: { type: Boolean, default: false },
+  state: { type: String },
+  lga: { type: String },
 }, { timestamps: true });
 
 userSchema.index({ location: '2dsphere' });

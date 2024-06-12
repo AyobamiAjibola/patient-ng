@@ -100,7 +100,7 @@ const InputField: React.FC<InputFieldProps> = ({
               fontWeight: 400,
               borderRadius: isBorder ? theme.borderRadius.sm : theme.borderRadius.none,
               color: error
-                ? theme.palette.primary.main
+                ? theme.palette.state.error
                 : theme.palette.primary.base,
               minHeight: '40px',
               paddingLeft: theme.spacing(2),

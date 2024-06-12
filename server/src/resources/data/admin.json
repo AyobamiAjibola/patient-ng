@@ -3,7 +3,7 @@
   "lastName": "Admin",
   "email": "ipatient_admin@ipatient.com",
   "phone": "2348031987665",
-  "password": "iPatient12",
+  "password": "$2a$12$Zo04UBElu99QCKcMgVsSnepe/E6E1jKRdUvnGGp2D82x0YGDdlvBS",
   "isAdmin": true,
   "userType": [ "admin" ]
 }

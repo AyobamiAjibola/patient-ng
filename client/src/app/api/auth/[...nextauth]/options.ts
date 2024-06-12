@@ -6,8 +6,11 @@ import axios from '@/app/Client';
 interface IProps {
   email: string;
   level: number;
-  token: string;
+  accessToken: string;
   refreshToken: string;
+  isAdmin: boolean;
+  userType: string[];
+  fullName: string;
 }
 
 interface ICredencials {
@@ -16,7 +19,10 @@ interface ICredencials {
 }
 
 interface Payload {
-  level: number
+  level: number;
+  isAdmin: boolean;
+  userType: string[];
+  fullName: string;
 }
 
 export const options: NextAuthOptions = {
@@ -34,16 +40,18 @@ export const options: NextAuthOptions = {
             email,
             password,
           });
-
+          
           if (userCredential) {
-            const { accessToken, refreshToken, user } = userCredential.data;
-
-            const decodedToken = decode(accessToken) as Payload;
+            const { tokens } = userCredential.data;
+            const decodedToken = decode(tokens.accessToken) as Payload;
             const payload: IProps = {
-              email: user.email,
+              email: email,
               level: decodedToken?.level,
-              token: accessToken,
-              refreshToken,
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+              isAdmin: decodedToken?.isAdmin,
+              userType: decodedToken?.userType,
+              fullName: decodedToken?.fullName,
             };
             return payload;
           } else {

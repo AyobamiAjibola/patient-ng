@@ -41,13 +41,9 @@ export declare namespace appCommonTypes {
   type CustomJwtPayload = JwtPayload & AuthPayload;
   
   type AuthPayload = {
-    permissions: IPermission[];
-    userId: number;
-    restuarantId?: number;
-    customer?: number;
+    userId: string;
+    customer?: string;
   };
-
-  type CustomJwtPayload = JwtPayload & AuthPayload;
 
   type AppRequestParams = {
     customerId: string;

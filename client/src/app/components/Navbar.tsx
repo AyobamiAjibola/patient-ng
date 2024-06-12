@@ -10,7 +10,7 @@ import {
   Box,
   TextField,
   Avatar,
-  Divider,
+  Divider
 } from '@mui/material';
 import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,13 +20,23 @@ import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Container from './Container';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import PButton from './PButton';
-import PModal from './Modal';
+import PButton, { NButton } from './PButton';
 import MenuDropDown from './MenuDropDown';
 import { useAtom } from 'jotai';
-import { setIndex } from '@/lib/atoms';
+import { setIndex, setIsLoggedIn } from '@/lib/atoms';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import MenuDropDown2 from './MenuDropDown2';
+import MModal from './Modal';
+import InputField from './InputField';
+import { signIn, useSession } from 'next-auth/react';
+import Toastify from './ToastifySnack';
+import { useForgotPassword, useResetPassword, useSendSignUpOtp, useSignUp, useUpdateUserOnboarding, useValidateSignUpOtp } from '../admin/hooks/userHook/useUser';
+import OtpInputField from './OtpInputField';
+import { MyCheckbox2 } from './CheckBox';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import Select from "react-select";
+import { customStyles } from '@/constant/customStyles';
+import { stateLga } from '@/constant/state';
 
 interface PagesProps {
   id?: number;
@@ -87,15 +97,103 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const theme = useTheme();
   const router = useRouter();
   const [toggle, setToggle] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 959px)');
+  const isMobile = useMediaQuery('(max-width: 900px)');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
   const [indx, setIndx] = useAtom(setIndex);
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorEl2);
   const pathname = usePathname();
-  const isLogged = true;
-  const [showResources, setShowResources] = useState(false)
+  const isLogged = false;
+  const [showResources, setShowResources] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openModalReg, setOpenModalReg] = useState<boolean>(false);
+  const [openModalReg2, setOpenModalReg2] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [isLoggedAsAdmin, setIsLoggedAsAdmin] = useAtom(setIsLoggedIn);
+  const { data: session, update } = useSession();
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [forgotPassModal, setForgotPassModal] = useState<boolean>(false);
+  const forgotPasswordMutation = useForgotPassword();
+  const resetPasswordMutation = useResetPassword();
+  const [successForgotPassModal, setSuccessForgotPassModal] = useState<boolean>(false);
+  const [enterResetPasswordModal, setEnterResetPasswordModal] = useState<boolean>(false);
+  const [otp, setOtp] = useState('');
+  const [otp2, setOtp2] = useState('');
+  const [checked, setChecked] = useState<boolean>(false);
+  const [checked2, setChecked2] = useState<boolean>(false);
+  const signUpMutation = useSignUp();
+  const sendSignUpTokenMutation = useSendSignUpOtp();
+  const validateSignUpTokenMutation = useValidateSignUpOtp();
+  const [userDetails, setUserDetails] = useLocalStorage('userInfo', {});
+  const [openAccountVerifyModal, setOpenAccountVerifyModal] = useState<boolean>(false);
+  const [age, setAge] = useState('0');
+  const [address, setAddress] = useState<string>('');
+  const [selectedGender, setSelectedGender] = useState<string>('');
+  const updateUserOnboardingMutation = useUpdateUserOnboarding();
+  const [state, setState] = useState([]);
+  const [district, setDistrict] = useState<any[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [selectedState, setSelectedState] = useState('');
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setSnackbarOpen(true);
+  };
+
+  const handleDistrict = (value: any) => {
+    if (!value) {
+      return;
+    }
+    const newData = Object.entries(stateLga).find(
+      (_items) => _items[0] === value
+    );
+
+    if (!newData) {
+      return;
+    }
+    const districtArray = newData[1]?.map(
+      (item) => {
+        return {
+          value: item,
+          label: item,
+        };
+      }
+    );
+    setDistrict(districtArray);
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false)
+  };
+
+  const handleModalClose2 = () => {
+    setForgotPassModal(false)
+  };
+
+  const handleModalClose3 = () => {
+    setSuccessForgotPassModal(false)
+    setEnterResetPasswordModal(true)
+  };
+
+  const handleModalRegClose = () => {
+    setOpenModalReg(false)
+  }
+
+  const handleModalClose4 = () => {
+    setEnterResetPasswordModal(false)
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -109,7 +207,189 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
     setShowResources(true)
   }
 
+  const handleForgotPassword = async () => {
+    await forgotPasswordMutation.mutateAsync(email, {
+      onSuccess: (response) => {
+        setSuccessForgotPassModal(true)
+        setForgotPassModal(false)
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  }
+
+  const handleResendToken = async () => {
+    await forgotPasswordMutation.mutateAsync(email, {
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  }
+
+  const handleUpdateUserOnboarding = async () => {
+    const payload = {
+      age: age,
+      gender: selectedGender,
+      address: address,
+      state: selectedState,
+      lga: selectedDistrict
+    }
+
+    await updateUserOnboardingMutation.mutateAsync(payload, {
+      onSuccess: async () => {
+        await update({
+          ...session,
+          user: {
+            ...session?.user,
+            level: 2,
+          },
+        });
+        setOpenModalReg2(false);
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  }
+
+  const handleResetPassword = async () => {
+    const payload = {
+      resetCode: otp,
+      password: password,
+      confirmPassword: confirmPassword
+    }
+
+    await resetPasswordMutation.mutateAsync(payload, {
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      },
+      onSuccess: (response) => {
+        handleOpenNotification('success', 'Successful, please log in with your new password.')
+        setEnterResetPasswordModal(false)
+        setEmail('')
+        setPassword('')
+        setConfirmPassword('')
+        setOtp('')
+      },
+    })
+  }
+
   const onToggle = () => setToggle(!toggle);
+
+  const handleSignIn = async () => {
+    setIsLoading(true);
+    const response = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if(response) {
+      if (response.ok === true) {
+        setIsLoggedAsAdmin(true)
+      } else if(response.ok === false) {
+        setIsLoading(false);
+        handleOpenNotification('error', '', response.error as string)
+      }
+    }
+  };
+
+  const handleValidateSignUpOtp = async() => {
+    const payload = {
+      //@ts-ignore
+      email: userDetails.email,
+      emailOtp: otp2
+    }
+
+    await validateSignUpTokenMutation.mutateAsync(payload, {
+      onSuccess: async () => {
+        await signUpMutation.mutateAsync(userDetails, {
+          onSuccess: async () => {
+            await signIn('credentials', {
+              email,
+              password,
+              redirect: false,
+            });
+            setOpenAccountVerifyModal(false)
+            setOpenModalReg2(true);
+            setUserDetails({});
+
+            await update({
+              ...session,
+              user: {
+                ...session?.user,
+                level: 1,
+              },
+            });
+          },
+          onError: (error: any) => {
+            const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+            handleOpenNotification('error', '', errorMessage)
+          }
+        })
+      }
+    })
+  }
+
+  const handleResendSignOtp = async () => {
+    await sendSignUpTokenMutation.mutateAsync(email)
+  }
+
+  const handleSendSignUpOtp = async () => {
+    const regex = /^\d+$/;
+    if(!regex.test(phone)) {
+      handleOpenNotification('error', '', 'Phone number should only contain numbers.')
+      return;
+    }
+
+    if(phone.length > 11) {
+      handleOpenNotification('error', '', 'Phone number too long.')
+      return;
+    }
+    if(phone.length < 11) {
+      handleOpenNotification('error', '', 'Phone number too short.')
+      return;
+    }
+
+    const payload = {
+      phone: phone,
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      password: password,
+      isAdvocate: checked2
+    }
+
+    await sendSignUpTokenMutation.mutateAsync( email, {
+      onSuccess: () => {
+        setUserDetails(payload)
+        setOpenAccountVerifyModal(true)
+        setOpenModalReg(false)
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  };
+
+  useEffect(() => {
+    let stateArray: any = [];
+    const newData = Object.entries(stateLga);
+
+    newData.map((item, index) => {
+      stateArray.push({
+        value: item[0],
+        label: item[0],
+      });
+    });
+    setState(stateArray);
+  }, []);
 
   useEffect(() => {
     if(pathname === '/blog' || 
@@ -130,6 +410,48 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
     }
   },[pathname]);
 
+  useEffect(() => {
+    if(isLoggedAsAdmin && session?.user?.isAdmin) {
+      router.push('/admin');
+    }
+
+    return () => {
+      setIsLoggedAsAdmin(false);
+    }
+  },[isLoggedAsAdmin]);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if(successForgotPassModal) {
+      intervalId = setTimeout(() => {
+        setSuccessForgotPassModal(false)
+        setEnterResetPasswordModal(true)
+      },5000)
+    }
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  },[successForgotPassModal]);
+
+  useEffect(() => {
+    if(session?.user?.level === 1) {
+      setOpenModalReg2(true)
+    }
+  },[session]);
+  // useEffect(() => {
+  //   const upd = async () => {
+  //     await update({
+  //       ...session,
+  //       user: {
+  //         ...session?.user,
+  //         level: 1,
+  //       },
+  //     });
+  //   }
+  //   upd();
+  // },[session])
   return (
     <Box 
       sx={{ 
@@ -235,16 +557,16 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             </ul>
           )}
 
-          {!isMobile && !isLogged && (<Box className='flex flex-row gap-1 items-center'>
-                <PButton bg={false} transBg={true}>
+          {!isMobile && !session?.user && (<Box className='flex flex-row gap-1 items-center'>
+                <PButton bg={false} transBg={true} onClick={()=>setOpenModalReg(true)}>
                   Sign Up
                 </PButton>
-                <PButton bg={true} width='100px' transBg={false}>
+                <PButton bg={true} width='100px' transBg={false} onClick={()=>setOpenModal(true)}>
                   {'Log In'}
                 </PButton>
               </Box>
           )}
-          {!isMobile && isLogged && (<Box
+          {!isMobile && session?.user && (<Box
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -273,7 +595,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                   color: pathname === '/' ? 'white' : 'black'
                 }}
               >
-                Abayomi Oluwo
+                {session?.user?.fullName}
               </Typography>
               <Typography
                 sx={{
@@ -282,7 +604,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                   mt: -1
                 }}
               >
-                email@gmail.com
+                {session?.user?.email}
               </Typography>
             </Box>
 
@@ -455,6 +777,844 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
         setAnchorEl={setAnchorEl2}
         open={open2}
         handleClick={handleClick2}
+      />
+
+      <MModal
+        onClose={handleModalClose}
+        open={openModal}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={true}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={2}>
+            Welcome back
+          </Typography>
+          <Typography variant='paragraphsm' color={theme.palette.secondary.light} mb={3}>
+            Please enter your details to login.
+          </Typography>
+          <Box width={'100%'}>
+            <InputField
+              label="Email address"
+              placeholder="Enter email"
+              isBorder={true}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <Box width={'100%'}>
+            <InputField
+              label="Password"
+              placeholder="Enter password"
+              isBorder={true}
+              type='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'flex-start',
+              mt: -3, mb: 3
+            }}
+          >
+            <Typography variant='paragraphxs'
+              onClick={()=>{
+                setOpenModal(false)
+                setForgotPassModal(true)
+              }}
+              sx={{
+                color: theme.palette.primary.main,
+                '&:hover': {
+                  fontWeight: 500
+                },
+                cursor: 'pointer'
+              }}
+            >
+              Forgot password?
+            </Typography>
+          </Box>
+          <NButton
+            textcolor='white'
+            bkgcolor={theme.palette.primary.main}
+            width='100%'
+            onClick={handleSignIn}
+          >
+            {isLoading ? "Logging you in..." : "Sign in" }
+          </NButton>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              my: 3, width: '100%',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Divider sx={{width: '45%'}}/>
+            <Typography variant='paragraphsm' color={theme.palette.secondary.light}>
+              OR
+            </Typography>
+            <Divider sx={{width: '45%'}}/>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2, width: '100%'
+            }}
+          >
+            <NButton
+              textcolor='black'
+              bkgcolor='white'
+              bordercolor={theme.palette.border.main}
+              hoverbordercolor={theme.palette.primary.main}
+              width={'50%'}
+            >
+              <img
+                src="/googleLogo.png"
+                alt="google logo"
+                style={{
+                  width: '20px',
+                  height: '20px'
+                }}
+              />
+              <Typography variant='labelxs' ml={2}>
+                Sign in with Google
+              </Typography>
+            </NButton>
+            <NButton
+              textcolor='white'
+              bkgcolor='black'
+              bordercolor={'black'}
+              hoverbordercolor={'black'}
+              width={'50%'}
+            >
+              <img
+                src="/appleLogo.png"
+                alt="apple logo"
+                style={{
+                  width: '20px',
+                  height: '20px'
+                }}
+              />
+              <Typography variant='labelxs' ml={2}>
+                Sign in with Apple
+              </Typography>
+            </NButton>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1, width: '100%',
+              justifyContent: 'center',
+              mt: 2
+            }}
+          >
+            <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
+              Don't have an account?
+            </Typography>
+            <Typography variant='labelxs'
+              onClick={() => {
+                setOpenModal(false)
+                setOpenModalReg(true)
+              }}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  color: theme.palette.primary.main
+                }
+              }}
+            >
+              Register
+            </Typography>
+          </Box>
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={handleModalClose2}
+        open={forgotPassModal}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={false}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={2}>
+            Reset Your Password
+          </Typography>
+          <Typography variant='paragraphxs' color={theme.palette.secondary.light} mb={3}
+            sx={{textAlign: 'center'}}
+          >
+            Enter your email address we will send you a code to reset your password.
+          </Typography>
+          <Box width={'100%'}>
+            <InputField
+              label="Email address"
+              placeholder="Enter email"
+              isBorder={true}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <NButton
+            textcolor='white'
+            bkgcolor={theme.palette.primary.main}
+            width='100%'
+            onClick={handleForgotPassword}
+          >
+            {forgotPasswordMutation.isLoading ? "Loading..." : "Continue" }
+          </NButton>
+          <Box className="flex items-center justify-center">
+            <Typography variant='paragraphsm'
+              onClick={() => {
+                setForgotPassModal(false)
+                setOpenModal(true)
+              }}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  color: theme.palette.primary.main
+                }
+              }}
+            >
+              Sign in instead
+            </Typography>
+          </Box>
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={handleModalClose3}
+        open={successForgotPassModal}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={true}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={2}>
+            Check Your Inbox
+          </Typography>
+          <Typography variant='paragraphsm' color={theme.palette.secondary.light} mb={3}
+            sx={{textAlign: 'center'}}
+          >
+            We've sent a password reset link to your email. Click the link to create a new password.
+          </Typography>
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={handleModalClose4}
+        open={enterResetPasswordModal}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={false}
+        onClickOut={false}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={2}>
+            Reset Your Password
+          </Typography>
+          <Box width={'100%'} mt={3} mb={3}>
+            <Typography variant='labelsm'>
+              Enter the otp sent to your email.
+            </Typography>
+            <OtpInputField
+              value={otp}
+              onChange={setOtp}
+            />
+            <Typography variant='paragraphxs'
+              onClick={() => forgotPasswordMutation.isLoading ? null : handleResendToken()}
+              sx={{
+                color: theme.palette.primary.main,
+                ml: 2,
+                '&:hover': {
+                  fontWeight: 500
+                },
+                cursor: 'pointer'
+              }}
+            >
+              {forgotPasswordMutation.isLoading ? 'Resending otp...' : 'Resend password otp'}
+            </Typography>
+          </Box>
+          <Box width={'100%'}>
+            <InputField
+              label="Enter new password"
+              placeholder="Enter new password"
+              isBorder={true}
+              type='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <Box width={'100%'}>
+            <InputField
+              label="Confirm password"
+              placeholder="Enter confirm password"
+              isBorder={true}
+              type='password'
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <NButton
+            textcolor='white'
+            bkgcolor={theme.palette.primary.main}
+            width='100%'
+            onClick={handleResetPassword}
+          >
+            {resetPasswordMutation.isLoading ? "Reseting password..." : "Reset password" }
+          </NButton>
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={handleModalRegClose}
+        open={openModalReg}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={true}
+        onClickOut={true}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={2}>
+            Create Your Account
+          </Typography>
+          <Typography variant='paragraphsm' color={theme.palette.secondary.light} mb={3}>
+            Enter your details to begin.
+          </Typography>
+          
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2, width: '100%'
+            }}
+          >
+            <NButton
+              textcolor='black'
+              bkgcolor='white'
+              bordercolor={theme.palette.border.main}
+              hoverbordercolor={theme.palette.primary.main}
+              width={'50%'}
+            >
+              <img
+                src="/googleLogo.png"
+                alt="google logo"
+                style={{
+                  width: '20px',
+                  height: '20px'
+                }}
+              />
+              <Typography variant='labelxs' ml={2}>
+                Sign in with Google
+              </Typography>
+            </NButton>
+            <NButton
+              textcolor='white'
+              bkgcolor='black'
+              bordercolor={'black'}
+              hoverbordercolor={'black'}
+              width={'50%'}
+            >
+              <img
+                src="/appleLogo.png"
+                alt="apple logo"
+                style={{
+                  width: '20px',
+                  height: '20px'
+                }}
+              />
+              <Typography variant='labelxs' ml={2}>
+                Sign in with Apple
+              </Typography>
+            </NButton>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              my: 3, width: '100%',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Divider sx={{width: '45%'}}/>
+            <Typography variant='paragraphsm' color={theme.palette.secondary.light}>
+              OR
+            </Typography>
+            <Divider sx={{width: '45%'}}/>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1, mb: 3, mt: 2,
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              width: '100%', 
+            }}
+          >
+            <MyCheckbox2
+              checked={checked2}
+              setChecked={setChecked2}
+            />
+            <Typography variant='paragraphbase'>
+              Be an advocate.
+            </Typography>
+          </Box>
+
+          <Box width={'100%'} display={'flex'} gap={2}>
+            <Box width={'50%'}>
+              <InputField
+                label="FirstName"
+                placeholder="Ade"
+                isBorder={true}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                labelStyle={{
+                  fontWeight: 500,
+                  marginBottom: -2,
+                  fontSize: theme.typography.labelsm
+                }}
+              />
+            </Box>
+            <Box width={'50%'}>
+              <InputField
+                label="Last name"
+                placeholder="Emeka"
+                isBorder={true}
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                labelStyle={{
+                  fontWeight: 500,
+                  marginBottom: -2,
+                  fontSize: theme.typography.labelsm
+                }}
+              />
+            </Box>
+          </Box>
+
+          <Box width={'100%'}>
+            <InputField
+              label="Phone number"
+              placeholder="08100000000"
+              isBorder={true}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          
+          <Box width={'100%'}>
+            <InputField
+              label="Email address"
+              placeholder="Enter email"
+              isBorder={true}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+
+          <Box width={'100%'}>
+            <InputField
+              label="Password"
+              placeholder="Enter password"
+              isBorder={true}
+              type='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1, mb: 1, mt: 2,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <MyCheckbox2
+              checked={checked}
+              setChecked={setChecked}
+            />
+            <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
+              I agree Patient.ng
+            </Typography>
+            <Typography variant='labelxs' color={theme.palette.primary.main}>
+              Term and Conditions
+            </Typography>
+          </Box>
+          <NButton
+            textcolor='white'
+            bkgcolor={checked ? theme.palette.primary.main : theme.palette.border.main}
+            width='100%'
+            onClick={handleSendSignUpOtp}
+            disabled={!checked}
+          >
+            {sendSignUpTokenMutation.isLoading ? "Loading..." : "Sign Up" }
+          </NButton>
+
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1, mt: 3, mb: 2
+            }}
+          >
+            <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
+              Already have an account?
+            </Typography>
+            <Typography variant='labelxs' onClick={()=>{
+              setOpenModalReg(false)
+              setOpenModal(true)
+            }}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  color: theme.palette.primary.main
+                }
+              }}
+            >
+              Login
+            </Typography>
+          </Box>
+         
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={()=>setOpenAccountVerifyModal(false)}
+        open={openAccountVerifyModal}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={false}
+        onClickOut={false}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+            style={{marginTop: '30px'}}
+          />
+          <Typography variant='h5' mt={4}>
+            Verify Your Account
+          </Typography>
+          <Box width={'100%'} mt={3} mb={3} display={'flex'} justifyContent={'center'} alignItems={'center'} flexDirection={'column'}>
+            <Typography variant='paragraphbase' color={theme.palette.secondary.light} mb={4}
+              sx={{textAlign:'center'}}
+            >
+              A verification code has been sent to your email. Please enter the code below to verify your account.
+            </Typography>
+            <OtpInputField
+              value={otp2}
+              onChange={setOtp2}
+              inputNumber={6}
+            />
+            <Typography variant='labelsm' color={theme.palette.primary.main} mt={3}
+              sx={{
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}
+              onClick={handleResendSignOtp}
+            >
+              {sendSignUpTokenMutation.isLoading ? 'Resending code...' : 'Resend code'}
+            </Typography>
+          </Box>
+          <Box mt={4}>
+            <NButton
+              textcolor='white'
+              bkgcolor={theme.palette.primary.main}
+              width='100%'
+              onClick={handleValidateSignUpOtp}
+            >
+              {validateSignUpTokenMutation.isLoading ? "Verifying..." : "Verify my account" }
+            </NButton>
+          </Box>
+          
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={() => setOpenModalReg2(false)}
+        open={openModalReg2}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={false}
+        onClickOut={false}
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={2}>
+            Personalize Your Experience
+          </Typography>
+          <Typography variant='paragraphsm' color={theme.palette.secondary.light} mb={3}
+            sx={{textAlign: 'center'}}
+          >
+            Tell us a bit about yourself to tailor your iPatient experience.
+          </Typography>
+          <Box width={'100%'} display={'flex'} gap={2}>
+            <Box width={'50%'}>
+              <InputField
+                label="Age"
+                placeholder="Enter age"
+                isBorder={true}
+                type='number'
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                labelStyle={{
+                  fontWeight: 500,
+                  marginBottom: -2,
+                  fontSize: theme.typography.labelsm
+                }}
+              />
+            </Box>
+            <Box
+              sx={{
+                width: '50%',
+                mt: -1
+              }}
+            >
+              <Typography variant="labelxs" mb={2}>
+                Gender
+              </Typography>
+              <Select
+                className="w-full h-10 font-light"
+                options={[
+                  {value: "male", label: "Male"},
+                  {value: "female", label: "Female"}
+                ]}
+                styles={customStyles}
+                placeholder="Select Gender"
+                name="gender"
+                onChange={(item) => {
+                  setSelectedGender(String(item?.value))
+                }}
+                value={{
+                  value: selectedGender,
+                  label: selectedGender,
+                }}
+              />
+            </Box>
+          </Box>
+          <Box width={'100%'}>
+            <InputField
+              label="Address"
+              placeholder="Enter address"
+              isBorder={true}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              labelStyle={{
+                fontWeight: 500,
+                marginBottom: -2,
+                fontSize: theme.typography.labelsm
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              width: '100%',
+              flexDirection: isMobile ? 'column' : 'row',
+              display: 'flex', gap: 3, mt: 2
+            }}
+          >
+            <Box
+              sx={{
+                width: isMobile ? '100%' : '50%'
+              }}
+            >
+              <Typography
+                sx={{
+                    fontSize: theme.typography.labelxs.fontSize,
+                    fontWeight: theme.typography.labelsm.fontWeight,
+                    mb: 2
+                }}
+              >
+                  State
+              </Typography>
+              <Select
+                className="w-full h-10 font-light"
+                options={state}
+                styles={customStyles}
+                placeholder="Select State"
+                name="state"
+                onChange={(item) => {
+                  handleDistrict(String(item?.value));
+                  setSelectedState(String(item?.value));
+                }}
+                value={{
+                    value: selectedState,
+                    label: selectedState
+                }}
+              />
+            </Box>
+            <Box
+              sx={{
+                width: isMobile ? '100%' : '50%'
+              }}
+            >
+              <Typography
+                sx={{
+                    fontSize: theme.typography.labelxs.fontSize,
+                    fontWeight: theme.typography.labelsm.fontWeight,
+                    mb: 2
+                }}
+              >
+                  LGA
+              </Typography>
+              <Select
+                className="w-full h-10 font-light"
+                options={district}
+                styles={customStyles}
+                placeholder="Select LGA"
+                name="lga"
+                onChange={(item) => {
+                  setSelectedDistrict(String(item?.value))
+                }}
+                value={{
+                    value: selectedDistrict,
+                    label: selectedDistrict,
+                }}
+              />
+            </Box>
+          </Box>
+          <Box mt={4} width='100%'>
+            <NButton
+              textcolor='white'
+              bkgcolor={theme.palette.primary.main}
+              width='100%'
+              onClick={handleUpdateUserOnboarding}
+            >
+              {updateUserOnboardingMutation.isLoading ? "Saving..." : "Continue" }
+            </NButton>
+          </Box>
+        </Box>
+      </MModal>
+
+      <Toastify
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
       />
     </Box>
   );

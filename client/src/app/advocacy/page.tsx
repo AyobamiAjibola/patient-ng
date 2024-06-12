@@ -4,7 +4,7 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import PButton, { NButton } from "../components/PButton";
 import { ArrowDownward, ChatBubbleOutline } from "@mui/icons-material";
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
 import Search from 'antd/es/input/Search';

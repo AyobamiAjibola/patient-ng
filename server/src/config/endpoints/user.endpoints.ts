@@ -18,7 +18,7 @@ const userEndpoints: RouteEndpoint  = [
     {
         name: 'get single user',
         method: 'get',
-        path: '/get-single-user',
+        path: '/get-single-user/:userId',
         handler: getSingleUserHandler
     },
     {
@@ -30,7 +30,7 @@ const userEndpoints: RouteEndpoint  = [
     {
         name: 'update user profile',
         method: 'put',
-        path: '/update-user-profile',
+        path: '/update-user-profile/:userId',
         handler: updateUserProfileHandler
     },
     {

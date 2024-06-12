@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Mousewheel, Keyboard } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 
 const crowdCampaign = [
   {

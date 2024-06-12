@@ -1,6 +1,6 @@
 'use client';
 
-import Footer from "@/modules/client/components/Footer";
+import Footer from "@/app/components/Footer";
 import Navbar from "../components/Navbar";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import capitalize from "capitalize";
