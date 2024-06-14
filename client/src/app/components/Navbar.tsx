@@ -440,6 +440,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       setOpenModalReg2(true)
     }
   },[session]);
+
   // useEffect(() => {
   //   const upd = async () => {
   //     await update({
@@ -451,7 +452,8 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   //     });
   //   }
   //   upd();
-  // },[session])
+  // },[session]);
+  
   return (
     <Box 
       sx={{ 
