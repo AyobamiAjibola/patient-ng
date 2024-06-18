@@ -13,6 +13,7 @@ declare module "next-auth" {
       isAdmin: boolean;
       userType: string[];
       fullName: string;
+      userId: string;
     };
     update: any;
     status: string;

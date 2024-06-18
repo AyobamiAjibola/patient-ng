@@ -1,10 +1,11 @@
 'use client';
 
-import { Space, Table, Tag } from 'antd';
+import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { formAmount } from '@/lib/helper';
+import moment from 'moment';
 
 interface IProps {
   title: string,
@@ -18,6 +19,7 @@ interface IProps {
 
 const CrowdAdminTable: React.FC = ({data}: any) => {
   const router = useRouter();
+  const theme = useTheme();
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -31,27 +33,31 @@ const CrowdAdminTable: React.FC = ({data}: any) => {
               flexDirection: 'column'
             }}
           >
-            <Typography variant='labelxs'>
+            <Typography variant='labelxs' className='capitalize'>
               {record.title}
             </Typography>
             <Typography variant='paragraphxs'>
-              {record.date}
+              {moment(record.createdAt).format('DD MMM YYYY')}
             </Typography>
           </Box>
       )},
     },
     {
       title: 'Created by',
-      dataIndex: 'createdBy',
       key: 'createdBy',
+      render: (_, record) => {
+        return (<Typography variant='labelxs' className='capitalize'>
+          {record.user.firstName} {record.user.lastName} 
+        </Typography>)
+      }
     },
     {
       title: 'Fundraising for',
       key: 'fundraisingFor',
       render: (_, record) => {
         return (
-          <Tag>
-            {record.fundraisingFor}
+          <Tag className='capitalize'>
+            {record.fundraisingFor === `${record.user.firstName} ${record.user.lastName}` ? 'Self' : 'Someone else'}
           </Tag>
       )},
     },
@@ -61,7 +67,7 @@ const CrowdAdminTable: React.FC = ({data}: any) => {
       render: (_, record) => {
         return (
           <Typography variant='paragraphsm'>
-            {formAmount(record.amount)}
+            {formAmount(record.amountNeeded)}
           </Typography>
       )},
     },
@@ -70,20 +76,31 @@ const CrowdAdminTable: React.FC = ({data}: any) => {
       key: 'status',
       render: (_, record) => {
         return (
-          <Typography variant='paragraphsm' color={'#FFCB00'}>
+          <Typography variant='paragraphsm' color={'#FFCB00'} className='capitalize'>
             {record.status}
           </Typography>
       )},
     },
     {
-      title: 'Location',
-      dataIndex: 'location',
-      key: 'location',
-    },
-    {
       title: 'Action',
-      dataIndex: 'action',
       key: 'action',
+      render: (_, record) => {
+        const handleUser = () => {
+          router.push(`/crowdfunding/${record._id}`)
+        }
+        return (
+          <Typography variant='labelxs'
+            onClick={handleUser}
+            sx={{
+              cursor: 'pointer',
+              '&:hover': {
+                color: theme.palette.primary.main
+              }
+            }}
+          >
+            Open
+          </Typography>
+      )},
     },
   ];
 

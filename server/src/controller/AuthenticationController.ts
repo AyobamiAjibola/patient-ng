@@ -300,6 +300,47 @@ export default class AuthenticationController {
     }
 
     @TryCatch
+    public async resetUserPassword(req: Request) {
+        const loggedInUser = req.user._id;
+        console.log(req.user._id, 'user')
+        const { error, value } = Joi.object({
+            email: Joi.string().required().label('Email'),
+          }).validate(req.body);
+        if (error)
+          return Promise.reject(
+            CustomAPIError.response(
+              error.details[0].message,
+              HttpStatus.BAD_REQUEST.code
+            )
+        );
+
+        const adminUser = await datasources.userDAOService.findById(loggedInUser);
+
+        if(adminUser && !adminUser.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+        
+        const user = await datasources.userDAOService.findByAny({ email: value.email });
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found", HttpStatus.NOT_FOUND.code));
+
+        const defaultPass = "Ipatientuser12";
+        const password = await this.passwordEncoder?.encode(defaultPass as string);
+
+        await datasources.userDAOService.updateByAny(
+            { _id: user._id },
+            { password: password }
+        )
+    
+        const response: HttpResponse<IUserModel> = {
+            message: `Password reset was successful.`,
+            code: HttpStatus.OK.code
+        };
+    
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
     public async changePassword(req: Request) {
   
       const userId = req.user._id;

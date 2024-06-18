@@ -12,63 +12,10 @@ import { Navigation, Mousewheel, Keyboard } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import Footer from "@/app/components/Footer";
-
-const crowdCampaign = [
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '200000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '400000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '300000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '150000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '120000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '90000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  }
-];
+import { useGetCrowdfundings } from "../admin/hooks/crowdFuncdingHook/useCrowdFunding";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import moment from "moment";
 
 const stories = [
   {
@@ -126,18 +73,33 @@ export default function CrowdFundings() {
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
   const router = useRouter();
+  const campaignsMutation = useGetCrowdfundings();
+  const {data: session} = useSession();
+  const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
 
   const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 7,
     borderRadius: 5,
     [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: theme.palette.secondary.lighter //[theme.palette.mode === 'light' ? 200 : 800],
+      backgroundColor: theme.palette.secondary.lighter
     },
     [`& .${linearProgressClasses.bar}`]: {
       borderRadius: 5,
-      backgroundColor: theme.palette.primary.main//theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
+      backgroundColor: theme.palette.primary.main
     },
   }));
+
+  useEffect(() => {
+    const handleFetchData = async () => {
+      await campaignsMutation.mutateAsync({},{
+        onSuccess: (response: any) => {
+          setCrowdCampaign(response.results)
+        }
+      })
+    }
+
+    handleFetchData();
+  },[session]);
 
   return (
     <>
@@ -283,11 +245,11 @@ export default function CrowdFundings() {
             }}
           >
             { crowdCampaign.slice(0, 3).map((fundraiser: any, index: number) => {
-              const percent = (+fundraiser.raised/+fundraiser.amountNeeded) * 100;
+              const percent = (+fundraiser.amountRaised/+fundraiser.amountNeeded) * 100;
 
               return ( 
-              <Box key={index}
-                sx={{
+                <Box key={fundraiser}
+                  sx={{
                     display: 'flex',
                     flexDirection: 'column',
                     height: '550px',
@@ -298,7 +260,7 @@ export default function CrowdFundings() {
                   }}
                 >
                   <img
-                    src={fundraiser.image}
+                    src={fundraiser.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${fundraiser.image}` : '/crowd2.png'}
                     alt='crowd funding image'
                     style={{
                       height: '50%',
@@ -324,13 +286,14 @@ export default function CrowdFundings() {
                           fontWeight: theme.typography.labelxs.fontWeight,
                           ml: -1
                         }}
+                        className="capitalize"
                       >
                         <LocationOn
                           sx={{
                             color: theme.palette.primary.main, 
                             fontSize: '16px'
                           }}
-                        /> { fundraiser.location }
+                        /> { `${fundraiser.location.lga ? fundraiser.location.lga : 'Ikeja'}, ${fundraiser.location.state ? fundraiser.location.state : 'Lagos'}` }
                       </Typography>
                       <Typography
                         sx={{
@@ -338,8 +301,9 @@ export default function CrowdFundings() {
                           fontWeight: theme.typography.labelxs.fontWeight,
                           my: 1
                         }}
+                        className="capitalize"
                       >
-                        { characterBreaker(fundraiser.name, 20)}
+                        { characterBreaker(fundraiser.fundraisingFor, 20)}
                       </Typography>
                     </Box>
 
@@ -351,7 +315,7 @@ export default function CrowdFundings() {
                         whiteSpace: 'pre-wrap'
                       }}
                     >
-                      { wordBreaker(fundraiser.story, 10) }...
+                      { wordBreaker(fundraiser.description, 10) }...
                     </Typography>
                   
                     <Box>
@@ -375,7 +339,7 @@ export default function CrowdFundings() {
                             fontWeight: theme.typography.labelxs.fontWeight
                           }}
                         >
-                          { fundraiser.lastDonation }
+                          { moment(fundraiser.donations[0].date).fromNow() }
                         </Typography>
                       </Box>
                       <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
@@ -391,7 +355,7 @@ export default function CrowdFundings() {
                             fontSize: theme.typography.labelxxs.fontSize
                           }}
                         >
-                          {formAmount(+fundraiser.raised)} raised
+                          {formAmount(+fundraiser.amountRaised)} raised
                         </Typography>
                         <Typography
                           sx={{
@@ -421,7 +385,7 @@ export default function CrowdFundings() {
                         px: '10px'
                       }}
                     >
-                      <Typography onClick={() => router.push(`/crowdfunding/${index}`)}
+                      <Typography onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
                         sx={{
                           cursor: 'pointer',
                           color: theme.palette.primary.main,
@@ -432,7 +396,7 @@ export default function CrowdFundings() {
                         See More Information
                       </Typography>
                     </Box>
-                    </Box>
+                  </Box>
                 </Box>
               )})
             }

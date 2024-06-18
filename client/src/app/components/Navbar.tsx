@@ -23,12 +23,12 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PButton, { NButton } from './PButton';
 import MenuDropDown from './MenuDropDown';
 import { useAtom } from 'jotai';
-import { setIndex, setIsLoggedIn } from '@/lib/atoms';
+import { modalReg, sessionErrorModal, sessionErrorMsg, setIndex, setIsLoggedIn, setOpenSignInModal } from '@/lib/atoms';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import MenuDropDown2 from './MenuDropDown2';
 import MModal from './Modal';
 import InputField from './InputField';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Toastify from './ToastifySnack';
 import { useForgotPassword, useResetPassword, useSendSignUpOtp, useSignUp, useUpdateUserOnboarding, useValidateSignUpOtp } from '../admin/hooks/userHook/useUser';
 import OtpInputField from './OtpInputField';
@@ -37,6 +37,7 @@ import { useLocalStorage } from '@uidotdev/usehooks';
 import Select from "react-select";
 import { customStyles } from '@/constant/customStyles';
 import { stateLga } from '@/constant/state';
+import capitalize from 'capitalize';
 
 interface PagesProps {
   id?: number;
@@ -112,8 +113,8 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const [phone, setPhone] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [openModalReg, setOpenModalReg] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useAtom(setOpenSignInModal);
+  const [openModalReg, setOpenModalReg] = useAtom(modalReg);
   const [openModalReg2, setOpenModalReg2] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -144,6 +145,8 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const [district, setDistrict] = useState<any[]>([]);
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
   const [selectedState, setSelectedState] = useState('');
+  const [sessionError, setSessionError] = useAtom(sessionErrorMsg)
+  const [sessionErrorModalOpen, setSessionErrorModalOpen] = useAtom(sessionErrorModal)
 
   const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
     setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
@@ -291,7 +294,8 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
 
     if(response) {
       if (response.ok === true) {
-        setIsLoggedAsAdmin(true)
+        setIsLoggedAsAdmin(true);
+        setOpenModal(false)
       } else if(response.ok === false) {
         setIsLoading(false);
         handleOpenNotification('error', '', response.error as string)
@@ -315,10 +319,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               password,
               redirect: false,
             });
-            setOpenAccountVerifyModal(false)
-            setOpenModalReg2(true);
-            setUserDetails({});
-
+            
             await update({
               ...session,
               user: {
@@ -326,6 +327,10 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                 level: 1,
               },
             });
+
+            setOpenAccountVerifyModal(false)
+            setOpenModalReg2(true);
+            setUserDetails({});
           },
           onError: (error: any) => {
             const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
@@ -441,19 +446,12 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
     }
   },[session]);
 
-  // useEffect(() => {
-  //   const upd = async () => {
-  //     await update({
-  //       ...session,
-  //       user: {
-  //         ...session?.user,
-  //         level: 1,
-  //       },
-  //     });
-  //   }
-  //   upd();
-  // },[session]);
-  
+  useEffect(() => {
+    if(sessionError !== '') {
+      setSessionErrorModalOpen(true)
+    }
+  },[sessionError]);
+
   return (
     <Box 
       sx={{ 
@@ -597,7 +595,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                   color: pathname === '/' ? 'white' : 'black'
                 }}
               >
-                {session?.user?.fullName}
+                {capitalize.words(session?.user?.fullName)}
               </Typography>
               <Typography
                 sx={{
@@ -611,7 +609,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             </Box>
 
             <IconButton onClick={(e: any) => handleClick2(e)}>
-              {open2 ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+              {open2 ? <KeyboardArrowUp sx={{color: 'white'}}/> : <KeyboardArrowDown sx={{color: pathname === '/' ? 'white' : 'black'}}/>}
             </IconButton>
           </Box>)}
         </Toolbar>
@@ -1606,6 +1604,57 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               onClick={handleUpdateUserOnboarding}
             >
               {updateUserOnboardingMutation.isLoading ? "Saving..." : "Continue" }
+            </NButton>
+          </Box>
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={() => setSessionErrorModalOpen(false)}
+        open={sessionErrorModalOpen}
+        width={isMobile ? '95%' : '30%'}
+        showCloseIcon={false}
+        onClickOut={false}
+        height='260px'
+      >
+        <Box className="flex flex-col justify-center items-center"
+          sx={{
+            height: 'auto',
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll', 
+            p: 3
+          }}
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={60}
+            height={60}
+          />
+          <Typography variant='h5' mt={4}>
+            Your session has expired
+          </Typography>
+          <Typography variant='paragraphsm' color={theme.palette.secondary.light} mb={3}
+            sx={{textAlign: 'center'}}
+          >
+            Please log in to continue.
+          </Typography>
+          
+          <Box mt={4} width='100%' display={'flex'} justifyContent={'center'} alignItems={'center'}>
+            <NButton
+              textcolor='white'
+              bkgcolor={theme.palette.primary.main}
+              width='70%'
+              onClick={() => {
+                setSessionError('')
+                setSessionErrorModalOpen(false)
+                setOpenModal(true)
+                signOut({
+                  redirect: false
+                })
+              }}
+            >
+              Sign in
             </NButton>
           </Box>
         </Box>

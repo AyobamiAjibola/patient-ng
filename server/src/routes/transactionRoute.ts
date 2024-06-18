@@ -10,11 +10,11 @@ export const donateyHandler = authenticateRouteWrapper(async (req, res) =>  {
     res.status(response.code).json(response);
 });
 
-export const initTransactionCallbackHandler = authenticateRouteWrapper(async (req, res) =>  {
+export const initTransactionCallbackHandler = async (req: Request, res: Response) =>  {
     const response = await transactionController.initTransactionCallback(req);
 
     res.status(response.code).json(response);
-});
+};
 
 export const fetchPaymentRequestHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await transactionController.fetchPaymentRequest(req);

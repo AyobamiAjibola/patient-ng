@@ -9,6 +9,13 @@ import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
 import Search from 'antd/es/input/Search';
 import { Button } from "antd";
+import { useRef, useState } from "react";
+import { useAtom } from "jotai";
+import { modalReg } from "@/lib/atoms";
+import { useSession } from "next-auth/react";
+import { useCreateComplain } from "../admin/hooks/advocacyHook/useAdvocacy";
+import { useRouter } from "next/navigation";
+import Toastify from "../components/ToastifySnack";
 
 const advocacy = [
   "Informal Complaint (Stage 1)",
@@ -27,18 +34,48 @@ type FormValues = {
 export default function page() {
   const isMobile = useMediaQuery('(max-width: 900px)');
   const theme = useTheme();
+  const targetRef = useRef<any>(null);
+  const [_, setOpenModalReg] = useAtom(modalReg);
+  const { data: session } = useSession();
+  const createComplainMutation = useCreateComplain();
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+      setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+      setIsError(type === 'error');
+      setIsSuccess(type === 'success');
+      setOpen(true);
+  };
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
-      ...data
+      hospitalName: data.nameOfHospital,
+      hospitalAddress: data.addressOfHospital,
+      complaints: data.complaints
     }
-    console.log(payload, 'data')
+
+    await createComplainMutation.mutateAsync(payload, {
+      onSuccess: (response) => {
+        handleOpenNotification('success', response.message)
+        reset()
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
   }
 
   const {
     handleSubmit,
     register,
     formState: { errors },
+    reset
   } = useForm<FormValues>({
     defaultValues: {
       nameOfHospital: '',
@@ -46,6 +83,12 @@ export default function page() {
       complaints: ''
     },
   });
+
+  const handleClick = () => {
+    if (targetRef.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <>
@@ -94,17 +137,24 @@ export default function page() {
             <NButton 
               textcolor={"white"}
               bkgcolor={theme.palette.primary.main}
+              onClick={handleClick}
             >
               How to make complaints <ArrowDownward sx={{fontSize: '16px'}}/>
             </NButton>
-            <NButton 
-              textcolor={theme.palette.primary.main}
-              bordercolor={theme.palette.primary.main}
-              bkgcolor="white"
-              hoverbordercolor={theme.palette.primary.main}
-            >
-              Sign up as an advocate
-            </NButton>
+            {session?.user
+              ? (
+                <></>
+              ) : (
+                <NButton
+                  onClick={() => setOpenModalReg(true)}
+                  textcolor={theme.palette.primary.main}
+                  bordercolor={theme.palette.primary.main}
+                  bkgcolor="white"
+                  hoverbordercolor={theme.palette.primary.main}
+                >
+                  Sign up as an advocate
+                </NButton>
+              )}
           </Box>
           
         </Box>
@@ -171,6 +221,7 @@ export default function page() {
       </Box>
 
       <Box
+        ref={targetRef}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -376,8 +427,8 @@ export default function page() {
               multiline={true}
               rows={6}
             />
-            <PButton transBg={false} bg={true} width="100%">
-              Send your complaints
+            <PButton transBg={false} bg={true} width="100%" type="submit">
+              {createComplainMutation.isLoading ? 'Sending...' : 'Send your complaints'}
             </PButton>
           </form>
         </Box>
@@ -402,24 +453,29 @@ export default function page() {
           }}
         >
           <Typography variant={isMobile ? "h5" : "h4"}>
-            Sign up as an advocate today
+            {session?.user ? 'Not an advocate? Become an advocate today' : 'Sign up as an advocate today'}
           </Typography>
-          <Typography variant="paragraphsm" mb={4} color={theme.palette.secondary.light}>
-            Just a few clicks can make a difference. Sign up now.
+          <Typography variant="paragraphbase" mb={4} color={theme.palette.secondary.light}>
+            Just {session?.user ? 'one click' : 'a few clicks'} can make a difference. {session?.user && 'Sign up now'}.
           </Typography>
-          <Search
-            placeholder="Enter your email"
-            style={{
-              width: isMobile ? '80%' : '30%'
-            }}
-            allowClear
-            enterButton={<Button style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
-            size="large"
-            // onSearch={onSearch}
-          />
+          <NButton
+            bkgcolor={theme.palette.primary.main}
+            textcolor="white"
+            width='200px'
+            onClick={() => session?.user ? null : setOpenModalReg(true)}
+          >
+            {session?.user ? 'Continue' : 'Sign up'}
+          </NButton>
         </Box>
       </Box>
 
+      <Toastify
+        open={open}
+        onClose={() => setOpen(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
       <Footer/>
     </>
   )

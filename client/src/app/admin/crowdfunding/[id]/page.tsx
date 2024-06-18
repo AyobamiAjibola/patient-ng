@@ -9,7 +9,6 @@ export default function page() {
     const isMobile = useMediaQuery('(max-width: 900px)');
     const theme = useTheme();
     const percent = (+100000/+500000) * 100;
-    const status = false;
 
     const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
         height: 7,

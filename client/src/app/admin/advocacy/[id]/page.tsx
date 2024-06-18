@@ -4,10 +4,55 @@ import { NButton } from "@/app/components/PButton";
 import { Check, FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Tag } from "antd";
+import { useGetSingleAdvocacy, useUpdateAdvocacyStatus } from "../../hooks/advocacyHook/useAdvocacy";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import capitalize from "capitalize";
+import moment from 'moment';
+import Toastify from "@/app/components/ToastifySnack";
+
 
 export default function page({ params }: any) {
     const theme = useTheme();
     const isMobile = useMediaQuery('(max-width: 900px)');
+    const getSingleAdvocacy = useGetSingleAdvocacy();
+    const {data: session} = useSession();
+    const updateStatusMutation = useUpdateAdvocacyStatus();
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState<boolean>(false);
+
+    const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+        setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+        setIsError(type === 'error');
+        setIsSuccess(type === 'success');
+        setOpen(true);
+    };
+
+    const handleStatus = async () => {
+        await updateStatusMutation.mutateAsync(params.id, {
+            onSuccess: async (response: any) => {
+                await getSingleAdvocacy.mutateAsync(params.id)
+                handleOpenNotification('success', response.message)
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
+    }
+
+    useEffect(() => {
+        const getAdvocacy = async () => {
+            if(params.id) {
+                await getSingleAdvocacy.mutateAsync(params.id)
+            }
+        }
+
+        getAdvocacy();
+    },[params.id, session]);
 
     return (
         <Box
@@ -37,17 +82,18 @@ export default function page({ params }: any) {
                     }}
                 >
                     <Typography variant={ isMobile ? "labelxs" : "labelsm"}>
-                        Advocacy ID #12343234324322 
+                        Advocacy ID {getSingleAdvocacy.data?.result.reference || ''}
                     </Typography>
-                    <Tag
+                    <Tag 
+                        color={getSingleAdvocacy.data?.result.status === "pending" ? "orange" : getSingleAdvocacy.data?.result.status === "in-progress" ? "green" : "red"}
                         style={{
-                            color: theme.palette.state.warning,
+                            color: getSingleAdvocacy.data?.result.status === "pending" ? "orange" : getSingleAdvocacy.data?.result.status === "in-progress" ? "green" : "red",
                             fontSize: '14px',
                             fontWeight: 500,
                             padding: '5px'
                         }}
                     >
-                        <FiberManualRecord sx={{fontSize: '12px'}}/> Pending
+                        <FiberManualRecord sx={{fontSize: '12px'}}/> {getSingleAdvocacy.data?.result && capitalize.words(getSingleAdvocacy.data?.result.status.replace('-', ' '))}
                     </Tag>
                 </Box>
                 <Box
@@ -59,18 +105,32 @@ export default function page({ params }: any) {
                     }}
                 >
                     <NButton
-                        bordercolor={theme.palette.state.warning}
+                        onClick={handleStatus}
+                        disabled={getSingleAdvocacy.data?.result.status !== "pending"}
+                        bordercolor={getSingleAdvocacy.data?.result.status === "pending" 
+                                        ? theme.palette.state.warning
+                                        : theme.palette.secondary.lighter}
                     >
                         <Typography variant={isMobile ? "labelxxs" : "labelxs" }
-                            color={theme.palette.state.warning}
+                            color={getSingleAdvocacy.data?.result.status === "pending" 
+                                    ? theme.palette.state.warning
+                                    : theme.palette.secondary.light}
                         >
                             <Check sx={{fontSize: isMobile ? '16px' : '18px'}} /> Mark as in progress
                         </Typography>
                     </NButton>
                     <NButton
-                        bordercolor={theme.palette.secondary.lighter}
+                        onClick={handleStatus}
+                        disabled={getSingleAdvocacy.data?.result.status === "closed"}
+                        bordercolor={getSingleAdvocacy.data?.result.status === "closed"
+                                        ? theme.palette.secondary.lighter
+                                        : "red"}
                     >
-                        <Typography variant={isMobile ? "labelxxs" : "labelxs" } color={'red'}>
+                        <Typography variant={isMobile ? "labelxxs" : "labelxs" } 
+                            color={getSingleAdvocacy.data?.result.status === "closed" 
+                                ? theme.palette.secondary.light
+                                : "red"}
+                        >
                             <Check sx={{fontSize: isMobile ? '16px' : '18px'}} /> Mark as closed
                         </Typography>
                     </NButton>
@@ -125,7 +185,7 @@ export default function page({ params }: any) {
                                 }}
                             >
                                 <Typography>
-                                    Ademola Kadir
+                                    {getSingleAdvocacy.data?.result && `${capitalize.words(getSingleAdvocacy.data?.result.user.firstName)} ${capitalize.words(getSingleAdvocacy.data?.result.user.lastName)}`}
                                 </Typography>
                                 <Tag
                                     style={{
@@ -137,7 +197,7 @@ export default function page({ params }: any) {
                                 </Tag>
                             </Box>
                             <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
-                                07/01/2022(08:45)
+                                {getSingleAdvocacy.data?.result && moment(getSingleAdvocacy.data?.result.createdAt).format('MM/DD/YYYY(hh:mm A)')}
                             </Typography>
                         </Box>
                         <Box
@@ -149,7 +209,7 @@ export default function page({ params }: any) {
                             }}
                         >
                             <Typography variant='paragraphsm' color={theme.palette.secondary.light}>
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse quod corporis nulla quisquam temporibus ipsa, quasi labore vel totam cum sed expedita, natus asperiores hic nostrum optio minus est laboriosam!
+                                {getSingleAdvocacy.data?.result && getSingleAdvocacy.data?.result.complaints}
                             </Typography>
                         </Box>
                     </Box>
@@ -192,7 +252,7 @@ export default function page({ params }: any) {
                                 Customer
                             </Typography>
                             <Typography variant="labelsm">
-                                Ese Glory
+                                {getSingleAdvocacy.data?.result && `${capitalize.words(getSingleAdvocacy.data?.result.user.firstName)} ${capitalize.words(getSingleAdvocacy.data?.result.user.lastName)}`}
                             </Typography>
                         </Box>
                         <Box
@@ -208,7 +268,7 @@ export default function page({ params }: any) {
                                 Customer Email
                             </Typography>
                             <Typography variant="labelsm">
-                                ese@gmail.com
+                                {getSingleAdvocacy.data?.result && `${getSingleAdvocacy.data?.result.user.email}`}
                             </Typography>
                         </Box>
                         <Box
@@ -224,7 +284,7 @@ export default function page({ params }: any) {
                                 Customer Phone
                             </Typography>
                             <Typography variant="labelsm">
-                                08098767656
+                            {getSingleAdvocacy.data?.result && `${getSingleAdvocacy.data?.result.user.phone}`}
                             </Typography>
                         </Box>
                         <Box
@@ -240,7 +300,7 @@ export default function page({ params }: any) {
                                 Name of Hospital
                             </Typography>
                             <Typography variant="labelsm">
-                                ABC Clinic
+                                {getSingleAdvocacy.data?.result && `${getSingleAdvocacy.data?.result.hospitalName}`}
                             </Typography>
                         </Box>
                         <Box
@@ -256,7 +316,7 @@ export default function page({ params }: any) {
                                 Address of Hospital
                             </Typography>
                             <Typography variant="labelsm">
-                                Abuja Nigeria
+                                {getSingleAdvocacy.data?.result && `${getSingleAdvocacy.data?.result.hospitalAddress}`}
                             </Typography>
                         </Box>
                         <Box
@@ -272,10 +332,10 @@ export default function page({ params }: any) {
                                 Submitted
                             </Typography>
                             <Typography variant="labelsm">
-                                07/12/2022(08:45)
+                                {getSingleAdvocacy.data?.result && moment(getSingleAdvocacy.data?.result.createdAt).format('MM/DD/YYYY(hh:mm A)')}
                             </Typography>
                         </Box>
-                        <Box
+                        {/* <Box
                             sx={{
                                  display: 'flex',
                                  flexDirection: 'column',
@@ -301,10 +361,18 @@ export default function page({ params }: any) {
                                     Closed
                                 </Typography>
                             </Tag>
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Box>
             </Box>
+
+            <Toastify
+                open={open}
+                onClose={() => setOpen(false)}
+                message={message}
+                error={isError}
+                success={isSuccess}
+            />
         </Box>
     )
 }

@@ -4,118 +4,17 @@ import { formAmount, formatNumberWithCommas } from "@/lib/helper";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { DatePicker, Tag } from 'antd';
 import CustomLineChart from "../../components/CustomChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CrowdAdminTable from "../../components/CrowdAdminTable";
 import { FiberManualRecord } from "@mui/icons-material";
 import Pagination from "../../components/Pagination";
+import { useGetCrowdfundings } from "../hooks/crowdFuncdingHook/useCrowdFunding";
+import { useSession } from "next-auth/react";
 
 const item = [
   "Crowdfunding",
   "Advocacy"
 ]
-
-const data = [
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Self"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Self"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Self"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Charity"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Someone else"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Self"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Self"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Someone else"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Someone else"
-  },
-  {
-    title: "Save Osaze Odenwingie",
-    date: "23 Oct 2023",
-    createdBy: "Lisa Steve",
-    amount: "100000000",
-    status: "pending",
-    location: "Abuja",
-    action: "Open",
-    fundraisingFor: "Someone else"
-  }
-];
 
 const advocacy = [
   {
@@ -196,6 +95,9 @@ export default function Dashboard() {
   const { RangePicker } = DatePicker;
   const [currentItem, setCurrentItem] = useState<string>('Crowdfunding');
   const [currentPage, setCurrentPage] = useState(1);
+  const crowdfundingMutation = useGetCrowdfundings();
+  const {data: session} = useSession();
+  const [data, setData] = useState<any>([]);
 
   const itemsPerPage = advocacy.length ? 10 : advocacy.length;
 
@@ -208,6 +110,19 @@ export default function Dashboard() {
   const handlePageChange = (newPage: any) => {
     setCurrentPage(newPage);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await crowdfundingMutation.mutateAsync({}, {
+        onSuccess: (response: any) => {
+          const filteredData = response.results.filter((data: any) => data.status === "pending")
+          setData(filteredData)
+        }
+      });
+    }
+
+    fetchData();
+  },[session]);
 
   return (
     <Box

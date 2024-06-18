@@ -124,7 +124,7 @@ const InputField: React.FC<InputFieldProps> = ({
               </InputAdornment>
             ),
             endAdornment: endAdornment && (
-              <InputAdornment position="end" sx={{ width: 100 }}>
+              <InputAdornment position="end" sx={{ width: 100, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                 {React.cloneElement(endAdornment)}
               </InputAdornment>
             ),

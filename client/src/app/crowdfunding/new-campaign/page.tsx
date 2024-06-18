@@ -3,15 +3,14 @@
 import ImagePreviewSingle from "@/app/components/ImagePreviewSingle";
 import ImageUploader from "@/app/components/ImageUploader";
 import Navbar from "@/app/components/Navbar"
-import { PButton2 } from "@/app/components/PButton";
+import { NButton, PButton2 } from "@/app/components/PButton";
 import StepperVertical from "@/app/components/Stepper";
-import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Avatar, Box, CircularProgress, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAtom } from 'jotai';
 import { selectedImageArrayAtom } from '@/lib/atoms';
 import { ArrowBack, ArrowForward, CheckCircleOutline } from "@mui/icons-material";
-import ToastifySnack from "@/app/components/ToastifySnack";
 import InputField from "@/app/components/InputField";
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
@@ -20,9 +19,11 @@ import { formAmount } from "@/lib/helper";
 import useBank from "@/app/hooks/useBank";
 import { banks } from "@/constant/bank";
 import capitalize from "capitalize";
+import Toastify from "@/app/components/ToastifySnack";
+import { useCreateCrowdfunding } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
+import { useSession } from "next-auth/react";
 
 interface IProps {
-    // image: File;
     title: string;
     state: string;
     lga: string;
@@ -34,6 +35,7 @@ interface IProps {
     accountName: string;
     amount: string;
     bankCode: string;
+    address: string;
 }
 
 export default function page() {
@@ -43,18 +45,26 @@ export default function page() {
     const [campaignImg, _] = useAtom(selectedImageArrayAtom);
     const [activeStep, setActiveStep] = useState(0);
     const steps = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('step');
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [isError, setIsError] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
     const [state, setState] = useState([]);
     const [bank, setBank] = useState([]);
-    const [selectedState, setSelectedState] = useState('');
-    const [selectedBank, setSelectedBank] = useState('');
     const [district, setDistrict] = useState<any[]>([]);
-    const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-    const [bankCode, setBankCode] = useState<string>('');
     const { verifyBank, verifyBankIsLoading, verified } = useBank();
-   
+    const [isErrorMsg, setIsErrorMsg] = useState<boolean>(false);
+    const { data: session } = useSession();
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const createCrowdfundingMutation = useCreateCrowdfunding();
+
+    const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+        setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+        setIsError(type === 'error');
+        setIsSuccess(type === 'success');
+        setOpen(true);
+    };
+
     const [data, setData] = useState<IProps>({
         title: '',
         state: '',
@@ -66,7 +76,8 @@ export default function page() {
         bank: '',
         accountName: '',
         amount: '',
-        bankCode: ''
+        bankCode: '',
+        address: ''
     })
 
     const serializedData = typeof sessionStorage !== 'undefined' && sessionStorage.getItem('fundraiserData');
@@ -80,31 +91,25 @@ export default function page() {
 
     const screenHeight = getHeight();
 
-    const closeToastify = () => {
-        setSnackbarOpen(false);
-    };
-
-    const handleNext = () => {
-        // if(campaignImg.length === 0) {
-        //     setSnackbarOpen(true)
-        //     setIsError(true)
-        //     setError('Please upload an image.')
-        //     return;
-        // }
+    const handleNext = async () => {
+        if(campaignImg.length === 0) {
+            handleOpenNotification('error', '', 'Please upload an image.')
+            return;
+        }
 
         const obj: IProps = {
-            // image: campaignImg,
             title: data.title,
-            state: selectedState,
-            lga: selectedDistrict,
+            state: data.state,
+            lga: data.lga,
             description: data.description,
             firstName: data.firstName,
             lastName: data.lastName,
             accountNumber: data.accountNumber,
-            bank: selectedBank,
+            bank: data.bank,
             accountName: data.accountName,
             amount: data.amount,
-            bankCode: bankCode,
+            bankCode: data.bankCode,
+            address: data.address
         }
         
         const toStore = JSON.stringify(obj);
@@ -112,8 +117,49 @@ export default function page() {
 
         const next = activeStep + 1
         sessionStorage.setItem('step', next.toString())
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+        setActiveStep((prevActiveStep) => {
+            return (prevActiveStep + 1)
+        });
     };
+
+    const handleSubmitCampaign = async () => {
+        if(!session?.user) {
+            handleOpenNotification('error', '', 'Please sign in to proceed.')
+            return;
+        }
+        if(campaignImg.length === 0) {
+            handleOpenNotification('error', '', 'Please upload an image.')
+            return;
+        }
+        if(data.accountName === '' || data.accountNumber === '' || data.bank === '') {
+            handleOpenNotification('error', '', 'Please fill the beneficiary account details.')
+            return;
+        }
+
+        const payload = sessionStorage.getItem('fundraiserData');
+        const obj = JSON.parse(payload as any);
+
+        const reqObject = {
+            ...obj,
+            image: campaignImg[0]
+        }
+
+        await createCrowdfundingMutation.mutateAsync(reqObject, {
+            onSuccess: (response) => {
+                setIsErrorMsg(false)
+                handleOpenNotification('success', response.message)
+                router.push('/crowdfunding')
+                sessionStorage.removeItem('fundraiserData')
+                sessionStorage.removeItem('step')
+            },
+            onError: (error: any) => {
+                setIsErrorMsg(true)
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
+    }
 
     const handleBack = () => {
         const prev = activeStep - 1
@@ -167,11 +213,11 @@ export default function page() {
             let bankArray: any = [];
     
             banks?.map((item: any, index: number) => {
-            bankArray.push({
-                value: item.name,
-                label: item.name,
-                code: item.code
-            });
+                bankArray.push({
+                    value: item.name,
+                    label: item.name,
+                    code: item.code
+                });
             });
 
             setBank(bankArray);
@@ -187,14 +233,53 @@ export default function page() {
         }
     },[sessionStorage]);
 
+    // useEffect(() => {
+    //     const handleVeriBank = async () => {
+    //         if(data.accountNumber.length === 10 && data.bankCode) {
+    //             await verifyBank.mutateAsync({
+    //                 accountNumber: data.accountNumber,
+    //                 bankCode: data.bankCode
+    //             })
+    //         }
+    //     }
+
+    //     handleVeriBank();
+    // },[data.accountNumber, data.bankCode]);
+
+    const hasMounted = useRef(false);
+
     useEffect(() => {
-        if(data.accountNumber.length === 10 && selectedBank) {
-            verifyBank.mutateAsync({
-                accountNumber: data.accountNumber,
-                bankCode: data.bankCode
-            })
+        const handleVeriBank = async () => {
+            if (data.accountNumber.length === 10 && data.bankCode) {
+                try {
+                    await verifyBank.mutateAsync({
+                        accountNumber: data.accountNumber,
+                        bankCode: data.bankCode
+                    });
+                } catch (error) {
+                    console.error('Bank verification failed', error);
+                }
+            }
+        };
+
+        if (hasMounted.current) {
+            handleVeriBank();
+        } else {
+            hasMounted.current = true;
         }
-    },[data.accountNumber, selectedBank]);
+    }, [data.accountNumber, data.bankCode]);
+
+    useEffect(() => {
+        if(verifyBank.isError) {
+            handleOpenNotification('error', '', 'Could not resolve account name. Please confirm the account number and bank.')
+        }
+    },[verifyBank.isError])
+
+    useEffect(() => {
+        if(verifyBank.isSuccess) {
+            setData({...data, accountName: verified})
+        }
+    },[verifyBank.isSuccess]);
 
     return (
         <>
@@ -244,10 +329,10 @@ export default function page() {
                             sx={{
                                 fontSize: theme.typography.labellg.fontSize,
                                 fontWeight: theme.typography.labelsm.fontWeight,
-                                color: theme.palette.primary.main
+                                color: isErrorMsg ? "red" : theme.palette.primary.main
                             }}
                         >
-                            Create fundraiser
+                            {isErrorMsg ? 'Error!' : 'Congratulations!'}
                         </Typography>
                         <Typography
                             sx={{
@@ -255,7 +340,7 @@ export default function page() {
                                 color: theme.palette.secondary.light
                             }}
                         >
-                            Start a fundraising journey
+                            {isErrorMsg ? 'Please address the error in your application.' : 'Fundraising journey starts now.'}
                         </Typography>
                     </Box>)}
                     
@@ -432,11 +517,11 @@ export default function page() {
                                                 name="state"
                                                 onChange={(item) => {
                                                     handleDistrict(String(item?.value));
-                                                    setSelectedState(String(item?.value));
+                                                    setData({...data, state: String(item?.value)})
                                                 }}
                                                 value={{
-                                                    value: selectedState,
-                                                    label: selectedState || data.state,
+                                                    value: data.state,
+                                                    label: data.state
                                                 }}
                                             />
                                         </Box>
@@ -452,11 +537,11 @@ export default function page() {
                                                 placeholder="Choose lga"
                                                 name="lga"
                                                 onChange={(item) => {
-                                                    setSelectedDistrict(String(item?.value))
+                                                    setData({...data, lga: String(item?.value)})
                                                 }}
                                                 value={{
-                                                    value: selectedDistrict,
-                                                    label: selectedDistrict || data.lga,
+                                                    value: data.lga,
+                                                    label: data.lga
                                                 }}
                                             />
                                         </Box>
@@ -628,6 +713,25 @@ export default function page() {
                                 </Box>
                                 <Box
                                     sx={{
+                                        width: '100%'
+                                    }}
+                                >
+                                    <InputField
+                                        placeholder="Address"
+                                        label="Address"
+                                        isBorder={true}
+                                        multiline={true}
+                                        rows={4}
+                                        labelStyle={{
+                                            fontSize: theme.typography.labelxs.fontSize,
+                                            fontWeight: theme.typography.labelxs.fontWeight
+                                        }}
+                                        onChange={(e) => setData({...data, address: e.target.value})}
+                                        value={data.address}
+                                    />
+                                </Box>
+                                <Box
+                                    sx={{
                                         display: 'flex',
                                         flexDirection: isMobile ? 'column' : 'row',
                                         width: '100%', gap: 4
@@ -648,11 +752,11 @@ export default function page() {
                                             }}
                                             onChange={(e) => setData({...data, accountNumber: e.target.value})}
                                             value={data.accountNumber}
-                                            // endAdornment={(
-                                            //     <>
-                                            //         { verifyBankIsLoading && <CircularProgress size='14px'/> }
-                                            //     </>
-                                            // )}
+                                            endAdornment={(
+                                                <>
+                                                    { verifyBankIsLoading && <CircularProgress size='14px'/> }
+                                                </>
+                                            )}
                                         />
                                     </Box>
                                     <Box
@@ -678,13 +782,12 @@ export default function page() {
                                             placeholder="Choose bank"
                                             name="bank"
                                             onChange={(item) => {
-                                                setSelectedBank(String(item?.value))
                                                 //@ts-ignore
-                                                setBankCode(String(item?.code))
+                                                setData({...data, bank: String(item?.value), bankCode: item?.code})
                                             }}
                                             value={{
-                                                value: selectedBank,
-                                                label: selectedBank || data.bank,
+                                                value: data.bank,
+                                                label: data.bank,
                                             }}
                                         />
                                     </Box>
@@ -704,10 +807,11 @@ export default function page() {
                                             fontWeight: theme.typography.labelxs.fontWeight
                                         }}
                                         disabled
-                                        onChange={(e) => setData({...data, accountName: e.target.value})}
-                                        value={data.accountName}
+                                        // onChange={(e) => setData({...data, accountName: verified})}
+                                        value={verified || data.accountName}
                                     />
                                 </Box>
+                                
                             </Box>
                         </Box>
                     )}
@@ -893,7 +997,7 @@ export default function page() {
                                 }}
                             >
                                 <img 
-                                    src="/crowd1.png" 
+                                    src={campaignImg.length ? URL.createObjectURL(campaignImg[0]) : "/crowd2.png"}
                                     alt="beneficiary image"
                                     crossOrigin="anonymous"
                                     style={{
@@ -917,7 +1021,7 @@ export default function page() {
                                     }}
                                 >
                                     <Avatar
-                                        src="/model.png"
+                                        src={"/model.png"}
                                         alt="user image"
                                         sx={{
                                             width: '20px',
@@ -1030,6 +1134,72 @@ export default function page() {
                                     </Typography>
                                 </Box>
                             </Box> 
+
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column'
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontSize: theme.typography.labelsm.fontSize,
+                                        fontWeight: theme.typography.labelsm.fontWeight
+                                    }}
+                                >
+                                    Fundraiser Beneficiary
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        mb: 2
+                                    }}
+                                >
+                                    <Typography
+                                        sx={{
+                                            fontSize: theme.typography.labelxs.fontSize,
+                                            color: theme.palette.secondary.light,
+                                            fontWeight: theme.typography.labelxs.fontWeight
+                                        }}
+                                    >
+                                        Name
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            fontSize: theme.typography.labelxs.fontSize,
+                                            color: theme.palette.secondary.light
+                                        }}
+                                    >
+                                        {capitalize.words(data.firstName)} {capitalize.words(data.lastName)} 
+                                    </Typography>
+                                </Box>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        mb: 2
+                                    }}
+                                >
+                                    <Typography
+                                        sx={{
+                                            fontSize: theme.typography.labelxs.fontSize,
+                                            color: theme.palette.secondary.light,
+                                            fontWeight: theme.typography.labelxs.fontWeight
+                                        }}
+                                    >
+                                        Address
+                                    </Typography>
+                                    <Typography
+                                        sx={{
+                                            fontSize: theme.typography.labelxs.fontSize,
+                                            color: theme.palette.secondary.light
+                                        }}
+                                    >
+                                        {data.address}
+                                    </Typography>
+                                </Box>
+                            </Box>
 
                             <Box
                                 sx={{
@@ -1202,24 +1372,39 @@ export default function page() {
                                 <ArrowBack sx={{fontSize: '16px', mb: 1}}/> Prev
                             </Typography>
                         </PButton2>
-                        <PButton2 transBg={true} bg={false} width='100px' onClick={handleNext}>
+                        {steps !== '4' && (<PButton2 transBg={true} bg={false} width='100px' onClick={handleNext}>
                             <Typography
                                 sx={{
                                     fontSize: theme.typography.labelxs.fontSize
                                 }}
                             >
-                                {steps === '4' ? 'Submit' : 'Next'} <ArrowForward sx={{fontSize: '16px', mb: 1}}/>
+                                Next
+                                <ArrowForward sx={{fontSize: '16px', mb: 1}}/>
                             </Typography>
-                        </PButton2>
+                        </PButton2>)}
+                        {steps === '4' && (
+                            <NButton
+                                onClick={handleSubmitCampaign}
+                                bkgcolor={theme.palette.primary.main}
+                                width='100px'
+                                textcolor="white"
+                                hoverbordercolor={theme.palette.primary.main}
+                                hovercolor={theme.palette.primary.main}
+                            >
+                                {createCrowdfundingMutation.isLoading ? 'Loading...' : 'Submit'}
+                                <ArrowForward sx={{fontSize: '16px', mb: 1}}/>
+                            </NButton>
+                        )}
                     </Box>
                 </Box>
             </Box>
 
-            <ToastifySnack
-                open={snackbarOpen}
-                onClose={closeToastify}
-                message={error}
+            <Toastify
+                open={open}
+                onClose={() => setOpen(false)}
+                message={message}
                 error={isError}
+                success={isSuccess}
             />
         </>
     )

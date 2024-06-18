@@ -18,6 +18,9 @@ import MModal from "../components/Modal";
 import { useWindowSize } from "@uidotdev/usehooks";
 import InputField from "../components/InputField";
 import { wordBreaker } from "@/lib/helper";
+import { useCreateInsight, useGetInsights } from "../admin/hooks/insightHook/useInsight";
+import Toastify from "../components/ToastifySnack";
+import { useSession } from "next-auth/react";
 
 const rates = [
     "All",
@@ -128,11 +131,27 @@ export default function Insight() {
     const [selectedRating, setSelectedRating] = useState<number>(0);
     const [hospitals, setHospitals] = useState([]);
     const [selectedHospital, setSelectedHospital] = useState<string>('');
+    const insightMutation = useCreateInsight();
+    const insightsMutation = useGetInsights();
+    const [insightData, setInsightData] = useState<any>([]);
+    const { data: session } = useSession();
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState<boolean>(false);
+
+    const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+        setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+        setIsError(type === 'error');
+        setIsSuccess(type === 'success');
+        setOpen(true);
+    };
 
     const filteredData =
-        reviews &&
-        reviews.filter((item: any) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        insightData &&
+        insightData.filter((item: any) =>
+        item.hospitalName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -156,6 +175,26 @@ export default function Insight() {
     const startIndex = (currPage - 1) * reviewsPage;
     const endIndex = Math.min(startIndex + reviewsPage, filteredData.length);
     const currentData = filteredData.slice(startIndex, endIndex);
+
+    const handleInsight = async () => {
+        const payload = {
+            hospitalName: selectedHospital,
+            rating: selectedRating,
+            comment: insight
+        }
+
+        await insightMutation.mutateAsync(payload, {
+            onSuccess: async (response: any) => {
+                await insightsMutation.mutateAsync({});
+                setModalOpen(false)
+                handleOpenNotification('success', response.message)
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
+    }
 
     useEffect(() => {
         let stateArray: any = [];
@@ -181,6 +220,19 @@ export default function Insight() {
         });
         setHospitals(array);
     }, []);
+
+    useEffect(() => {
+        const handleFetchInsights = async () => {
+            await insightsMutation.mutateAsync({})
+        }
+        handleFetchInsights();
+    },[session]);
+
+    useEffect(() => {
+        if(insightsMutation.isSuccess) {
+            setInsightData(insightsMutation.data.results)
+        }
+    },[insightsMutation.isSuccess]);
 
     return (
         <>
@@ -351,7 +403,7 @@ export default function Insight() {
                         />
                     </Box>
                     {
-                        currentData.map((review, index) => (
+                        currentData.map((review: any, index: number) => (
                             <Box key={index}
                                 sx={{
                                     border: `1px solid ${theme.palette.secondary.lighter}`,
@@ -359,7 +411,7 @@ export default function Insight() {
                                     borderRadius: theme.borderRadius.sm,
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    height: '200px',
+                                    height: '220px',
                                     width: '100%'
                                 }}
                             >
@@ -374,11 +426,12 @@ export default function Insight() {
                                     {!isMobile && (<Box
                                         sx={{
                                             width: '25%',
-                                            height: '90%'
+                                            height: '90%',
+                                            pl: 2
                                         }}
                                     >
                                         <img
-                                            src="/model.png"
+                                            src={review.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.image}` : "/logo.png"}
                                             alt="insights image"
                                             crossOrigin="anonymous"
                                             style={{
@@ -404,7 +457,7 @@ export default function Insight() {
                                             }}
                                         >
                                             <Typography variant="labelxl">
-                                                {review.name}
+                                                {review.hospitalName}
                                             </Typography>
                                             <Box
                                                 sx={{
@@ -440,13 +493,13 @@ export default function Insight() {
                                             </Box>
                                         </Box>
                                         <Typography variant="paragraphxs" color={theme.palette.secondary.light} mt={-1}>
-                                            {capitalize.words(review.state)} state
+                                            {capitalize.words('lagos')} state
                                         </Typography>
-                                        <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
-                                            {wordBreaker(review.insight, isMobile ? 10 : 20)}{review.insight.length > 30 ? '...' : ''}
+                                        <Typography variant="paragraphxs" color={theme.palette.secondary.light}>
+                                            {wordBreaker(review.comment, isMobile ? 10 : 20)}{review.comment.length > 30 ? '...' : ''}
                                         </Typography>
                                         <Typography variant="labelxxs" color={theme.palette.secondary.light} mb={isMobile ? 1 : 3}>
-                                            Written by {capitalize.words(review.writtenBy)}
+                                            Written by {`${capitalize.words(review.user.firstName)} ${capitalize.words(review.user.lastName)}`}
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -514,7 +567,7 @@ export default function Insight() {
                     mt: 5
                 }}
                 >
-                {reviews.length !== 0 && (<Pagination
+                {insightData.length !== 0 && (<Pagination
                     currentPage={currPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
@@ -637,15 +690,24 @@ export default function Insight() {
                     />
                 </Box>
                 <Box width={'100%'}>
-                    <NButton
-                    textcolor="white"
-                    bkgcolor={theme.palette.primary.main}
+                    <NButton type='submit'
+                        onClick={handleInsight}
+                        textcolor="white"
+                        bkgcolor={theme.palette.primary.main}
                     >
-                    Submit review
+                        {insightsMutation.isLoading ? 'Sumbitting...' : 'Submit review'}
                     </NButton>
                 </Box>
                 </Box>
             </MModal>
+
+            <Toastify
+                open={open}
+                onClose={() => setOpen(false)}
+                message={message}
+                error={isError}
+                success={isSuccess}
+            />
             <Footer/>
         </>
     )

@@ -11,6 +11,7 @@ interface IProps {
   isAdmin: boolean;
   userType: string[];
   fullName: string;
+  userId: string;
 }
 
 interface ICredencials {
@@ -23,6 +24,7 @@ interface Payload {
   isAdmin: boolean;
   userType: string[];
   fullName: string;
+  userId: string;
 }
 
 export const options: NextAuthOptions = {
@@ -52,6 +54,7 @@ export const options: NextAuthOptions = {
               isAdmin: decodedToken?.isAdmin,
               userType: decodedToken?.userType,
               fullName: decodedToken?.fullName,
+              userId: decodedToken.userId,
             };
             return payload;
           } else {

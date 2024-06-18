@@ -10,6 +10,7 @@ import { IUserModel } from "../models/User";
 import formidable, { File } from 'formidable';
 import { UPLOAD_BASE_PATH } from "../config/constants";
 import Generic from "../utils/Generic";
+import { IInsightModel } from "../models/Insight";
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 form.setMaxListeners(15);
@@ -55,7 +56,7 @@ export default class UserController {
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successfully updated user.'
+            message: 'Successfully updated user status.'
         };
 
         return Promise.resolve(response);
@@ -80,7 +81,6 @@ export default class UserController {
 
     @TryCatch
     public async updateUserOnboarding (req: Request) {
-        // const userId = req.params.userId;
         const userId = req.user._id;
 
         const { error, value } = Joi.object<any>({
@@ -95,38 +95,6 @@ export default class UserController {
         const user = await datasources.userDAOService.findById(userId);
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
-
-        // let phone = '';
-        // if(value.phone) {
-        //     phone = value.phone.replace(/(^\+?(234)?0?)/, '234');
-
-        //     const user_phone = await datasources.userDAOService.findByAny({
-        //         phone: phone
-        //     });
-            
-        //     if(user.phone && user.phone !== phone){
-        //         if(user_phone) {
-        //             return Promise.reject(CustomAPIError.response('User with this phone number already exists.', HttpStatus.NOT_FOUND.code))
-        //         }
-        //     };
-        // }
-
-        // if(value.email) {
-        //     const user_email = await datasources.userDAOService.findByAny({
-        //         email: value.email.toLowerCase()
-        //     });
-            
-        //     if(user.email && user.email !== value.email.toLowerCase()){
-        //         if(user_email) {
-        //             return Promise.reject(CustomAPIError.response('User with this email address already exists.', HttpStatus.NOT_FOUND.code))
-        //         }
-        //     };
-        // }
-
-        // let healthInterests;
-        // if(value.healthInterests) {
-        //     healthInterests = JSON.parse(value.healthInterests)
-        // }
 
         const payload: Partial<IUserModel> = {
             state: value.state,
@@ -159,6 +127,371 @@ export default class UserController {
         };
       
         return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getUserInsights (req: Request) {
+        const userId = req.params.userId;
+
+        const insights = await datasources.insightDAOService.findAll({user: userId});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: insights
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getSingleInsight (req: Request) {
+        const insightId = req.params.insightId;
+
+        const insight = await datasources.insightDAOService.findById( insightId );
+        if(!insight)
+            return Promise.reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            result: insight
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async deleteInsight (req: Request) {
+        const insightId = req.params.insightId;
+
+        const insight = await datasources.insightDAOService.findById( insightId );
+        if(!insight)
+            return Promise.reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.insightDAOService.deleteById(insight._id);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted insight.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getAllInsights (req: Request) {
+        const insights = await datasources.insightDAOService.findAll({});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: insights
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async reviewOnInsight (req: Request) {
+        const userId = req.user._id;
+        const insightId = req.params.insightId;
+
+        const { error, value } = Joi.object<any>({
+            review: Joi.string().required().label('Review')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const insight = await datasources.insightDAOService.findById(insightId);
+        if(!insight)
+            return Promise.reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+
+        insight.reviews.unshift({
+            review: value.review,
+            user: userId
+        });
+    
+        await datasources.insightDAOService.updateByAny({ _id: insight._id }, { reviews: insight.reviews });
+        
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully commented on the insight.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async createInsight (req: Request) {
+        await this.doCreateInsight(req);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully created insight.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async updateInsight (req: Request) {
+        await this.doUpdateInsight(req);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated.'
+        };
+      
+        return Promise.resolve(response);
+    }
+    
+    @TryCatch
+    public async getUserAdvocacies (req: Request) {
+        const userId = req.params.userId;
+
+        const advocacies = await datasources.advocacyDAOService.findAll({user: userId});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: advocacies
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getSingleAdvocate (req: Request) {
+        const advocacyId = req.params.advocacyId;
+
+        const advocacy = await datasources.advocacyDAOService.findById( advocacyId );
+        if(!advocacy)
+            return Promise.reject(CustomAPIError.response("Advocacy not found.", HttpStatus.NOT_FOUND.code));
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            result: advocacy
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async deleteAdvocacy (req: Request) {
+        const advocacyId = req.params.advocacyId;
+
+        const advocacy = await datasources.advocacyDAOService.findById( advocacyId );
+        if(!advocacy)
+            return Promise.reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.advocacyDAOService.deleteById(advocacy._id);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted advocacy.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getAllAdvocacies (req: Request) {
+        const userId = req.user._id;
+
+        const user = await datasources.userDAOService.findById(userId);
+        if(user && !user.userType.includes('admin'))
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        const advocacies = await datasources.advocacyDAOService.findAll({});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: advocacies
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async createAdvocacy (req: Request) {
+
+        const userId = req.user._id;
+
+        const { error, value } = Joi.object<any>({
+            hospitalName: Joi.string().label('hospital name'),
+            hospitalAddress: Joi.string().required().label('hospital address'),
+            complaints: Joi.string().label('Complain')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const user = await datasources.userDAOService.findById(userId);
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
+
+        if(user && !user.userType.includes("advocacy"))
+            return Promise.reject(CustomAPIError.response("You are not authorized as an advocate.", HttpStatus.UNAUTHORIZED.code));
+
+        const payload = {
+            ...value,
+            user: user._id,
+            reference: `#${Generic.generateReference(6)}`
+        };
+
+        await datasources.advocacyDAOService.create(payload)
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully created advocacy.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async updateAdvocacy (req: Request) {
+
+        const advocacyId = req.params.advocacyId;
+
+        const { error, value } = Joi.object<any>({
+            hospitalName: Joi.string().label('hospital name'),
+            hospitalAddress: Joi.string().label('hospital address'),
+            complaints: Joi.string().label('Comment')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const advocacy = await datasources.advocacyDAOService.findById(advocacyId);
+        if(!advocacy)
+            return Promise.reject(CustomAPIError.response("Advocacy not found.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.advocacyDAOService.updateByAny({ _id: advocacy._id }, { ...value })
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated advocacy.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async updateAdvocacyStatus (req: Request) {
+        const loggedInUser = req.user._id;
+        const advocacyId = req.params.advocacyId;
+
+        const user = await datasources.userDAOService.findById(loggedInUser);
+        if(user && !user.userType.includes("admin"))
+            return Promise.reject(CustomAPIError.response("You not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        const advocacy = await datasources.advocacyDAOService.findById(advocacyId);
+        if(!advocacy)
+            return Promise.reject(CustomAPIError.response("Advocacy not found.", HttpStatus.NOT_FOUND.code));
+
+        if(advocacy.status === "pending") {
+            await datasources.advocacyDAOService.updateByAny({ _id: advocacy._id }, { status: "in-progress" })
+        } else if( advocacy.status === "in-progress" ) {
+            await datasources.advocacyDAOService.updateByAny({ _id: advocacy._id }, { status: "closed" })
+        }
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated status.'
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
+    private async doCreateInsight(req: Request): Promise<HttpResponse<IUserModel>> {
+        return new Promise((resolve, reject) => {
+            const userId = req.user._id;
+
+            form.parse(req, async (err, fields, files) => {
+                const { error, value } = Joi.object<any>({
+                    hospitalName: Joi.string().label('Hospital name'),
+                    // hospitalAddress: Joi.string().label('Hospital address'),
+                    // state: Joi.string().label('State'),
+                    image: Joi.any().label('Image'),
+                    rating: Joi.string().label('Rating'),
+                    comment: Joi.string().label('Comment'),
+                }).validate(fields);
+                if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+                const [user] = await Promise.all([
+                    datasources.userDAOService.findById(userId)
+                ]);
+        
+                if(!user)
+                    return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
+
+                const basePath = `${UPLOAD_BASE_PATH}/photo`;
+    
+                const [_image] = await Promise.all([
+                    Generic.handleImage(files.titleImage as File, basePath)
+                ]);
+
+                const payload = {
+                    ...value,
+                    rating: +value.rating,
+                    image: _image,
+                    user: user._id
+                }
+
+                const insight: any = await datasources.insightDAOService.create(payload as IInsightModel);
+
+                return resolve(insight)
+
+            })
+        })
+    }
+
+    private async doUpdateInsight(req: Request): Promise<HttpResponse<IUserModel>> {
+        return new Promise((resolve, reject) => {
+            const insightId = req.params.insightId
+
+            form.parse(req, async (err, fields, files) => {
+                const { error, value } = Joi.object<any>({
+                    hospitalName: Joi.string().label('Hospital name'),
+                    // hospitalAddress: Joi.string().label('Hospital address'),
+                    // state: Joi.string().label('State'),
+                    image: Joi.any().label('Image'),
+                    rating: Joi.string().label('Rating'),
+                    comment: Joi.string().label('Comment'),
+                }).validate(fields);
+                if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+                const [insight] = await Promise.all([
+                    datasources.insightDAOService.findById(insightId)
+                ]);
+
+                if(!insight)
+                    return reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+
+                const basePath = `${UPLOAD_BASE_PATH}/photo`;
+    
+                const [_image] = await Promise.all([
+                    Generic.handleImage(files.titleImage as File, basePath)
+                ]);
+
+                const imagePath = 'photo/'
+                if (_image && insight.image) {
+                    await Generic.deleteExistingImage(insight.image, basePath, imagePath);
+                };
+    
+
+                const payload = {
+                    ...value,
+                    image: _image ? _image : insight.image
+                }
+
+
+                const updatedInsight: any = await datasources.insightDAOService.updateByAny({ _id: insight._id }, payload as IInsightModel);
+
+                return resolve(updatedInsight)
+
+            })
+        })
     }
 
     private async doUpdateUserProfile(req: Request): Promise<HttpResponse<IUserModel>> {

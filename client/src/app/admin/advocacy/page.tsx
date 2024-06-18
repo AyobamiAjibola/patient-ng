@@ -6,6 +6,8 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useGetAdvocacies } from "../hooks/advocacyHook/useAdvocacy";
 
 const items = [
   "Pending",
@@ -13,78 +15,78 @@ const items = [
   "Closed"
 ];
 
-const advocacy = [
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'in-progress',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'in-progress',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'closed',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'closed',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'closed',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'closed',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ZYX Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  }
-]
+// const advocacy = [
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'in-progress',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'in-progress',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'closed',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'closed',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'closed',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'closed',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'pending',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'pending',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ABC Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'pending',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   },
+//   {
+//     hospitalName: "ZYX Hospital",
+//     address: "Chrismas street abuja",
+//     status: 'pending',
+//     complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
+//     refNumber: '#1234543'
+//   }
+// ]
 
 export default function page() {
   const theme = useTheme();
@@ -93,6 +95,8 @@ export default function page() {
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const [adv, setAdv] = useState<any>([]);
+  const {data: session} = useSession();
+  const getAdvocaciesMutation = useGetAdvocacies();
 
   const itemsPerPage = adv.length ? 10 : adv.length;
   const totalPages = Math.ceil(adv.length / itemsPerPage);
@@ -105,17 +109,27 @@ export default function page() {
   };
 
   useEffect(() => {
-    if(currentItem === "Pending") {
-      const filteredData = advocacy.filter((advocacy) => advocacy.status === "pending");
-      setAdv(filteredData)
-    } else if(currentItem === "In progress") {
-      const filteredData = advocacy.filter((advocacy) => advocacy.status === "in-progress");
-      setAdv(filteredData)
-    } else if(currentItem === "Closed") {
-      const filteredData = advocacy.filter((advocacy) => advocacy.status === "closed");
-      setAdv(filteredData)
+    if(getAdvocaciesMutation.isSuccess) {
+      if(currentItem === "Pending") {
+        const filteredData = getAdvocaciesMutation.data?.results && getAdvocaciesMutation.data?.results.filter((advocacy) => advocacy.status === "pending");
+        setAdv(filteredData)
+      } else if(currentItem === "In progress") {
+        const filteredData = getAdvocaciesMutation.data?.results && getAdvocaciesMutation.data?.results.filter((advocacy) => advocacy.status === "in-progress");
+        setAdv(filteredData)
+      } else if(currentItem === "Closed") {
+        const filteredData = getAdvocaciesMutation.data?.results && getAdvocaciesMutation.data?.results.filter((advocacy) => advocacy.status === "closed");
+        setAdv(filteredData)
+      }
     }
-  },[currentItem]);
+  },[currentItem, getAdvocaciesMutation.isSuccess]);
+
+  useEffect(() => {
+    const handleAdvocacy = async () => {
+      await getAdvocaciesMutation.mutateAsync({})
+    }
+
+    handleAdvocacy();
+  },[session]);
 
   return (
     <Box
@@ -175,89 +189,98 @@ export default function page() {
           </Box>
         </Box>
 
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 3,
-                height: 'auto',
-                width: '100%',
-                px: 2, py: 3
-            }}
-        >
-            { 
-              currentData.map((item: any, index: number) => (
-                <Box key={index}
-                  sx={{
+        {currentData.length 
+          ? ( <Box
+                sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    borderRadius: theme.borderRadius.sm,
-                    border: `1px solid ${theme.palette.secondary.lighter}`,
-                    p: 3, gap: 3,
-                    cursor: 'pointer',
-                    '&:hover': {
-                        border: `1px solid ${theme.palette.primary.main}`
-                    }
-                  }}
-                  onClick={() => router.push(`/admin/advocacy/${index}`)}
-                >
-                  <Box
+                    gap: 3,
+                    height: 'auto',
+                    width: '100%',
+                    px: 2, py: 3
+                }}
+              >
+                { 
+                  currentData.map((item: any, index: number) => (
+                    <Box key={index}
                       sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: theme.borderRadius.sm,
+                        border: `1px solid ${theme.palette.secondary.lighter}`,
+                        p: 3, gap: 3,
+                        cursor: 'pointer',
+                        '&:hover': {
+                            border: `1px solid ${theme.palette.primary.main}`
+                        }
                       }}
-                  >
+                      onClick={() => router.push(`/admin/advocacy/${item._id}`)}
+                    >
                       <Box
                           sx={{
                               display: 'flex',
-                              gap: 2
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
                           }}
                       >
-                          <Typography variant="labelsm">
-                              {item.hospitalName}
-                          </Typography>
-                          <Tag
-                            style={{
-                              color: item.status === 'in-progress'
-                                      ? theme.palette.state.warning
-                                      : item.status === 'pending'
-                                        ? "black"
-                                        : theme.palette.state.error
-                            }}
+                          <Box
+                              sx={{
+                                  display: 'flex',
+                                  gap: 2
+                              }}
                           >
-                              <FiberManualRecord sx={{fontSize: '12px'}}/> {item.status}
-                          </Tag>
-                      </Box> 
-                      <Typography variant="paragraphxs">
-                          {item.refNumber}
+                              <Typography variant="labelsm">
+                                  {item.hospitalName}
+                              </Typography>
+                              <Tag
+                                style={{
+                                  color: item.status === 'in-progress'
+                                          ? "blue"
+                                          : item.status === 'pending'
+                                            ? "gold"
+                                            : "red"
+                                }}
+                                className="capitalize"
+                              >
+                                  <FiberManualRecord sx={{fontSize: '12px'}}/> {item.status}
+                              </Tag>
+                          </Box> 
+                          <Typography variant="paragraphxs">
+                              {item.reference || ''}
+                          </Typography>
+                      </Box>
+                      <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
+                      {item.address}
                       </Typography>
-                  </Box>
-                  <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
-                  {item.address}
-                  </Typography>
-                  <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
-                  {item.complaints}
-                  </Typography>
+                      <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
+                      {item.complaints}
+                      </Typography>
+                    </Box>
+                  ))
+                }
+                <Box
+                    sx={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        mt: 5
+                    }}
+                    >
+                    {adv.length !== 0 && (<Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />)}
                 </Box>
-              ))
-            }
-            <Box
-                sx={{
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    mt: 5
-                }}
-                >
-                {adv.length !== 0 && (<Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />)}
+              </Box>
+          ) : (
+            <Box pl={3} my={3}>
+              <Typography variant='paragraphsm'>
+                No data.
+              </Typography>
             </Box>
-        </Box>
+          )}
       </Box>
     </Box>
   )

@@ -2,12 +2,15 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface ICrowdFunding {
     title: string,
-    body: string,
-    isAllowed: boolean;
+    description: string,
     status: string;
+    address: string;
     image: string;
     video: string;
     user: mongoose.Types.ObjectId;
+    likes: {
+        user: mongoose.Types.ObjectId
+    }[];
     donations: {
         user: mongoose.Types.ObjectId;
         amount: string;
@@ -31,12 +34,15 @@ interface ICrowdFunding {
 
 const crowdFundingSchema = new Schema<ICrowdFunding>({
     title: { type: String },
-    body: { type: String },
-    isAllowed: { type: Boolean, default: false },
+    description: { type: String },
+    address: { type: String },
     image: { type: String },
-    status: { type: String, default: 'in-progress' },
+    status: { type: String, default: 'pending' },
     video: { type: String },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
+    likes: [{
+        user: { type: Schema.Types.ObjectId, ref: 'User' }
+    }],
     donations: [{
         user: { type: Schema.Types.ObjectId, ref: 'User' },
         amount: { type: String },
@@ -61,7 +67,23 @@ const crowdFundingSchema = new Schema<ICrowdFunding>({
 crowdFundingSchema.pre(['findOne', 'find'], function (next) {
     this.populate({
         path: 'user',
-        select: 'firstName lastName image email.'
+        select: '_id firstName lastName image email'
+      });
+    next();
+});
+
+crowdFundingSchema.pre(['findOne', 'find'], function (next) {
+    this.populate({
+        path: 'donations.user',
+        select: '_id firstName lastName image email'
+      });
+    next();
+});
+
+crowdFundingSchema.pre(['findOne', 'find'], function (next) {
+    this.populate({
+        path: 'likes.user',
+        select: 'firstName lastName email'
       });
     next();
 });
