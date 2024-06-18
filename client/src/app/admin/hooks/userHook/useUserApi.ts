@@ -116,7 +116,28 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const resetUserPassword = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      ('/reset-user-password', requestParameters);
+    return response.data;
+  }; 
+
+  const toggleUserStatus = async (
+    requestParameters: string
+  ): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      (`/toggle-user-status/${requestParameters}` );
+    return response.data;
+  }; 
+
   return {
+    toggleUserStatus,
+    resetUserPassword,
     updateUserOnboarding,
     validateSignUpToken,
     resetPassword,

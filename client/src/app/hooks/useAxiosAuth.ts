@@ -3,10 +3,13 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { axiosAuth } from "@/app/Client";
 import axios from "axios";
+import { useAtom } from "jotai";
+import { sessionErrorMsg } from "@/lib/atoms";
 
 const useAxiosAuth = () => {
   const { data: session, update } = useSession();
   const refreshToken = session?.user.refreshToken;
+  const [_, setSessionError] = useAtom(sessionErrorMsg)
   
   useEffect(() => {
     const requestIntercept = axiosAuth.interceptors.request.use(
@@ -29,32 +32,33 @@ const useAxiosAuth = () => {
           prevRequest.sent = true;
 
           if(refreshToken) {
-            const customTokenResult = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/get-access-token`, {
-              refreshToken: refreshToken
-            });
-            console.log('are you here 2')
-            if (customTokenResult.data.code === 200) {
-              // Custom token received, sign in with it
-              // const userCredential = await signInWithCustomToken(auth, customTokenResult.data.result);
-              // const idToken = await userCredential.user.getIdToken();
-              const idToken = customTokenResult.data.result;
-              
-              //save the new access token to the next-auth session
-              const updateSession = async () => {
-                if(idToken) {
-                  await update({
-                    ...session,
-                    user: {
-                      ...session?.user,
-                      accessToken: idToken
-                    },
-                  });
+            try {
+              const customTokenResult = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/get-access-token`, {
+                refreshToken: refreshToken
+              });
+              console.log('are you here 2')
+              if (customTokenResult.data.code === 200) {
+                const idToken = customTokenResult.data.result;
+                
+                //save the new access token to the next-auth session
+                const updateSession = async () => {
+                  if(idToken) {
+                    await update({
+                      ...session,
+                      user: {
+                        ...session?.user,
+                        accessToken: idToken
+                      },
+                    });
+                  }
                 }
-              }
-              await updateSession();
+                await updateSession();
 
-              prevRequest.headers["Authorization"] = idToken;
-              return axiosAuth(prevRequest);
+                prevRequest.headers["Authorization"] = idToken;
+                return axiosAuth(prevRequest);
+              }
+            } catch (error: any) {
+              setSessionError(error.response.data.message)
             }
           }
         }

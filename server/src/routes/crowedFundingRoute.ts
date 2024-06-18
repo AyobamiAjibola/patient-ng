@@ -1,4 +1,4 @@
-import CrowdFundingController from "../controller/crowdFundingController";
+import CrowdFundingController from "../controller/CrowdFundingController";
 import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
 import { Request, Response } from "express";
 
@@ -6,6 +6,18 @@ const crowdFundingController = new CrowdFundingController();
 
 export const activateCrowdFundingHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await crowdFundingController.activateCrowdFunding(req);
+
+    res.status(response.code).json(response);
+});
+
+export const markCrowdFundingDoneHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await crowdFundingController.markCrowdFundingDone(req);
+
+    res.status(response.code).json(response);
+});
+
+export const getActiveCrowdfundingHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await crowdFundingController.getActiveCrowdfunding(req);
 
     res.status(response.code).json(response);
 });
@@ -42,6 +54,12 @@ export const singleCrowdFundingHandler = async (req: Request, res: Response) => 
 
 export const deleteCrowdFundingHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await crowdFundingController.deleteCrowdFunding(req);
+
+    res.status(response.code).json(response);
+});
+
+export const likeCrowdFundingHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await crowdFundingController.likeCrowdFunding(req);
 
     res.status(response.code).json(response);
 });

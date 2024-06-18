@@ -5,86 +5,14 @@ import { SearchOutlined } from "@mui/icons-material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
 import { ChangeEvent, useEffect, useState } from "react";
-
-const crowdCampaign = [
-  {
-    date: "23 Oct 2023",
-    title: "Save Odenwingie Osaze",
-    status: "Inactive",
-    fundraiserFor: "Someone else",
-    createdBy: 'Kira John',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '200000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    date: "23 Oct 2023",
-    title: "Save Odenwingie Osaze",
-    status: "Active",
-    fundraiserFor: "Someone else",
-    createdBy: 'Osaze Kudus',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '400000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    date: "23 Oct 2023",
-    title: "Save Odenwingie Osaze",
-    status: "Active",
-    fundraiserFor: "Someone else",
-    createdBy: 'Audu Kelvin',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '300000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    date: "23 Oct 2023",
-    title: "Save Odenwingie Osaze",
-    status: "Inactive",
-    fundraiserFor: "Charity",
-    createdBy: 'Paul Benji',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '150000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    date: "23 Oct 2023",
-    title: "Save Odenwingie Osaze",
-    status: "Pending",
-    fundraiserFor: "Self",
-    createdBy: 'Kaffy Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '120000',
-    amountNeeded: '900000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    date: "23 Oct 2023",
-    title: "Save Odenwingie Osaze",
-    status: "Pending",
-    fundraiserFor: "Charity",
-    createdBy: 'Kudz Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '90000',
-    amountNeeded: '300000',
-    location: 'Ikeja, Lagos'
-  }
-];
+import { useGetCrowdfundings } from "../hooks/crowdFuncdingHook/useCrowdFunding";
+import { useSession } from "next-auth/react";
 
 const items = [
   "Pending",
   "Active",
-  "Inactive"
+  "Inactive",
+  "Done"
 ]
 
 export default function page() {
@@ -94,6 +22,8 @@ export default function page() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentItem, setCurrentItem] = useState<string>('Pending');
   const [crowdfunding, setCrowdfunding] = useState<any>([]);
+  const getCrowedFundingMutation = useGetCrowdfundings();
+  const {data: session} = useSession();
 
   const filteredData =
     crowdfunding &&
@@ -112,17 +42,29 @@ export default function page() {
   };
 
   useEffect(() => {
-    if(currentItem === "Pending") {
-      const filteredData = crowdCampaign.filter((crowdCampaign) => crowdCampaign.status === "Pending");
-      setCrowdfunding(filteredData)
-    } else if(currentItem === "Active") {
-      const filteredData = crowdCampaign.filter((crowdCampaign) => crowdCampaign.status === "Active");
-      setCrowdfunding(filteredData)
-    } else if(currentItem === "Inactive") {
-      const filteredData = crowdCampaign.filter((crowdCampaign) => crowdCampaign.status === "Inactive");
-      setCrowdfunding(filteredData)
+    if(getCrowedFundingMutation.isSuccess) {
+      if(currentItem === "Pending") {
+        const filteredData = getCrowedFundingMutation.data?.results?.filter((crowdCampaign) => crowdCampaign.status === "pending");
+        setCrowdfunding(filteredData)
+      } else if(currentItem === "Active") {
+        const filteredData = getCrowedFundingMutation.data?.results?.filter((crowdCampaign) => crowdCampaign.status === "active");
+        setCrowdfunding(filteredData)
+      } else if(currentItem === "Inactive") {
+        const filteredData = getCrowedFundingMutation.data?.results?.filter((crowdCampaign) => crowdCampaign.status === "inactive");
+        setCrowdfunding(filteredData)
+      } else {
+        const filteredData = getCrowedFundingMutation.data?.results?.filter((crowdCampaign) => crowdCampaign.status === "done");
+        setCrowdfunding(filteredData)
+      }
     }
-  },[currentItem]);
+  },[currentItem, getCrowedFundingMutation.isSuccess]);
+
+  useEffect(() => {
+    const handleGetCrowd = async () => {
+      await getCrowedFundingMutation.mutateAsync({})
+    }
+    handleGetCrowd()
+  },[session]);
 
   return (
     <Box

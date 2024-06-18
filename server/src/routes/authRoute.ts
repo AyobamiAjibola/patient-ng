@@ -65,3 +65,9 @@ export const createUserHandler = authenticateRouteWrapper(async (req, res) =>  {
 
     res.status(response.code).json(response);
 });
+
+export const resetUserPasswordHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await authController.resetUserPassword(req);
+
+    res.status(response.code).json(response);
+});

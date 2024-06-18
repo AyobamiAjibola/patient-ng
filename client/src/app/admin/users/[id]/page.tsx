@@ -12,11 +12,16 @@ import { useForm } from "react-hook-form";
 import { stateLga } from "@/constant/state";
 import { customStyles } from "@/constant/customStyles";
 import Select from "react-select";
-import { formAmount } from "@/lib/helper";
-import { useFetchSingleUser, useUpdateUser } from "../../hooks/userHook/useUser";
+import { formAmount, wordBreaker } from "@/lib/helper";
+import { useFetchSingleUser, useResetUserPassword, useToggleUserStatus, useUpdateUser } from "../../hooks/userHook/useUser";
 import { useSession } from "next-auth/react";
 import MultiSelectComponent from "../../components/MultiSelect";
 import capitalize from "capitalize";
+import Toastify from "@/app/components/ToastifySnack";
+import { useActivateCrowdfunding, useGetActiveCrowdfunding, useMarkCrowdfundingDone } from "../../hooks/crowdFuncdingHook/useCrowdFunding";
+import { useUsersAdvocacies } from "../../hooks/advocacyHook/useAdvocacy";
+import { useGetUserInsights } from "../../hooks/insightHook/useInsight";
+import moment from "moment";
 
 const item = [
     "User information",
@@ -25,110 +30,16 @@ const item = [
     "Insights"
 ];
 
-const advocacy = [
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ABC Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    },
-    {
-      hospitalName: "ZYX Hospital",
-      address: "Chrismas street abuja",
-      status: 'pending',
-      complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-      refNumber: '#1234543'
-    }
-]
-
 const userInfo = [
     {
         title: 'User profile',
         icon: PersonOutline
     },
     {
-        title: 'Change password',
+        title: 'Reset password',
         icon: LockOutlined
     }
 ];
-
-const insights = [
-    {
-        rating: 4,
-        title: 'Good Insight',
-        createdAt: '2h ago',
-        content: 'lore Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio deleniti provident sed neque in. Doloremque eum officiis unde, cupiditate est dicta eius aliquam voluptas nostrum porro culpa nisi provident illo?'
-    },
-    {
-        rating: 4,
-        title: 'Good Insight',
-        createdAt: '2h ago',
-        content: 'lore Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio deleniti provident sed neque in. Doloremque eum officiis unde, cupiditate est dicta eius aliquam voluptas nostrum porro culpa nisi provident illo?'
-    },
-    {
-        rating: 4,
-        title: 'Good Insight',
-        createdAt: '2h ago',
-        content: 'lore Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio deleniti provident sed neque in. Doloremque eum officiis unde, cupiditate est dicta eius aliquam voluptas nostrum porro culpa nisi provident illo?'
-    }
-]
 
 type FormValues = {
     firstName?: string,
@@ -138,8 +49,8 @@ type FormValues = {
     age?: 0,
     gender?: string,
     address?: string,
-    oldPassword?: string,
-    newPassword?: string
+    newPassword?: string,
+    resetEmail?: string
 }
 
 type OptionType = {
@@ -160,11 +71,33 @@ export default function page({ params }: any) {
     const [district, setDistrict] = useState<any[]>([]);
     const [selectedDistrict, setSelectedDistrict] = useState<string>('');
     const [selectedGender, setSelectedGender] = useState<string>('');
-    const percent = (+100000/+500000) * 100;
     const getUserMutation = useFetchSingleUser();
     const {data: session} = useSession();
     const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
     const updateUserMutation = useUpdateUser();
+    const resetUserPassword = useResetUserPassword();
+    const toggleUserStatus = useToggleUserStatus();
+    const getActiveCrowdfundingMutation = useGetActiveCrowdfunding();
+    const [recordedDonations, setRecordedDonations] = useState<number>(0);
+    const toggleCrowdfundingStatusMutation = useActivateCrowdfunding();
+    const [percent, setPercent] = useState<number>(0);
+    const markCampaignAsDoneMutation = useMarkCrowdfundingDone();
+    const getUsersAdvocacyMutation = useUsersAdvocacies();
+    const [advocacy, setAdvocacy] = useState<any>([]);
+    const [insights, setInsights] = useState<any>([]);
+    const userInsightsMutation = useGetUserInsights();
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState<boolean>(false);
+
+    const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+        setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+        setIsError(type === 'error');
+        setIsSuccess(type === 'success');
+        setOpen(true);
+    };
 
     //Advocacy pagination
     const itemsPerPage = advocacy.length ? 10 : advocacy.length;
@@ -179,6 +112,23 @@ export default function page({ params }: any) {
     const insightStartIndex = (currPage - 1) * insightItemsPerPage;
     const insightEndIndex = Math.min(insightStartIndex + insightItemsPerPage, insights.length);
     const insightCurrentData = insights.slice(insightStartIndex, insightEndIndex);
+
+    const handleUserStatus = async() => {
+        if(getUserMutation.data?.result) {
+            await toggleUserStatus.mutateAsync(getUserMutation.data?.result?._id, {
+                onSuccess: async (response: any) => {
+                    await getUserMutation.mutateAsync(params.id)
+                    handleOpenNotification('success', response.message)
+                },
+                onError: (error: any) => {
+                    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                    handleOpenNotification('error', '', errorMessage)
+                }
+            })
+        } else {
+            return null;
+        }
+    }
 
     const handleDistrict = (value: any) => {
         if (!value) {
@@ -201,6 +151,32 @@ export default function page({ params }: any) {
         );
         setDistrict(districtArray);
     };
+
+    const handleToggleStatus = async () => {
+        await toggleCrowdfundingStatusMutation.mutateAsync(getActiveCrowdfundingMutation.data?.result._id, {
+            onSuccess: async (response: any) => {
+                await getActiveCrowdfundingMutation.mutateAsync(params.id)
+                handleOpenNotification('success', "Successfully updated status.")
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
+    };
+
+    const handleMarkDone = async () => {
+        await markCampaignAsDoneMutation.mutateAsync(getActiveCrowdfundingMutation.data?.result._id, {
+            onSuccess: async (response: any) => {
+                await getActiveCrowdfundingMutation.mutateAsync(params.id)
+                handleOpenNotification('success', "Successfully marked campaign as done.")
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
+    }
 
     const handlePageChange = (newPage: any) => {
         setCurrentPage(newPage);
@@ -227,16 +203,28 @@ export default function page({ params }: any) {
           userId: params.id
         }
 
-        updateUserMutation.mutateAsync(payload)
+        await updateUserMutation.mutateAsync(payload)
     }
 
     const onSubmitPass = async (data: FormValues) => {
+        const email = getUserMutation.data?.result.email
+        if(email !== data.resetEmail) {
+            handleOpenNotification('error', '', 'Please enter the correct user email.')
+            return;
+        }
         const payload = {
-            oldPassword: data.oldPassword,
-            newPassword: data.newPassword
+            email: data.resetEmail
         }
 
-        console.log(payload)
+        await resetUserPassword.mutateAsync(payload, {
+            onSuccess: (response: any) => {
+                handleOpenNotification('success', response.message)
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
     }
 
     const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
@@ -285,7 +273,13 @@ export default function page({ params }: any) {
         if(params) {
             getUserMutation.mutateAsync(params.id)
         }
-    },[params, session])
+    },[params, session]);
+
+    useEffect(() => {
+        if(params) {
+            getUsersAdvocacyMutation.mutateAsync(params.id)
+        }
+    },[params, session]);
     
     useEffect(() => {
         if(getUserMutation.isSuccess) {
@@ -313,7 +307,48 @@ export default function page({ params }: any) {
         if(updateUserMutation.isSuccess) {
             getUserMutation.mutateAsync(params.id)
         }
-    },[updateUserMutation.isSuccess, params, session])
+    },[updateUserMutation.isSuccess, params, session]);
+
+    useEffect(() => {
+        const fetchActiveCrowdfunding = async () => {
+            await getActiveCrowdfundingMutation.mutateAsync(params.id)
+            await userInsightsMutation.mutateAsync(params.id)
+        }
+        
+        fetchActiveCrowdfunding()
+    },[params, session]);
+
+    useEffect(() => {
+        if (getActiveCrowdfundingMutation.isSuccess) {
+            const { donations } = getActiveCrowdfundingMutation.data?.result || {};
+
+            if (donations) {
+                const total = donations.reduce((acc: any, donation: any) => acc + Number(donation.amount), 0);
+                setRecordedDonations(total);
+            }
+        }
+    }, [getActiveCrowdfundingMutation.isSuccess]);    
+    
+    useEffect(() => {
+        const { amountNeeded } = getActiveCrowdfundingMutation.data?.result || {};
+    
+        if (amountNeeded) {
+            const per = (Number(recordedDonations) / Number(amountNeeded)) * 100;
+            setPercent(per);
+        }
+    }, [getActiveCrowdfundingMutation.isSuccess, recordedDonations]);
+
+    useEffect(() => {
+        if(getUsersAdvocacyMutation.isSuccess) {
+            setAdvocacy(getUsersAdvocacyMutation.data?.results)
+        }
+    },[getUsersAdvocacyMutation.isSuccess]);
+
+    useEffect(() => {
+        if(userInsightsMutation.isSuccess) {
+            setInsights(userInsightsMutation.data?.results)
+        }
+    },[userInsightsMutation.isSuccess]);
 
     return (
         <Box
@@ -381,7 +416,7 @@ export default function page({ params }: any) {
                         }}
                     >
                         <Avatar
-                            src="/model.png"
+                            src={getUserMutation.data?.result?.image ? getUserMutation.data?.result?.image : "/model.png"}
                             alt="image"
                             sx={{
                                 width: 100,
@@ -396,44 +431,34 @@ export default function page({ params }: any) {
                             }}
                         >
                             <Typography variant="labelsm">
-                                Lisa Steve
+                                {capitalize.words(getUserMutation.data?.result?.firstName || '')} {capitalize.words(getUserMutation.data?.result?.lastName || '')}
                             </Typography>
                             <Typography variant="paragraphxs"
                                 sx={{
                                     color: theme.palette.secondary.light
                                 }}
                             >
-                                lisa@gmail.com
+                                {getUserMutation.data?.result?.email || ''}
                             </Typography>
                         </Box>
                     </Box>
 
-                    {!isMobile && (<Box
+                    {!isMobile && getUserMutation.data?.result && (<Box
                         sx={{
                             display: 'flex',
                             gap: 2, mt: 4
                         }}
                     >
-                        <Button
-                            sx={{
-                                textTransform: 'none',
-                                borderRadius: theme.borderRadius.sm,
-                                backgroundColor: 'white',
-                                color: 'red',
-                                // width: props.width,
-                                border: `1px solid red`,
-                                px: theme.spacing(3),
-                            }}
+                        <NButton
+                            disabled={getUserMutation.isLoading}
+                            bkgcolor={getUserMutation.data?.result?.active ? 'red' : theme.palette.primary.main}
+                            textcolor={"white"}
+                            hoverbordercolor={getUserMutation.data?.result?.active ? 'red' : theme.palette.primary.main}
+                            onClick={handleUserStatus}
+                            hovercolor={getUserMutation.data?.result?.active ? 'red' : theme.palette.primary.main}
                         >
-                            <Typography variant="paragraphxs">
-                                Deactivate user
-                            </Typography>
-                        </Button>
-                        <PButton transBg={false} bg={true}>
-                            <Typography variant="paragraphxs">
-                                Activate user
-                            </Typography>
-                        </PButton>
+                            {getUserMutation.data?.result?.active ? 'Deactivate user' : 'Activate user'}
+                        </NButton>
                     </Box>)}
                 </Box>
             </Box>
@@ -496,153 +521,194 @@ export default function page({ params }: any) {
                                     flexDirection: 'column'
                                 }}
                             >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        width: '100%',
-                                        height: isMobile ? '20rem' : '40rem',
-                                        position: 'relative',
-                                        borderRadius: theme.borderRadius.sm,
-                                        border: `1px solid ${theme.palette.secondary.lighter}`
-                                    }}
-                                >
-                                    <img
-                                        src='/crowd1.png'
-                                        style={{
-                                            width: '100%',
-                                            height: '90%',
-                                            borderTopLeftRadius:theme.borderRadius.sm,
-                                            borderTopRightRadius:theme.borderRadius.sm
-                                        }}
-                                    />
+                                {getActiveCrowdfundingMutation.data?.result ? (
+                                <>
                                     <Box
                                         sx={{
                                             display: 'flex',
+                                            flexDirection: 'column',
                                             width: '100%',
-                                            position: 'absolute',
-                                            justifyContent: 'space-between',
-                                            top: 10, px: 3
+                                            height: isMobile ? '20rem' : '40rem',
+                                            position: 'relative',
+                                            borderRadius: theme.borderRadius.sm,
+                                            border: `1px solid ${theme.palette.secondary.lighter}`
                                         }}
                                     >
-                                        <Box
-                                             sx={{
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                px: 2,
-                                                border: `1px solid ${theme.palette.state.warning}`,
-                                                borderRadius: theme.borderRadius.md,
-                                                bgcolor: 'white'
-                                            }}
-                                        >
-                                            <Typography variant={isMobile ? 'labelxs' : 'labelsm'}
-                                                sx={{
-                                                    color: theme.palette.state.warning
-                                                }}
-                                            >
-                                                Awaiting review
-                                            </Typography>
-                                        </Box>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                gap: 2,
-                                                flexDirection: isMobile ? 'column' : 'row'
-                                            }}
-                                        >
-                                            <NButton
-                                                bkgcolor="red"
-                                                textcolor="white"
-                                            >
-                                                <Typography variant={isMobile ? "paragraphxxs" : "paragraphsm"}>
-                                                    Delete campaign
-                                                </Typography>
-                                            </NButton>
-                                            <NButton
-                                                bkgcolor={theme.palette.primary.main}
-                                                textcolor="white"
-                                            >
-                                                <Typography variant={isMobile ? "paragraphxxs" : "paragraphsm"}>
-                                                    Approve
-                                                </Typography>
-                                            </NButton>
-                                        </Box>
-                                    </Box>
-                                    <Box
-                                        sx={{
-                                            height: '10%',
-                                            width: '100%',
-                                            backgroundColor: theme.palette.secondary.lightest,
-                                            borderBottomLeftRadius:theme.borderRadius.sm,
-                                            borderBottomRightRadius:theme.borderRadius.sm,
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            px: 2, gap: 1
-                                        }}
-                                    >
-                                        <Avatar
-                                            src='/model.png'
-                                            alt="crowdfunding image"
-                                            sx={{
-                                                width: '40px',
-                                                height: '40px',
-                                                mr: 1
+                                        <img
+                                            src={getActiveCrowdfundingMutation.data.result ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${getActiveCrowdfundingMutation.data.result.image}` : '/crowd1.png'}
+                                            crossOrigin="anonymous"
+                                            style={{
+                                                width: '100%',
+                                                height: '90%',
+                                                borderTopLeftRadius:theme.borderRadius.sm,
+                                                borderTopRightRadius:theme.borderRadius.sm
                                             }}
                                         />
-                                        <Typography variant="labelxs">
-                                            Olawale Kudus
-                                        </Typography>
-                                        <Typography variant="paragraphxs">
-                                            is organising a fundraiser on behalf of
-                                        </Typography>
-                                        <Typography variant="labelxs">
-                                            Abayomi Kudus
-                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                width: '100%',
+                                                position: 'absolute',
+                                                justifyContent: 'space-between',
+                                                top: 10, px: 3
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    px: 2,
+                                                    border: `1px solid ${getActiveCrowdfundingMutation.data.result.status === 'active' ? theme.palette.primary.main : theme.palette.state.warning}`,
+                                                    borderRadius: theme.borderRadius.md,
+                                                    bgcolor: 'white'
+                                                }}
+                                            >
+                                                <Typography variant={isMobile ? 'labelxs' : 'labelsm'}
+                                                    sx={{
+                                                        color: getActiveCrowdfundingMutation.data.result.status === 'active' 
+                                                            ? theme.palette.primary.main
+                                                            : theme.palette.state.warning
+                                                    }}
+                                                >
+                                                    {getActiveCrowdfundingMutation.data.result.status === 'pending' 
+                                                        ? 'Awaiting review' 
+                                                        : capitalize.words(getActiveCrowdfundingMutation.data.result.status)}
+                                                </Typography>
+                                            </Box>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 2,
+                                                    flexDirection: isMobile ? 'column' : 'row'
+                                                }}
+                                            >
+                                                <NButton
+                                                    bkgcolor={theme.palette.primary.main}
+                                                    textcolor="white"
+                                                    onClick={handleMarkDone}
+                                                >
+                                                    <Typography variant={isMobile ? "paragraphxxs" : "paragraphsm"}>
+                                                        {markCampaignAsDoneMutation.isLoading ? 'Loading...' : 'Mark campaign as done'}
+                                                    </Typography>
+                                                </NButton>
+                                                <NButton
+                                                    onClick={handleToggleStatus}
+                                                    bkgcolor={getActiveCrowdfundingMutation.data.result.status === "pending" 
+                                                                ? theme.palette.primary.main
+                                                                : getActiveCrowdfundingMutation.data?.result && getActiveCrowdfundingMutation.data?.result.status === "inactive"
+                                                                    ? theme.palette.primary.main
+                                                                    : "red"
+                                                            }
+                                                    textcolor="white"
+                                                    hoverbordercolor={getActiveCrowdfundingMutation.data.result.status === "pending" 
+                                                                        ? theme.palette.primary.main
+                                                                        : getActiveCrowdfundingMutation.data?.result && getActiveCrowdfundingMutation.data?.result.status === "inactive"
+                                                                            ? theme.palette.primary.main
+                                                                            : "red"
+                                                                    }
+                                                    hovercolor={getActiveCrowdfundingMutation.data.result.status === "pending" 
+                                                                    ? theme.palette.primary.main
+                                                                    : getActiveCrowdfundingMutation.data?.result && getActiveCrowdfundingMutation.data?.result.status === "inactive"
+                                                                        ? theme.palette.primary.main
+                                                                        : "red"
+                                                                }           
+                                                >
+                                                    <Typography variant={isMobile ? "paragraphxxs" : "paragraphsm"}>
+                                                        {getActiveCrowdfundingMutation.data.result.status === "pending" || getActiveCrowdfundingMutation.data?.result && getActiveCrowdfundingMutation.data.result.status === "inactive"
+                                                            ? getActiveCrowdfundingMutation.isLoading ? "Loading..." : "Approve"
+                                                            : getActiveCrowdfundingMutation.isLoading ? "Loading..." : "Deactivate campaign"
+                                                        }
+                                                    </Typography>
+                                                </NButton>
+                                            </Box>
+                                        </Box>
+                                        <Box
+                                            sx={{
+                                                height: '10%',
+                                                width: '100%',
+                                                backgroundColor: theme.palette.secondary.lightest,
+                                                borderBottomLeftRadius:theme.borderRadius.sm,
+                                                borderBottomRightRadius:theme.borderRadius.sm,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                px: 2, gap: 1
+                                            }}
+                                        >
+                                            <Avatar
+                                                src={getActiveCrowdfundingMutation.data.result.user.image 
+                                                        ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${getActiveCrowdfundingMutation.data.result.user.image}`
+                                                        : '/model.png'}
+                                                alt="crowdfunding image"
+                                                sx={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    mr: 1
+                                                }}
+                                            />
+                                            <Typography variant="labelxs">
+                                                {capitalize.words(getActiveCrowdfundingMutation.data.result.user.firstName)} {capitalize.words(getActiveCrowdfundingMutation.data.result.user.lastName)}
+                                            </Typography>
+                                            <Typography variant="paragraphxs">
+                                                is organising a fundraiser on behalf of
+                                            </Typography>
+                                            <Typography variant="labelxs">
+                                                {capitalize.words(getActiveCrowdfundingMutation.data.result.fundraisingFor)}
+                                            </Typography>
+                                        </Box>
                                     </Box>
-                                </Box>
 
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        width: '100%',
-                                        height: 'auto',
-                                        borderRadius: theme.borderRadius.sm,
-                                        border: `1px solid ${theme.palette.secondary.lighter}`,
-                                        p: 3
-                                    }}
-                                >
-                                    <Typography variant="labelsm">
-                                        Abuja
-                                    </Typography>
                                     <Box
                                         sx={{
                                             display: 'flex',
-                                            gap: 1, mt: 3, mb: 1,
-                                            alignItems: 'center'
+                                            flexDirection: 'column',
+                                            width: '100%',
+                                            height: 'auto',
+                                            borderRadius: theme.borderRadius.sm,
+                                            border: `1px solid ${theme.palette.secondary.lighter}`,
+                                            p: 3
                                         }}
                                     >
                                         <Typography variant="labelsm">
-                                            {formAmount(100000)}
+                                            {getActiveCrowdfundingMutation.data.result.address}
                                         </Typography>
-                                        <Typography variant="paragraphsm"
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                gap: 1, mt: 3, mb: 1,
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <Typography variant="labelsm">
+                                                {formAmount(recordedDonations)}
+                                            </Typography>
+                                            <Typography variant="paragraphsm"
+                                                sx={{
+                                                    color: theme.palette.secondary.light
+                                                }}
+                                            >
+                                                {`of ${formAmount(+getActiveCrowdfundingMutation.data.result.amountNeeded)} goal`}
+                                            </Typography>
+                                        </Box>
+                                        <BorderLinearProgress variant="determinate" value={percent} />
+                                        <Typography variant="labelxs"
                                             sx={{
                                                 color: theme.palette.secondary.light
                                             }}
                                         >
-                                            {`of ${formAmount(500000)} goal`}
+                                            {getActiveCrowdfundingMutation.data.result.donations.length} donations
                                         </Typography>
                                     </Box>
-                                    <BorderLinearProgress variant="determinate" value={percent} />
-                                    <Typography variant="labelxs"
-                                        sx={{
-                                            color: theme.palette.secondary.light
-                                        }}
-                                    >
-                                        0 donations
-                                    </Typography>
-                                </Box>
+                                </>
+                                ) : (
+                                    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                                        <Typography>
+                                            This user does not have any active or pending campaign.
+                                        </Typography>
+                                    </Box>
+                                )
+                                
+                            }
                             </Box>
                             ) 
                         : currentItem === 'Advocacy' 
@@ -658,7 +724,7 @@ export default function page({ params }: any) {
                                         }}
                                     >
                                         {
-                                            currentData.map((item, index) => (
+                                            currentData.map((item: any, index: number) => (
                                                 <Box key={index}
                                                     sx={{
                                                         display: 'flex',
@@ -671,7 +737,7 @@ export default function page({ params }: any) {
                                                             border: `1px solid ${theme.palette.primary.main}`
                                                         }
                                                     }}
-                                                    onClick={() => router.push(`/admin/advocacy/${index}`)}
+                                                    onClick={() => router.push(`/admin/advocacy/${item._id}`)}
                                                 >
                                                     <Box
                                                         sx={{
@@ -689,16 +755,20 @@ export default function page({ params }: any) {
                                                             <Typography variant="labelsm">
                                                                 {item.hospitalName}
                                                             </Typography>
-                                                            <Tag>
-                                                                <FiberManualRecord sx={{fontSize: '12px'}}/> {item.status}
+                                                            <Tag color={item.status === "pending" ? "orange" : item.status === "in-progress" ? "green" : "red"}
+                                                                style={{
+                                                                    color: item.status === "pending" ? "orange" : item.status === "in-progress" ? "green" : "red"
+                                                                }}
+                                                            >
+                                                                <FiberManualRecord sx={{fontSize: '12px'}}/> {capitalize.words(item.status.replace('-', ' '))}
                                                             </Tag>
                                                         </Box> 
                                                         <Typography variant="paragraphxs">
-                                                            {item.refNumber}
+                                                            {item.reference}
                                                         </Typography>
                                                     </Box>
                                                     <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
-                                                    {item.address}
+                                                    {item.hospitalAddress}
                                                     </Typography>
                                                     <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
                                                     {item.complaints}
@@ -1065,7 +1135,7 @@ export default function page({ params }: any) {
                                                                 >
                                                                     <form onSubmit={handleSubmit(onSubmitPass)} noValidate>
                                                                         {!isMobile && (<Typography variant='h6' mb={4}>
-                                                                            Change password
+                                                                            Reset user password
                                                                         </Typography>)}
 
                                                                         <Box
@@ -1079,45 +1149,27 @@ export default function page({ params }: any) {
                                                                         >
                                                                             <Box
                                                                                 sx={{
-                                                                                    width: isMobile ? '100%' : '50%'
+                                                                                    width: '100%'
                                                                                 }}
                                                                             >
                                                                                 <InputField
-                                                                                    label="Old Password"
-                                                                                    placeholder="Old Password"
+                                                                                    label="Email"
+                                                                                    placeholder="Email"
                                                                                     isBorder={true}
                                                                                     labelStyle={{
                                                                                         fontSize: theme.typography.labelxs.fontSize,
                                                                                         fontWeight: theme.typography.labelsm.fontWeight
                                                                                     }}
-                                                                                    errorMessage={errors.oldPassword?.message}
-                                                                                    error={!!errors.oldPassword}
-                                                                                    register={register('oldPassword')}
-                                                                                />
-                                                                            </Box>
-                                                                            <Box
-                                                                                sx={{
-                                                                                    width: isMobile ? '100%' : '50%'
-                                                                                }}
-                                                                            >
-                                                                                <InputField
-                                                                                    label="New Password"
-                                                                                    placeholder="New Password"
-                                                                                    isBorder={true}
-                                                                                    labelStyle={{
-                                                                                        fontSize: theme.typography.labelxs.fontSize,
-                                                                                        fontWeight: theme.typography.labelsm.fontWeight
-                                                                                    }}
-                                                                                    errorMessage={errors.newPassword?.message}
-                                                                                    error={!!errors.newPassword}
-                                                                                    register={register('newPassword')}
+                                                                                    errorMessage={errors.resetEmail?.message}
+                                                                                    error={!!errors.resetEmail}
+                                                                                    register={register('resetEmail')}
                                                                                 />
                                                                             </Box>
                                                                         </Box>
 
                                                                         <PButton transBg={false} bg={true} width="100%" type="submit">
                                                                             <Typography sx={{fontSize: theme.typography.labelsm.fontSize}}>
-                                                                                <FileDownloadOutlined/> Save Changes
+                                                                                <FileDownloadOutlined/> {resetUserPassword.isLoading ? 'Saving...' : 'Save Changes'}
                                                                             </Typography>
                                                                         </PButton>
                                                                     </form>
@@ -1128,73 +1180,92 @@ export default function page({ params }: any) {
                                         </Box>
                                     )
                                 :   (
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                p: 2, width: '100%',
-                                                gap: 3
-                                            }}
-                                        >
-                                            {
-                                                insightCurrentData.map((review, index) => (
-                                                    <Box key={index}
-                                                        sx={{
-                                                            borderRadius: theme.borderRadius.sm,
-                                                            border: `1px solid ${theme.palette.secondary.lighter}`,
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            p: 4, gap: 2
-                                                        }}
-                                                    >
-                                                        <Box
+                                    insightCurrentData.length > 0
+                                        ? <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    p: 2, width: '100%',
+                                                    gap: 3
+                                                }}
+                                            >
+                                                {
+                                                    insightCurrentData.map((review: any, index: number) => (
+                                                        <Box key={index}
+                                                            onClick={()=>router.push(`/insight/${review._id}`)}
                                                             sx={{
+                                                                borderRadius: theme.borderRadius.sm,
+                                                                border: `1px solid ${theme.palette.secondary.lighter}`,
                                                                 display: 'flex',
-                                                                justifyContent: 'space-between'
+                                                                flexDirection: 'column',
+                                                                cursor: 'pointer',
+                                                                p: 4, gap: 2,
+                                                                '&:hover': {
+                                                                    border: `1px solid ${theme.palette.primary.main}`,
+                                                                }
                                                             }}
                                                         >
-                                                            <Rating
-                                                                name="half-rating-read"
-                                                                size={'small'}
-                                                                value={review.rating}
-                                                                precision={0.5}
-                                                                readOnly
-                                                                sx={{ color: theme.palette.state.warning }}
-                                                            />
-                                                             <Typography variant="labelxxs" color={theme.palette.secondary.light}>
-                                                                {review.createdAt}
+                                                            <Box
+                                                                sx={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'space-between'
+                                                                }}
+                                                            >
+                                                                <Rating
+                                                                    name="half-rating-read"
+                                                                    size={'small'}
+                                                                    value={review.rating}
+                                                                    precision={0.5}
+                                                                    readOnly
+                                                                    sx={{ color: theme.palette.state.warning }}
+                                                                />
+                                                                <Typography variant="labelxxs" color={theme.palette.secondary.light}>
+                                                                    {moment(review.createdAt).format('MM/DD/YYYY(hh:mm A)')}
+                                                                </Typography>
+                                                            </Box>
+                                                            <Typography variant="labelsm">
+                                                                {review.hospitalName}
+                                                            </Typography>
+                                                            <Typography variant="labelsm" color={theme.palette.secondary.light}>
+                                                                {wordBreaker(review.comment, 30)}
                                                             </Typography>
                                                         </Box>
-                                                        <Typography variant="labelsm">
-                                                            {review.title}
-                                                        </Typography>
-                                                        <Typography variant="labelxs" color={theme.palette.secondary.light}>
-                                                            {review.content}
-                                                        </Typography>
-                                                    </Box>
-                                                ))
-                                            }
+                                                    ))
+                                                }
 
-                                            <Box
-                                                sx={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    mt: 5
-                                                }}
-                                                >
-                                                {insights.length !== 0 && (<Pagination
-                                                    currentPage={currPage}
-                                                    totalPages={insightTotalPages}
-                                                    onPageChange={handlePageChangeInsight}
-                                                />)}
+                                                <Box
+                                                    sx={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        mt: 5
+                                                    }}
+                                                    >
+                                                    {insights.length !== 0 && (<Pagination
+                                                        currentPage={currPage}
+                                                        totalPages={insightTotalPages}
+                                                        onPageChange={handlePageChangeInsight}
+                                                    />)}
+                                                </Box>
                                             </Box>
-                                        </Box>
+                                        :   <Box justifyContent={'center'} alignItems={'center'}>
+                                                <Typography variant="labellg">
+                                                    No data found.
+                                                </Typography>
+                                            </Box>
                                     )
                     }
                 </Box>
             </Box>
+
+            <Toastify
+                open={open}
+                onClose={() => setOpen(false)}
+                message={message}
+                error={isError}
+                success={isSuccess}
+            />
         </Box>
     )
 }

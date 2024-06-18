@@ -5,31 +5,14 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { ArrowForward, Close, Star } from "@mui/icons-material";
 import { Avatar, Box, Divider, IconButton, LinearProgress, Rating, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWindowSize } from "@uidotdev/usehooks";
 import InputField from "@/app/components/InputField";
 import { NButton } from "@/app/components/PButton";
-
-const reviews = [
-  {
-      title: 'review title',
-      comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-      dateCreated: '2 hours ago',
-      rating: '3'
-  },
-  {
-      title: 'review title',
-      comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-      dateCreated: '2 hours ago',
-      rating: '2'
-  },
-  {
-      title: 'review title',
-      comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-      dateCreated: '2 hours ago',
-      rating: '1'
-  }
-]
+import { useGetSingleInsight, usePostInsightReview } from "@/app/admin/hooks/insightHook/useInsight";
+import { useSession } from "next-auth/react";
+import capitalize from "capitalize";
+import Toastify from "@/app/components/ToastifySnack";
 
 export default function page({ params }: any) {
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -37,23 +20,50 @@ export default function page({ params }: any) {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const size = useWindowSize();
   const [review, setReview] = useState<string>('');
+  const insightMutation = useGetSingleInsight();
+  const { data: session } = useSession();
+  const reviewMutation = usePostInsightReview();
 
-  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 7,
-    borderRadius: 5,
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: theme.palette.secondary.lighter
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-      borderRadius: 5,
-      backgroundColor: theme.palette.primary.main
-    },
-  }));
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setOpen(true);
+  };
 
   const handleCloseModal = () => {
     setReview('');
     setModalOpen(false)
+  };
+
+  const handleReview = async () => {
+    await reviewMutation.mutateAsync({ review: review, insightId: params.id }, {
+      onSuccess: async (response: any) => {
+        await insightMutation.mutateAsync(params.id);
+        setModalOpen(false)
+        setReview('')
+        handleOpenNotification('success', response.message)
+      },
+      onError: (error: any) => {
+          const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+          handleOpenNotification('error', '', errorMessage)
+      }
+    })
   }
+
+  useEffect(() => {
+    const getInsight = async () => {
+      if(params.id) {
+        await insightMutation.mutateAsync(params.id)
+      }
+    }
+    getInsight()
+  },[session, params]);
 
   return (
     <>
@@ -85,7 +95,9 @@ export default function page({ params }: any) {
             }}
           >
             <img
-              src='/model.png'
+               src={insightMutation.data?.result && insightMutation.data?.result.user.image 
+                      ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${insightMutation.data?.result.user.image}`
+                      : "/logo.png"}
               alt="hosital image"
               style={{
                 width: '5em',
@@ -102,10 +114,10 @@ export default function page({ params }: any) {
               }}
             >
               <Typography variant="labelbase">
-                ABC Hospital
+                {insightMutation.data?.result && capitalize.words(insightMutation.data?.result.hospitalName) || ''}
               </Typography>
               <Typography color={theme.palette.secondary.light} variant="paragraphxxs">
-                2,500 Reviews
+                {insightMutation.data?.result && insightMutation.data?.result.reviews.length} Reviews
               </Typography>
               <Box
                 sx={{
@@ -123,7 +135,7 @@ export default function page({ params }: any) {
                   sx={{ color: '#FFCB00' }}
                 />
                 <Typography variant="paragraphxs" color={theme.palette.secondary.light} mb={-1}>
-                  4
+                  {insightMutation.data?.result && insightMutation.data?.result.rating}
                 </Typography>
               </Box>
               
@@ -171,11 +183,11 @@ export default function page({ params }: any) {
             gap: 3
           }}
         >
-          <Typography variant="labelsm" mb={-3}>
+          <Typography variant="labellg" mb={-3}>
             Review
           </Typography>
           <Typography variant="paragraphsm" color={theme.palette.secondary.light} width={isMobile ? '100%' : '70%'}>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis fuga quia iusto nulla quibusdam, dolore in illo cum molestiae voluptate eligendi alias recusandae! Laboriosam ea saepe praesentium veniam, sapiente beatae!
+            {insightMutation.data?.result && insightMutation.data?.result.comment}
           </Typography>
           <Box
             onClick={() => setModalOpen(true)}
@@ -195,7 +207,9 @@ export default function page({ params }: any) {
             }}
           >
             <Avatar
-              src="/model.png"
+              src={insightMutation.data?.result && insightMutation.data?.result.user.image 
+                    ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${insightMutation.data?.result.user.image}`
+                    : "/logo.png"}
               sx={{
                 width: 30,
                 height: 30
@@ -206,57 +220,59 @@ export default function page({ params }: any) {
             </Typography>
           </Box>
           <Divider sx={{width: isMobile ? '100%' : '70%', my: 2}}/>
-          {
-            reviews.map((review, index) => (
-              <Box
-                sx={{
-                  width: isMobile ? '100%' : '70%',
-                  bgcolor: 'white',
-                  border: `1px solid ${theme.palette.secondary.lighter}`,
-                  p: 3,
-                  display: 'flex',
-                  gap: 2,
-                  // alignItems: 'center',
-                  borderRadius: theme.borderRadius.sm,
-                  flexDirection: 'column'
-                }}
-              >
-                <Box
+          { insightMutation.data?.result.reviews.length > 0 
+            ? insightMutation.data?.result.reviews.map((review: any, index: number) => (
+                <Box key={index}
                   sx={{
+                    width: isMobile ? '100%' : '70%',
+                    bgcolor: 'white',
+                    border: `1px solid ${theme.palette.secondary.lighter}`,
+                    p: 3,
                     display: 'flex',
                     gap: 2,
-                    alignItems: 'center'
+                    borderRadius: theme.borderRadius.sm,
+                    flexDirection: 'column'
                   }}
                 >
-                  <Avatar
-                    src="/model.png"
-                    alt="review image"
-                    sx={{
-                      width: 40,
-                      height: 40
-                    }}
-                  />
                   <Box
                     sx={{
                       display: 'flex',
-                      flexDirection: 'column',
-                      // gap: 1
+                      gap: 2,
+                      alignItems: 'center'
                     }}
                   >
-                    <Typography variant="labelxs">
-                      Adeyemi Olowu
-                    </Typography>
-                    <Typography variant="paragraphxxs" color={theme.palette.secondary.light}>
-                      CEO
-                    </Typography>
+                    <Avatar
+                      src={review.user.image 
+                            ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.user.image}`
+                            : "/person.png"}
+                      alt="review image"
+                      sx={{
+                        width: 40,
+                        height: 40
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+                      <Typography variant="labelxs">
+                        {`${capitalize.words(review.user.firstName)} ${capitalize.words(review.user.lastName)}`}
+                      </Typography>
+                    </Box>
                   </Box>
+                  <Divider sx={{my: 2}}/>
+                  <Typography variant="paragraphsm">
+                    {review.review}
+                  </Typography>
                 </Box>
-                <Divider sx={{my: 2}}/>
-                <Typography variant="paragraphxs">
-                  {review.comment}
-                </Typography>
-              </Box>
-            ))
+              ))
+            : (<Box justifyContent={'center'} alignItems={'center'}>
+                  <Typography variant='paragraphsm' color={theme.palette.secondary.light}>
+                    No reviews.
+                  </Typography>
+              </Box>)
           }
           
         </Box>
@@ -267,6 +283,7 @@ export default function page({ params }: any) {
         open={modalOpen}
         width={isMobile ? '90%' : '60%'}
         showCloseIcon={false}
+        height={isMobile ? '80%' : '350px'}
       >
         <Box className="flex flex-col p-2 gap-3"
           sx={{
@@ -317,14 +334,23 @@ export default function page({ params }: any) {
           </Box>
           <Box width={'100%'}>
             <NButton
+              onClick={handleReview}
               textcolor="white"
               bkgcolor={theme.palette.primary.main}
             >
-              Submit review
+              {reviewMutation.isLoading ? 'Submitting...' : 'Submit review'}
             </NButton>
           </Box>
         </Box>
       </MModal>
+
+      <Toastify
+        open={open}
+        onClose={() => setOpen(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
       <Footer/>
     </>
   )

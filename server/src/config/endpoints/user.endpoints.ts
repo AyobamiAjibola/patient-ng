@@ -1,9 +1,23 @@
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
+    createAdvocacyHandler,
+    createInsightHandler,
     deactivateUserHandler, 
+    deleteAdvocacyHandler, 
+    deleteInsightHandler, 
+    getAllAdvocaciesHandler, 
+    getAllInsightsHandler, 
     getAllUserHandler, 
+    getSingleAdvocateHandler, 
+    getSingleInsightHandler, 
     getSingleUserHandler, 
+    getUserAdvocaciesHandler, 
+    getUserInsightsHandler, 
+    reviewOnInsightHandler, 
+    updateAdvocacyHandler, 
+    updateAdvocacyStatusHandler, 
+    updateInsightHandler, 
     updateUserOnboardingHandler, 
     updateUserProfileHandler
 } from '../../routes/userRoute';
@@ -34,10 +48,96 @@ const userEndpoints: RouteEndpoint  = [
         handler: updateUserProfileHandler
     },
     {
-        name: 'deactivate user',
+        name: 'toggle user-status',
         method: 'put',
-        path: '/deactivate-user',
+        path: '/toggle-user-status/:userId',
         handler: deactivateUserHandler
+    },
+    //insight
+    {
+        name: 'post insight review',
+        method: 'put',
+        path: '/post-insight-review/:insightId',
+        handler: reviewOnInsightHandler
+    },
+    {
+        name: 'update insight',
+        method: 'put',
+        path: '/update-insight/:insightId',
+        handler: updateInsightHandler
+    },
+    {
+        name: 'create insight',
+        method: 'post',
+        path: '/create-insight',
+        handler: createInsightHandler
+    },
+    {
+        name: 'get insight',
+        method: 'get',
+        path: '/get-all-insights',
+        handler: getAllInsightsHandler
+    },
+    {
+        name: 'delete insight',
+        method: 'delete',
+        path: '/delete-insight/:insightId',
+        handler: deleteInsightHandler
+    },
+    {
+        name: 'get insight',
+        method: 'get',
+        path: '/get-single-insight/:insightId',
+        handler: getSingleInsightHandler
+    },
+    {
+        name: 'get user insights',
+        method: 'get',
+        path: '/get-user-insights/:userId',
+        handler: getUserInsightsHandler
+    },
+    //advocacy
+    {
+        name: 'update advocacy status',
+        method: 'put',
+        path: '/update-advocacy-status/:advocacyId',
+        handler: updateAdvocacyStatusHandler
+    },
+    {
+        name: 'update advocacy',
+        method: 'put',
+        path: '/update-advocacy/:advocacyId',
+        handler: updateAdvocacyHandler
+    },
+    {
+        name: 'create advocacy',
+        method: 'post',
+        path: '/create-advocacy',
+        handler: createAdvocacyHandler
+    },
+    {
+        name: 'get advocacies',
+        method: 'get',
+        path: '/get-all-advocacies',
+        handler: getAllAdvocaciesHandler
+    },
+    {
+        name: 'delete advocacy',
+        method: 'delete',
+        path: '/delete-advocacy/:advocacyId',
+        handler: deleteAdvocacyHandler
+    },
+    {
+        name: 'get single advocacy',
+        method: 'get',
+        path: '/get-single-advocacy/:advocacyId',
+        handler: getSingleAdvocateHandler
+    },
+    {
+        name: 'get user advocacies',
+        method: 'get',
+        path: '/get-user-advocacies/:userId',
+        handler: getUserAdvocaciesHandler
     },
 ]
 

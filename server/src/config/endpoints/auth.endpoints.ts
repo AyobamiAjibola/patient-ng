@@ -5,6 +5,7 @@ import {
     createUserHandler,
     getAccessTokenHandler,
     resetPasswordHandler,
+    resetUserPasswordHandler,
     sendPasswordResetLinkHandler,
     sendSignUpOtpHandler, 
     signInAdminUserHandler, 
@@ -73,7 +74,13 @@ const authEndpoints: RouteEndpoint  = [
         method: 'post',
         path: '/create-user',
         handler: createUserHandler
-    }
+    },
+    {
+        name: 'reset user password',
+        method: 'put',
+        path: '/reset-user-password',
+        handler: resetUserPasswordHandler
+    },
 ]
 
 export default authEndpoints;

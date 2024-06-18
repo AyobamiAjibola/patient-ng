@@ -39,7 +39,7 @@ const transactionSchema = new Schema<ITransactions>({
     currency: { type: String },
     paidAt: { type: Date },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
-    crowedFunding: { type: Schema.Types.ObjectId, ref: 'CrowedFunding' }
+    crowedFunding: { type: Schema.Types.ObjectId, ref: 'CrowdFunding' }
 });
 
 transactionSchema.pre(['findOne', 'find'], function (next) {

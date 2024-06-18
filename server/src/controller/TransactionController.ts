@@ -43,6 +43,8 @@ export default class TransactionController {
             return Promise.reject(CustomAPIError.response("Crowed funding not found.", HttpStatus.NOT_FOUND.code));
         if(!user)
             return Promise.reject(CustomAPIError.response('User does not exist', HttpStatus.NOT_FOUND.code));
+        if(crowdFunding.status === "done")
+            return Promise.reject(CustomAPIError.response('You can no longer donate the crowdfunding is done.', HttpStatus.NOT_FOUND.code));
 
         const crowedFunding = await datasources.crowdFundingDAOService.findByAny({ user: crowdFunding.user });
         if(!crowedFunding)
@@ -66,7 +68,7 @@ export default class TransactionController {
 
         endpoint = '/transaction/initialize';
 
-        const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}/`;
+        const callbackUrl = `${process.env.PAYMENT_GW_CB_URL}/${crowdFunding._id}/`;
         const amount = value.amount;
         let serviceCharge = 0.015 * amount;
 
@@ -100,10 +102,10 @@ export default class TransactionController {
 
         const transaction = await datasources.transactionDAOService.create(txnValues as ITransactionModel);
 
-        const response: HttpResponse<ITransactionModel> = {
+        const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: HttpStatus.OK.value,
-            result: transaction,
+            result: transaction.authorizationUrl,
           };
       
         return Promise.resolve(response);
@@ -134,7 +136,8 @@ export default class TransactionController {
             accountNumber: Joi.string().required().label('account number'),
             bankCode: Joi.string().required().label("bank code")
         }).validate(req.body);
-console.log(value.accountNumber, value.bankCode, 'dfd')
+        if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
         const verificationData = await paystackService.verifyBankAccount(value.accountNumber, value.bankCode);
 
         if (!verificationData) {
@@ -157,18 +160,17 @@ console.log(value.accountNumber, value.bankCode, 'dfd')
 
     @TryCatch
     public async initTransactionCallback(req: Request) {
-        // const { reference } = req.query as unknown as { reference: string };
 
         const { error, value } = Joi.object<any>({
             reference: Joi.string().required().label('reference'),
-            // amount: Joi.number().required().label('Amount'),
             crowedFundingId: Joi.string().required().label("Crowed funding id is required.")
         }).validate(req.body);
+        if (error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
         const transaction = await datasources.transactionDAOService.findByAny({
            reference: value.reference
         });
-        
+
         if (!transaction) {
             return Promise.reject(CustomAPIError.response('Transaction Does not exist.', HttpStatus.NOT_FOUND.code));
         }
@@ -182,14 +184,9 @@ console.log(value.accountNumber, value.bankCode, 'dfd')
         axiosClient.defaults.headers.common['Authorization'] = `Bearer ${process.env.PAYMENT_GW_SECRET_KEY}`;
 
         const endpoint = `/transaction/verify/${value.reference}`;
-
         const axiosResponse = await axiosClient.get(endpoint);
-
         const data = axiosResponse.data.data;
-        
-        // const amountInKobo = data.amount * 100;
-        // await paystackService.sendMoneyToAccount(crowedFunding.account.accountNumber, crowedFunding.account.bankCode, amountInKobo, "Payment");
-        
+
         const $transaction = {
             reference: data.reference,
             channel: data.authorization.channel,
@@ -211,19 +208,18 @@ console.log(value.accountNumber, value.bankCode, 'dfd')
             $transaction
         );
 
-        const payload = {
+        crowedFunding.donations.unshift({
             user: transaction.user,
-            amount: transaction.amount,
+            amount: transaction.amount.toString(),
             date: data.paid_at
-        };
+        })
 
-        const donations = [...crowedFunding.donations, payload];
-        const amountPaid = +crowedFunding.amountRaised + +value.amount
+        const amountPaid = +crowedFunding.amountRaised + transaction.amount
 
         await datasources.crowdFundingDAOService.updateByAny(
             { _id: crowedFunding._id },
             {
-                donations,
+                donations: crowedFunding.donations,
                 amountRaised: amountPaid.toString()
             }
         );

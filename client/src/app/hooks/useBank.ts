@@ -11,7 +11,7 @@ export default function useBank() {
     const axiosAuth = useAxiosAuth();
 
     const verifyBank = useMutation(async (item: IBank) => {
-        return axiosAuth.post('/verify-bank-account', item);
+      return axiosAuth.post('/verify-bank-account', item);
     });
 
     const getBanks = useMutation(async () => {

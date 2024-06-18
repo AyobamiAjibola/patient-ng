@@ -5,7 +5,7 @@ import Modal from '@mui/material/Modal';
 import { Backdrop, IconButton, useTheme } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
-const MModal = ({ onClose, open, width, showCloseIcon = true, onClickOut = true, children, props }: any) => {
+const MModal = ({ onClose, open, width, showCloseIcon = true, onClickOut = true, height = '80%', children, props }: any) => {
   const theme = useTheme();
 
   return (
@@ -33,7 +33,7 @@ const MModal = ({ onClose, open, width, showCloseIcon = true, onClickOut = true,
           boxShadow: theme.shadows[5],
           p: theme.spacing(2),
           borderRadius: theme.borderRadius.sm,
-          height: '80%',
+          height: height,
           overflow: 'scroll',
           ...props
         }}

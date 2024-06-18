@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { characterBreaker, formAmount } from '@/lib/helper';
 import { useAtom } from 'jotai';
 import { useAdminUser, useCrowdStatus } from '@/lib/atoms';
+import moment from 'moment';
 
 const CrowdfundingAdminTable: React.FC = ({data}: any) => {
   const router = useRouter();
@@ -27,11 +28,11 @@ const CrowdfundingAdminTable: React.FC = ({data}: any) => {
               flexDirection: 'column'
             }}
           >
-            <Typography variant='labelxs'>
+            <Typography variant='labelsm' className='capitalize'>
               {isMobile ? characterBreaker(record.title, 10) : characterBreaker(record.title, 20)}...
             </Typography>
-            <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
-              {record.date}
+            <Typography variant='paragraphxxs' color={theme.palette.secondary.light}>
+              {moment(record.createdAt).format('MM/DD/YYYY(hh:mm A)')}
             </Typography>
           </Box>
       )},
@@ -41,8 +42,8 @@ const CrowdfundingAdminTable: React.FC = ({data}: any) => {
       key: 'createdBy',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.createdBy}
+          <Typography variant='labelxs' color={theme.palette.secondary.light} className='capitalize'>
+            {`${record.user.firstName} ${record.user.lastName}`}
           </Typography>
       )},
     },
@@ -52,8 +53,8 @@ const CrowdfundingAdminTable: React.FC = ({data}: any) => {
       key: 'fundraiserFor',
       render: (_, record) => {
         return (
-          <Tag>
-            {record.fundraiserFor}
+          <Tag className='capitalize'>
+            {record.fundraisingFor}
           </Tag>
       )},
     },
@@ -74,13 +75,13 @@ const CrowdfundingAdminTable: React.FC = ({data}: any) => {
       key: 'status',
       render: (_, record) => {
         return (
-          <Tag
+          <Tag className='capitalize'
             style={{
-              color: record.status === "Pending"
+              color: record.status === "pending"
                       ? theme.palette.state.warning
-                      : record.status === "Active"
+                      : record.status === "done"
                         ? theme.palette.primary.main
-                        : theme.palette.state.error
+                        : record.status === "active" ? theme.palette.primary.darker : theme.palette.state.error
             }}  
           >
             {record.status}
@@ -93,7 +94,7 @@ const CrowdfundingAdminTable: React.FC = ({data}: any) => {
       render: (_, record) => {
         return (
           <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.location}
+            {record.address}
           </Typography>
       )},
     },

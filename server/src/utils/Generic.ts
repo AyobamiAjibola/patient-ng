@@ -327,7 +327,7 @@ export default class Generic {
   
       // Calculate the refresh token expiration date (e.g., 7 days from now)
       const refreshTokenExpiry = new Date();
-      refreshTokenExpiry.setHours(refreshTokenExpiry.getHours() + 24);
+      refreshTokenExpiry.setHours(refreshTokenExpiry.getHours() + 168);
   
       // Create a new user token
       await UserToken.create({
@@ -422,6 +422,18 @@ export default class Generic {
 
   public static generatePasswordResetCode(limit: number) {
     const letters = '0123456789';
+    const letterCount = letters.length;
+    const randomBytes = crypto.randomBytes(limit);
+    let randomString = '';
+    for (let i = 0; i < limit; i++) {
+      const randomNum = randomBytes[i] % letterCount;
+      randomString += letters[randomNum];
+    }
+    return randomString;
+  }
+
+  public static generateReference(limit: number) {
+    const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ';
     const letterCount = letters.length;
     const randomBytes = crypto.randomBytes(limit);
     let randomString = '';

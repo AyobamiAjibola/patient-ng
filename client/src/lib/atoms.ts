@@ -8,3 +8,7 @@ export const useAdminUser = atom<boolean>(false);
 export const useCrowdStatus = atom<string>('');
 export const setEditState = atom<boolean>(false);
 export const setIsLoggedIn = atom<boolean>(false);
+export const modalReg = atom<boolean>(false);
+export const sessionErrorMsg = atom<string>("");
+export const sessionErrorModal = atom<boolean>(false);
+export const setOpenSignInModal = atom<boolean>(false);

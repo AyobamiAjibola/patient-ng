@@ -8,6 +8,8 @@ import CrowdFundingRepository from "../../repository/CrowdFundingRepository";
 import TransactionRepository from "../../repository/TransactionRepository";
 import PaymentRequestRepository from "../../repository/PaymentRequestRepository";
 import BankRepository from "../../repository/BankRepository";
+import InsightRepository from "../../repository/InsightRepository";
+import AdvocacyRepository from "../../repository/AdvocacyRepository";
 
 import UserDAOService from "./UserDAOService";
 import BlogDAOService from "./BlogDAOService";
@@ -19,6 +21,8 @@ import CrowdFundingDAOService from "./CrowdFundingDAOService";
 import TransactionDAOService from "./TransactionDAOService";
 import PaymentRequestDAOService from "./PaymentRequestDAOService";
 import BankDAOService from "./BankDAOService";
+import AdvocacyDAOService from "./AdvocacyDAOService";
+import InsightDAOService from "./InsightDAOService";
 
 const userRepository = new UserRepository();
 const blogRepository = new BlogRepository();
@@ -30,6 +34,8 @@ const crowdFundingRepository = new CrowdFundingRepository();
 const transactionRepository = new TransactionRepository();
 const paymentRequestRepository = new PaymentRequestRepository();
 const bankRepository = new BankRepository();
+const insightRepository = new InsightRepository();
+const advocacyRepository = new AdvocacyRepository();
 
 const userDAOService = new UserDAOService(userRepository);
 const blogDAOService = new BlogDAOService(blogRepository);
@@ -41,9 +47,13 @@ const crowdFundingDAOService = new CrowdFundingDAOService(crowdFundingRepository
 const transactionDAOService = new TransactionDAOService(transactionRepository);
 const paymentRequestDAOService = new PaymentRequestDAOService(paymentRequestRepository);
 const bankDAOService = new BankDAOService(bankRepository);
+const advocacyDAOService = new AdvocacyDAOService(advocacyRepository);
+const insightDAOService = new InsightDAOService(insightRepository);
 
 export default {
     userDAOService,
+    advocacyDAOService,
+    insightDAOService,
     blogDAOService,
     patientStoriesDAOService,
     podcastDAOService,
