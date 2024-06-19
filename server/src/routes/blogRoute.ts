@@ -75,3 +75,21 @@ export const singleBlogHandler = async (req: Request, res: Response) =>  {
 
     res.status(response.code).json(response);
 };
+
+export const changeBlogStatusToDraftHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await blogController.changeBlogStatusToDraft(req);
+
+    res.status(response.code).json(response);
+});
+
+export const changeBlogStatusToPublishHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await blogController.changeBlogStatusToPublish(req);
+
+    res.status(response.code).json(response);
+});
+
+export const changeBlogStatusToArchiveHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await blogController.changeBlogStatusToArchive(req);
+
+    res.status(response.code).json(response);
+});

@@ -1,6 +1,9 @@
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
+    changeBlogStatusToArchiveHandler,
+    changeBlogStatusToDraftHandler,
+    changeBlogStatusToPublishHandler,
     commentOnBlogHandler, 
     createBlogCategoryHandler, 
     createBlogHandler, 
@@ -76,7 +79,7 @@ const blogEndpoints: RouteEndpoint  = [
     {
         name: 'get blogs with category',
         method: 'get',
-        path: '/get-blogs-with-catgory',
+        path: '/get-blogs-with-catgory/:blogCategoryId',
         handler: fetchBlogsByCategoryHandler
     },
     {
@@ -84,6 +87,24 @@ const blogEndpoints: RouteEndpoint  = [
         method: 'get',
         path: '/get-single-blog/:blogId',
         handler: singleBlogHandler
+    },
+    {
+        name: 'change blog draft',
+        method: 'put',
+        path: '/change-to-draft/:blogId',
+        handler: changeBlogStatusToDraftHandler
+    },
+    {
+        name: 'change blog publish',
+        method: 'put',
+        path: '/change-to-publish/:blogId',
+        handler: changeBlogStatusToPublishHandler
+    },
+    {
+        name: 'change blog archive',
+        method: 'put',
+        path: '/change-to-archive/:blogId',
+        handler: changeBlogStatusToArchiveHandler
     },
 ];
 

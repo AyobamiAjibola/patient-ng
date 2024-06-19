@@ -243,9 +243,9 @@ export default class BlogController {
     @TryCatch
     public async fetchBlogsByCategory (req: Request) {
 
-        const blogCategory = req.body.blogCategory;
+        const blogCategoryId = req.params.blogCategoryId;
 
-        const blogs = await datasources.blogDAOService.findAll({category: blogCategory});
+        const blogs = await datasources.blogDAOService.findAll({category: blogCategoryId});
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
@@ -257,11 +257,83 @@ export default class BlogController {
     }
 
     @TryCatch
+    public async changeBlogStatusToDraft (req: Request) {
+ 
+        const blogId = req.params.blogId;
+
+        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
+        if(!blog)
+            return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+
+        await datasources.blogDAOService.updateByAny(
+            {_id: blog._id},
+            {
+                status: "draft"
+            }
+        )
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully changed blog status to draft.',
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async changeBlogStatusToPublish (req: Request) {
+ 
+        const blogId = req.params.blogId;
+
+        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
+        if(!blog)
+            return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+
+        await datasources.blogDAOService.updateByAny(
+            {_id: blog._id},
+            {
+                status: "publish"
+            }
+        )
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully published this blog.',
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async changeBlogStatusToArchive (req: Request) {
+ 
+        const blogId = req.params.blogId;
+
+        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
+        if(!blog)
+            return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+
+        await datasources.blogDAOService.updateByAny(
+            {_id: blog._id},
+            {
+                status: "archive"
+            }
+        )
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully archived blog.',
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
     public async singleBlog (req: Request) {
  
         const blogId = req.params.blogId;
 
-        const blog = await datasources.blogDAOService.findById(blogId);
+        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
 
@@ -280,20 +352,23 @@ export default class BlogController {
 
     private async doCreateBlog(req: Request): Promise<HttpResponse<IBlogModel>> {
         return new Promise((resolve, reject) => {
+           
             form.parse(req, async (err, fields, files) => {
                 const loggedInUser = req.user._id;
 
-                const { error, value } = Joi.object<IBlogModel>({
+                const { error, value } = Joi.object<any>({
                     title: Joi.string().required().label('Title'),
-                    body: Joi.string().required().label('Blog body'),
+                    urlSlug: Joi.string().required().label('Url slug'),
+                    content: Joi.string().required().label('Blog body'),
                     category: Joi.string().required().label('Blog category'),
-                    hot: Joi.boolean().required().label('hot blog'),
+                    hot: Joi.string().label('hot blog'),
                     titleImage: Joi.any().label('Title image'),
                     bodyImage: Joi.any().label('Body image'),
                     publisher: Joi.string().required().label('Publisher'),
+                    status: Joi.string().required().label('status')
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-
+ 
                 const [user, category] = await Promise.all([
                     datasources.userDAOService.findById(loggedInUser),
                     BlogCategory.findOne({ name: value.category })
@@ -309,32 +384,24 @@ export default class BlogController {
                 if(!category)
                     return reject(CustomAPIError.response("Category does not exist.", HttpStatus.NOT_FOUND.code));
 
-                const basePath = `${UPLOAD_BASE_PATH}/photo`;
+                const basePathBodyImage = `${UPLOAD_BASE_PATH}/blogbodyimg`;
+                const basePathTitleImage = `${UPLOAD_BASE_PATH}/blogtitleimg`;
 
-                // const handleImage = async (image: File) => {
-                //     if (!image) return '';
-                //     const allowedFileTypes = ALLOWED_FILE_TYPES;
-                //     if (!allowedFileTypes.includes(image.mimetype as string)) {
-                //         throw new CustomAPIError(MESSAGES.image_type_error, HttpStatus.BAD_REQUEST.code);
-                //     }
-                //     const outputPath = await Generic.compressImage(image.filepath);
-                //     return Generic.getImagePath({
-                //         tempPath: outputPath,
-                //         filename: image.originalFilename as string,
-                //         basePath,
-                //     });
-                // };
-        
                 const [_titleImage, _bodyImage] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePath),
-                    Generic.handleImage(files.bodyImage as File, basePath)
+                    Generic.handleImage(files.titleImage as File, basePathTitleImage),
+                    Generic.handleImage(files.bodyImage as File, basePathBodyImage)
                 ]);
+
+                const blogExist = await datasources.blogDAOService.findByAny({urlSlug: value.urlSlug});
+                if(blogExist)
+                    return reject(CustomAPIError.response(`A blog with this permlink: ${process.env.CLIENT_URL}${value.urlSlug} already exist.`, HttpStatus.FORBIDDEN.code))
 
                 const payload: Partial<IBlogModel> = {
                     ...value,
-                    category: category.name,
+                    category: category._id,
                     titleImage: _titleImage ? _titleImage : '',
-                    bodyImage: _bodyImage ? _bodyImage : ''
+                    bodyImage: _bodyImage ? _bodyImage : '',
+                    hot: value.hot
                 }
 
                 const blog: any = await datasources.blogDAOService.create(payload as IBlogModel);
@@ -353,9 +420,10 @@ export default class BlogController {
 
                 const { error, value } = Joi.object<IBlogModel>({
                     title: Joi.string().label('Title'),
-                    body: Joi.string().label('Blog body'),
+                    urlSlug: Joi.string().label('Url slug'),
+                    content: Joi.string().label('Blog body'),
                     category: Joi.string().label('Blog category'),
-                    hot: Joi.boolean().label('hot blog'),
+                    // hot: Joi.string().label('hot blog'),
                     titleImage: Joi.any().label('Title image'),
                     bodyImage: Joi.any().label('Body image'),
                     publisher: Joi.string().label('Publisher'),
@@ -364,7 +432,7 @@ export default class BlogController {
 
                 const [user, blog] = await Promise.all([
                     datasources.userDAOService.findById(loggedInUser),
-                    datasources.blogDAOService.findById(blogId)
+                    datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`})
                 ]);
 
                 const allowedUser = Generic.handleAllowedBlogUser(user?.userType);
@@ -381,28 +449,33 @@ export default class BlogController {
                         return reject(CustomAPIError.response("Category does not exist.", HttpStatus.NOT_FOUND.code));
                 }
                 
-                const basePath = `${UPLOAD_BASE_PATH}/photo`;
-        
+                const basePathBodyImage = `${UPLOAD_BASE_PATH}/blogbodyimg`;
+                const basePathTitleImage = `${UPLOAD_BASE_PATH}/blogtitleimg`;
+
                 const [_titleImage, _bodyImage] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePath),
-                    Generic.handleImage(files.bodyImage as File, basePath)
+                    Generic.handleImage(files.titleImage as File, basePathTitleImage),
+                    Generic.handleImage(files.bodyImage as File, basePathBodyImage)
                 ]);
 
-                const imagePath = 'photo/'
+                const imagePathtitle = 'blogtitleimg/'
                 if (_titleImage && blog.titleImage) {
-                    await Generic.deleteExistingImage(blog.titleImage, basePath, imagePath);
+                    await Generic.deleteExistingImage(blog.titleImage, basePathTitleImage, imagePathtitle);
                 }
         
+                const imagePathbody = 'blogbodyimg/'
                 if (_bodyImage && blog.bodyImage) {
-                    await Generic.deleteExistingImage(blog.bodyImage, basePath, imagePath);
+                    await Generic.deleteExistingImage(blog.bodyImage, basePathBodyImage, imagePathbody);
                 }
         
-
                 const payload: Partial<IBlogModel> = {
-                    ...value,
-                    category: value.category ? category?.name : blog.category,
+                    title: value.title ? value.title : blog.title,
+                    content: value.content ? value.content : blog.content,
+                    publisher: value.publisher ? value.publisher : blog.publisher,
+                    category: value.category ? category?._id : blog.category,
                     titleImage: _titleImage ? _titleImage : blog.titleImage,
-                    bodyImage: _bodyImage ? _bodyImage : blog.bodyImage
+                    bodyImage: _bodyImage ? _bodyImage : blog.bodyImage,
+                    // hot: value.hot ? value.hot : blog.hot,
+                    urlSlug: value.urlSlug ? value.urlSlug : blog.urlSlug
                 }
 
                 const updatedBlog: any = await datasources.blogDAOService.updateByAny({_id: blog._id}, payload as IBlogModel);

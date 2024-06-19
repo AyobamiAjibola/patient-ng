@@ -8,6 +8,8 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
+import { useGetBlogs } from "../hooks/blogHook/useBlog";
+import { useSession } from "next-auth/react";
 
 const item = [
   "All",
@@ -104,11 +106,15 @@ export default function page() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [blogs, setBlogs] =  useState<any>([]);
   const router = useRouter();
+  const getBlogsMutation = useGetBlogs();
+  const {data: session} = useSession();
+  const [blogData, setBlogData] = useState<any>([]);
 
   const filteredData =
     blogs &&
     blogs.filter((item: any) =>
-      item.author.toLowerCase().includes(searchQuery.toLowerCase())
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.publisher.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -122,16 +128,28 @@ export default function page() {
     if(currentItem === "All") {
       setBlogs(blogData)
     } else if(currentItem === "Published") {
-      const filteredData = blogData.filter((blogs) => blogs.status === "published");
+      const filteredData = blogData.filter((blogs: any) => blogs.status === "publish");
       setBlogs(filteredData)
     } else if(currentItem === "Draft") {
-      const filteredData = blogData.filter((blog) => blog.status === "draft");
+      const filteredData = blogData.filter((blog: any) => blog.status === "draft");
       setBlogs(filteredData)
     }else if(currentItem === "Archived") {
-      const filteredData = blogData.filter((blog) => blog.status === "archived");
+      const filteredData = blogData.filter((blog: any) => blog.status === "archived");
       setBlogs(filteredData)
     }
   },[currentItem]);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      await getBlogsMutation.mutateAsync({}, {
+        onSuccess: (response) => {
+          setBlogData(response.results)
+        }
+      });
+    }
+
+    fetchBlogs();
+  },[session]);
 
   return (
     <Box

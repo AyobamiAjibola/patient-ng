@@ -49,7 +49,7 @@ export const useUserApi = () => {
     if(data.userType.length > 0) {
       formData.append('userType', JSON.stringify(data.userType));
     }
-
+ 
     const response = await axiosAuth.put<
       types.ApiResponseSuccess<any>>
       (`/update-user-profile/${data.userId}`, formData);

@@ -39,20 +39,19 @@ const TextEditor = ({ preference, setPreference }: any) => {
         style={{ 
           display: "flex", 
           justifyContent: "center",
-          marginTop: '40px'
+          backgroundColor: 'white'
         }}
       >
         <ReactQuill
           theme="snow"
           modules={modules}
           formats={formats}
-          placeholder="terms and condition...."
+          placeholder="Blog content...."
           onChange={handleProcedureContentChange}
-          className="md:min-h-[350px] min-h-[200px] max-h-[200px] md:max-h-[350px] overflow-y: auto"
+          className="h-[250px]"
           style={{width: '100%'}}
           value={preference}
         />
-        {/* </ReactQuill> */}
       </div>
     </div>
   );
