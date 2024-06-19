@@ -6,6 +6,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { ChatBubbleOutlineRounded, FavoriteBorderOutlined, RemoveRedEyeOutlined } from '@mui/icons-material';
 import capitalize from 'capitalize';
+import moment from 'moment';
 
 const BlogAdminTable: React.FC = ({data}: any) => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
               flexDirection: 'column'
             }}
           >
-            <Typography variant='labelxs'>
+            <Typography variant='labelxs' className='capitalize'>
               {record.title}
             </Typography>
           </Box>
@@ -35,8 +36,8 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       key: 'createdBy',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.author}
+          <Typography variant='labelxs' color={theme.palette.secondary.light} className='capitalize'>
+            {record.publisher}
           </Typography>
       )},
     },
@@ -46,7 +47,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       render: (_, record) => {
         return (
           <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.publicationDate}
+            {moment(record.createdAt).format('DD MMM YYYY')}
           </Typography>
       )},
     },
@@ -55,13 +56,13 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       key: 'status',
       render: (_, record) => {
         return (
-          <Tag
+          <Tag className='capitalize'
             style={{
-              color: record.status === "published"
-                      ? theme.palette.primary.main  
+              color: record.status === "publish"
+                      ? "green"
                       : record.status === "draft"
-                        ? "black"
-                        : theme.palette.state.error
+                        ? "gold"
+                        : "red"
             }}
           >
             {capitalize.words(record.status)}
@@ -80,7 +81,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
                   color: theme.palette.secondary.light,
                   fontSize: '14px'
                 }}
-              /> {record.views}
+              /> {record.views || 0}
             </Typography>
             <Typography variant='labelxxs'>
               <FavoriteBorderOutlined
@@ -88,7 +89,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
                   color: theme.palette.secondary.light,
                   fontSize: '14px'
                 }}
-              /> {record.likes}
+              /> {record.likes.length}
             </Typography>
             <Typography variant='labelxxs'>
               <ChatBubbleOutlineRounded
@@ -96,7 +97,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
                   color: theme.palette.secondary.light,
                   fontSize: '14px'
                 }}
-              /> {record.comments}
+              /> {record.comments.length}
             </Typography>
         </Box>
       )},
@@ -106,7 +107,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       key: 'action',
       render: (_, record) => {
         const handleUser = () => {
-          router.push(`/admin/blog/${record.permLink}`)
+          router.push(`/admin/blog${record.urlSlug}`)
         }
         return (
           <Box

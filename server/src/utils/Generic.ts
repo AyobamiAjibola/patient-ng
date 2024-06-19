@@ -109,7 +109,7 @@ export default class Generic {
     const newFileName = `${v4()}${path.extname(params.filename)}`;
 
     const newPath = `${params.basePath}/${newFileName}`;
-
+ 
     await fs.rename(params.tempPath, newPath);
 
     return newPath;
@@ -142,7 +142,7 @@ export default class Generic {
     if (!allowedFileTypes.includes(image.mimetype as string)) {
         throw new CustomAPIError(MESSAGES.image_type_error, HttpStatus.BAD_REQUEST.code);
     }
-    const outputPath = await Generic.compressImage(image.filepath);
+    const outputPath = await Generic.compressImage(image.filepath, basePath);
     return Generic.getImagePath({
         tempPath: outputPath,
         filename: image.originalFilename as string,
@@ -249,8 +249,9 @@ export default class Generic {
     return sign(payload, key, {expiresIn: expiration});
   }
 
-  public static async compressImage(imagePath: string): Promise<string> {
-    let outputPath = path.join("uploads/photo", "image.webp");
+  public static async compressImage(imagePath: string, basePath?: string): Promise<string> {
+
+    let outputPath = basePath ? path.join(basePath, "image.png") : path.join("uploads/photo", "image.png");
     
     try {
         const image = await Jimp.read(imagePath);
@@ -269,7 +270,7 @@ export default class Generic {
   }
 
   public static async compressMenuImage(imagePath: string): Promise<string> {
-    let outputPath = path.join("uploads/photo", "image.webp");
+    let outputPath = path.join("uploads/photo", "image.png");
     
     try {
         const image = await Jimp.read(imagePath);
@@ -288,7 +289,7 @@ export default class Generic {
   }
 
   public static async compressGalleryImage(imagePath: string): Promise<string> {
-    let outputPath = path.join("uploads/gallery", "image.webp");
+    let outputPath = path.join("uploads/gallery", "image.png");
     
     try {
         const image = await Jimp.read(imagePath);

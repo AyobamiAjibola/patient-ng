@@ -5,7 +5,7 @@ import startup from './startup';
 import AppLogger from './utils/AppLogger';
 
 const logger = AppLogger.init('server').logger;
-const port = process.env.PORT || 5090;
+const port = process.env.PORT || 5010;
 
 const server = http.createServer(app);
 

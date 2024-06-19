@@ -7,8 +7,6 @@ import { ArrowDownward, ChatBubbleOutline } from "@mui/icons-material";
 import Footer from "@/app/components/Footer";
 import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
-import Search from 'antd/es/input/Search';
-import { Button } from "antd";
 import { useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { modalReg } from "@/lib/atoms";
