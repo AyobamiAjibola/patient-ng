@@ -5,12 +5,13 @@ import Navbar from "../components/Navbar";
 import { Button } from 'antd';
 import Search from 'antd/es/input/Search';
 import MyCheckbox from "../components/CheckBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { characterBreaker } from "@/lib/helper";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
+import { useGetWebinars } from "../admin/hooks/webinarHook/useWebinar";
 
 const topics = [
     "Nutrition and Diet",
@@ -59,10 +60,21 @@ const webinars = [
 
 export default function Webinars() {
     const theme = useTheme();
-    const isLoggedIn = false;
+    const isLoggedIn = true;
     const router = useRouter();
     const [checkedTopics, setCheckedTopics] = useState<string[]>([]);
     const md = useMediaQuery(theme.breakpoints.down('md'));
+    const fetchWebinarsMutation = useGetWebinars();
+    const [webinars, setWebinars] = useState<any>([]);
+
+    const handleFetchWebinars = async () => {
+        await fetchWebinarsMutation.mutateAsync({}, {
+        onSuccess: (response: any) => {
+            const filtered = response.results.filter((data: any) => data.status !== "draft")
+            setWebinars(filtered)
+        }
+        })
+    }
 
     const handleCheckboxChange = (topic: string, checked: boolean) => {
       if (checked) {
@@ -72,7 +84,9 @@ export default function Webinars() {
       }
     };
 
-    
+    useEffect(() => {
+        handleFetchWebinars()
+    },[]);
 
     return (
       <>
@@ -269,11 +283,12 @@ export default function Webinars() {
                                             ) : (
                                             <Typography
                                                 sx={{
-                                                color: theme.palette.primary.main,
-                                                fontSize: theme.typography.labelxs.fontSize,
-                                                fontWeight: theme.typography.labelxs.fontWeight,
-                                                cursor: 'pointer'
+                                                    color: theme.palette.primary.main,
+                                                    fontSize: theme.typography.labelxs.fontSize,
+                                                    fontWeight: theme.typography.labelxs.fontWeight,
+                                                    cursor: 'pointer'
                                                 }}
+                                                onClick={()=>router.push(`/webinar/${index}`)}
                                             >
                                                 Open <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
                                             </Typography>
@@ -322,7 +337,6 @@ export default function Webinars() {
             </Box>
             
         </Box>
-
         <Footer/>
       </>
     )

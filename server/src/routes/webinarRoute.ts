@@ -34,11 +34,11 @@ export const updateWebinarHandler = authenticateRouteWrapper(async (req, res) =>
     res.status(response.code).json(response);
 });
 
-export const webinarsHandler = authenticateRouteWrapper(async (req, res) =>  {
+export const webinarsHandler = async (req: Request, res: Response) =>  {
     const response = await webinarController.webinars(req);
 
     res.status(response.code).json(response);
-});
+};
 
 export const fetchUsersWebinarsHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await webinarController.fetchUsersWebinars(req);

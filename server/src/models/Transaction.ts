@@ -38,7 +38,7 @@ const transactionSchema = new Schema<ITransactions>({
     brand: { type: String, allowNull: true },
     currency: { type: String },
     paidAt: { type: Date },
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    user: { type: Schema.Types.ObjectId, allowNull: true, ref: 'User' },
     crowedFunding: { type: Schema.Types.ObjectId, ref: 'CrowdFunding' }
 });
 

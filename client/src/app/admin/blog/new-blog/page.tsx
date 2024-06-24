@@ -57,6 +57,21 @@ export default function page() {
 
     const handleModalOpen = () => {
         setOpen(true)
+    };
+
+    const handleBlogscat = async () => {
+        await getBlogCategoryMutation.mutateAsync({},{
+            onSuccess: (response: any) => {
+                let cat: any[] = [];
+                response.results.map((item: any, _: number) => (
+                    cat.push({
+                        value: item.name,
+                        label: capitalize.words(item.name)
+                    })
+                ))
+                setBlogCategories(cat)
+            }
+        });
     }
 
     const getHeight = () => {
@@ -69,7 +84,7 @@ export default function page() {
     const handleCreateNewCat = async () => {
         await createBlogCategoryMutation.mutateAsync({name: bcategory}, {
             onSuccess: async (response) => {
-                await getBlogCategoryMutation.mutateAsync({})
+                await handleBlogscat()
                 handleOpenNotification('success', response.message)
                 setOpen(false)
             },
@@ -113,23 +128,8 @@ export default function page() {
     };
 
     useEffect(() => {
-        const handleBlogscat = async () => {
-            await getBlogCategoryMutation.mutateAsync({},{
-                onSuccess: (response: any) => {
-                    let cat: any[] = [];
-                    response.results.map((item: any, _: number) => (
-                        cat.push({
-                            value: item.name,
-                            label: capitalize.words(item.name)
-                        })
-                    ))
-                    setBlogCategories(cat)
-                }
-            });
-        }
-
         handleBlogscat()
-    },[session]);
+    },[]);
 
     return (
         <Box
@@ -393,7 +393,7 @@ export default function page() {
                                 hoverbordercolor={theme.palette.border.main}
                                 hovercolor={'black'}
                                 onClick={handleCreateBlog}
-                                onMouseDown={()=>setStatus('draft')}
+                                onMouseEnter={()=>setStatus('draft')}
                             >
                                 <Typography variant='labelxs'>
                                     <DescriptionOutlined sx={{fontSize: '14px', mb: '0.5px'}}/>
@@ -402,7 +402,7 @@ export default function page() {
                             </NButton>
                         </Box>
                         <NButton 
-                            onMouseDown={()=>setStatus('publish')}
+                            onMouseEnter={()=>setStatus('publish')}
                             onClick={handleCreateBlog}
                             textcolor='white' 
                             bkgcolor={theme.palette.primary.main}

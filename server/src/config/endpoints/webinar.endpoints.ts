@@ -25,7 +25,7 @@ const webinarEndpoints: RouteEndpoint  = [
     {
         name: 'delete webinar category',
         method: 'delete',
-        path: '/delete-webinar-category',
+        path: '/delete-webinar-category/:webinarCategoryId',
         handler: deleteWebinarCategoryHandler
     },
     {
@@ -43,7 +43,7 @@ const webinarEndpoints: RouteEndpoint  = [
     {
         name: 'update webinar categories',
         method: 'put',
-        path: '/update-webinar',
+        path: '/update-webinar/:webinarId',
         handler: updateWebinarHandler
     },
     {
@@ -55,19 +55,19 @@ const webinarEndpoints: RouteEndpoint  = [
     {
         name: 'fetch users webinars',
         method: 'get',
-        path: '/get-users-webinars',
+        path: '/get-users-webinars/:userId',
         handler: fetchUsersWebinarsHandler
     },
     {
         name: 'get single webinars',
         method: 'get',
-        path: '/get-single-webinar',
+        path: '/get-single-webinar/:webinarId',
         handler: singleWebinarHandler
     },
     {
         name: 'delete webinar',
         method: 'delete',
-        path: '/delete-webinar',
+        path: '/delete-webinar/:webinarId',
         handler: deleteWebinarHandler
     },
     {
@@ -85,7 +85,7 @@ const webinarEndpoints: RouteEndpoint  = [
     {
         name: 'delete webinar waitlist',
         method: 'delete',
-        path: '/delete-webinar-waitlist',
+        path: '/delete-webinar-waitlist/:watchOnDemandId',
         handler: deleteWebinarWaitlistHandler
     },
 ];

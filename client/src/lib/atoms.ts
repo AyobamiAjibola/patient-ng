@@ -13,3 +13,8 @@ export const sessionErrorMsg = atom<string>("");
 export const sessionErrorModal = atom<boolean>(false);
 export const setOpenSignInModal = atom<boolean>(false);
 export const selectedImageArrayAtom2 = atom<any>([]);
+export const speakerData = atom([{
+    speakerName: '',
+    occupation: '',
+    image: null
+}])

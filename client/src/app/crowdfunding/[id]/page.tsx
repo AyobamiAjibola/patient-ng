@@ -506,7 +506,7 @@ export default function CrowdFunding({params}: any) {
                       }}
                     >
                       <Avatar
-                        src={donation.user.image ? donation.user.image : ''}
+                        src={donation.user && donation.user.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${donation.user.image}` : ''}
                         alt='donation'
                         sx={{
                           width: '40px',
@@ -520,7 +520,7 @@ export default function CrowdFunding({params}: any) {
                         }}
                       >
                         <Typography variant="labelxs" className="capitalize">
-                          {donation.user.firstName} {donation.user.lastName}
+                          {donation.user ? `${donation.user.firstName} ${donation.user.lastName}` : 'Anonymous'} 
                         </Typography>
                         <Typography color={theme.palette.secondary.light}
                           variant="paragraphxs"
@@ -549,16 +549,16 @@ export default function CrowdFunding({params}: any) {
           <MModal 
             onClose={handleCloseModal} 
             open={open} 
-            width={isMobile ? '80%' : '30%'}
+            width={isMobile ? '80%' : '50%'}
             height={showDonations ? '80%' : '250px'}
           >
-            <Box
+            <Box className='hide-scrollbar'
               sx={{
                 px: isMobile ? 1 : 4, pb: 2,
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100%',
-                overflow: 'scroll'
+                overflow: 'hidden'
               }}
             >
               { showDonations && (<>
@@ -591,7 +591,7 @@ export default function CrowdFunding({params}: any) {
                           }}
                         >
                           <Avatar
-                            src={donation.user.image ? donation.user.image : ''}
+                            src={donation.user && donation.user.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${donation.user.image}` : ''}
                             alt='donation'
                             sx={{
                               width: '40px',
@@ -605,7 +605,7 @@ export default function CrowdFunding({params}: any) {
                             }}
                           >
                             <Typography variant="labelxs" className="capitalize">
-                              {donation.user.firstName} {donation.user.lastName}
+                              {donation.user ? `${donation.user.firstName} ${donation.user.lastName}` : 'Anonymous'} 
                             </Typography>
                             <Typography color={theme.palette.secondary.light}
                               variant="paragraphxs"

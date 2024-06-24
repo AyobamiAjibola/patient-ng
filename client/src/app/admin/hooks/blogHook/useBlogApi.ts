@@ -1,7 +1,6 @@
 import useAxiosAuth from "@/app/hooks/useAxiosAuth";
 import { types } from "../../../../../types/models";
 
-
 export const useBlogApi = () => {
     const axiosAuth = useAxiosAuth();
 
@@ -83,12 +82,30 @@ export const useBlogApi = () => {
         return response.data;
     };
 
-    const commentOnBlog = async (
+    const likeBlogComment = async (
         data: any
     ): Promise<types.ApiResponseSuccess<any>> => {
         const response = await axiosAuth.put<
         types.ApiResponseSuccess<any>>
-        (`/comment-on-blog/${data.blogId}`, data);
+        (`/like-blog-comment/${data}`);
+        return response.data;
+    };
+
+    const replyBlogComment = async (
+        data: any
+    ): Promise<types.ApiResponseSuccess<any>> => {
+        const response = await axiosAuth.put<
+        types.ApiResponseSuccess<any>>
+        (`/reply-blog-comment/${data.commentId}`, {reply: data.reply});
+        return response.data;
+    };
+
+    const commentOnBlog = async (
+        data: any
+    ): Promise<types.ApiResponseSuccess<any>> => {
+        const response = await axiosAuth.post<
+        types.ApiResponseSuccess<any>>
+        (`/comment-on-blog/${data.blogId}`, {comment: data.comment});
         return response.data;
     };
 
@@ -123,6 +140,15 @@ export const useBlogApi = () => {
             types.ApiResponseSuccess<any>>
             (`/get-blogs-with-catgory/${data}`);
             return response.data;
+    };
+
+    const fetchBlogComments = async (
+        data: any
+    ): Promise<types.ApiResponseSuccess<any>> => {
+        const response = await axiosAuth.get<
+        types.ApiResponseSuccess<any>>
+        (`/fetch-blog-comments/${data}`);
+        return response.data;
     };
 
     const getSingleBlog = async (
@@ -176,6 +202,9 @@ export const useBlogApi = () => {
         getUsersBlogs,
         getBlogsWithCategory,
         getSingleBlog,
-        changeBlogToDraft
+        changeBlogToDraft,
+        likeBlogComment,
+        replyBlogComment,
+        fetchBlogComments
     };
 }

@@ -7,11 +7,9 @@ import { NButton } from '@/app/components/PButton';
 import { selectedImageArrayAtom, selectedImageArrayAtom2 } from '@/lib/atoms';
 import { ArrowBackRounded, ChatBubbleOutlineSharp, DeleteOutlineOutlined, DescriptionOutlined, Favorite, FavoriteBorderOutlined, RemoveRedEyeOutlined, SendOutlined } from '@mui/icons-material';
 import { Box, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
-// import JoditEditor from 'jodit-react';
 import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useChangeToArchive, useChangeToDraft, useChangeToPublish, useCreateBlogCategory, useGetBlogCategories, useGetSingleBlog, useUpdateBlog } from '../../hooks/blogHook/useBlog';
 import { useSession } from 'next-auth/react';
 import TextEditor from '../../components/TextEditor';
@@ -38,8 +36,8 @@ export default function page({params}: any) {
     const router = useRouter();
     const getSingleBlogMutation = useGetSingleBlog();
     const {data: session} = useSession();
-    const [headerImage, ___] = useAtom(selectedImageArrayAtom);
-    const [bodyImage, __] = useAtom(selectedImageArrayAtom2);
+    const [headerImage, setHeaderImage] = useAtom(selectedImageArrayAtom);
+    const [bodyImage, setBodyImage] = useAtom(selectedImageArrayAtom2);
     const [image, setImage] = useState('');
     const [image2, setImage2] = useState('');
     const [blogData, setBlogData] = useState<any>({});
@@ -90,18 +88,20 @@ export default function page({params}: any) {
             publisher: author,
             blogId: params.id
         }
-
+        
         await upateBlogMutation.mutateAsync(payload, {
             onSuccess: async (response) => {
                 await fetchBlog()
                 handleOpenNotification('success', response.message)
-                router.back()
+                setHeaderImage([])
+                setBodyImage([])
             },
             onError: (error: any) => {
                 const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
                 handleOpenNotification('error', '', errorMessage)
             }
-        })
+        });
+
     };
 
     const handleCreateNewCat = async () => {

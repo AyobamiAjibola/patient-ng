@@ -40,6 +40,24 @@ export const likeBlogHandler = authenticateRouteWrapper(async (req, res) =>  {
     res.status(response.code).json(response);
 });
 
+export const likeBlogCommentHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await blogController.likeComment(req);
+
+    res.status(response.code).json(response);
+});
+
+export const replyBlogCommentHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await blogController.replyBlogComment(req);
+
+    res.status(response.code).json(response);
+});
+
+export const fetchBlogCommentHandler = async (req: Request, res: Response) =>  {
+    const response = await blogController.fetchBlogComments(req);
+
+    res.status(response.code).json(response);
+};
+
 export const commentOnBlogHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await blogController.commentOnBlog(req);
 

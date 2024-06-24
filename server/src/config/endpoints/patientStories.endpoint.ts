@@ -1,6 +1,6 @@
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
-import { createStoryHandler, updateStoryHandler, userStoriesHandler } from '../../routes/patientStoriesRoute';
+import { createStoryHandler, deleteStoryHandler, publishStoryHandler, rejectStoryHandler, singleStoryHandler, storiesHandler, updateStoryHandler, userStoriesHandler } from '../../routes/patientStoriesRoute';
 
 const patientStoriesEndpoints: RouteEndpoint  = [
     {
@@ -19,25 +19,37 @@ const patientStoriesEndpoints: RouteEndpoint  = [
         name: 'single story',
         method: 'get',
         path: '/single-story/:storyId',
-        handler: updateStoryHandler
+        handler: singleStoryHandler
     },
     {
         name: 'get stories',
         method: 'get',
         path: '/get-stories',
-        handler: updateStoryHandler
+        handler: storiesHandler
     },
     {
         name: 'get user stories',
         method: 'get',
-        path: '/get-user-stories',
+        path: '/get-user-stories/:storyId',
         handler: userStoriesHandler
     },
     {
         name: 'delete story',
         method: 'delete',
         path: '/delete-story/:storyId',
-        handler: updateStoryHandler
+        handler: deleteStoryHandler
+    },
+    {
+        name: 'publish story',
+        method: 'put',
+        path: '/publish-story/:storyId',
+        handler: publishStoryHandler
+    },
+    {
+        name: 'reject story',
+        method: 'put',
+        path: '/reject-story/:storyId',
+        handler: rejectStoryHandler
     }
 ];
 

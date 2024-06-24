@@ -317,3 +317,66 @@ export const useChangeToArchive = () => {
   });
 };
 
+export const useLikeBlogComment = () => {
+  const api = useBlogApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.likeBlogComment(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['like_blog_comment'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
+};
+
+export const useReplyBlogComment = () => {
+  const api = useBlogApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.replyBlogComment(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['reply_blog_comment'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
+};
+
+export const useFetchBlogComments = () => {
+  const api = useBlogApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.fetchBlogComments(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['fetch_blog_comments'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
+};
+

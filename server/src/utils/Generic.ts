@@ -205,21 +205,27 @@ export default class Generic {
   }
 
   public static async handleImages(items: any[], basePath: string) {
-    const promises = items.map(async (item) => {
+
+    const promises = items.map(async (item: any) => {
         let imagePath;
+        
         if (item.image) {
-            const file = item.image as File;
-            imagePath = await Generic.handleImage(file, basePath);
+          const file = item.image as File;
+          imagePath = await Generic.handleImage(file, basePath);
         }
-        return { ...item, image: imagePath };
+        const payload = { ...item, image: imagePath }
+        return payload;
     });
-    return Promise.all(promises);
+    const results = await Promise.all(promises);
+    return results;
   };
 
   public static async deleteExistingImage(existingImage: string, basePath: string, imagePath: string) {
-    const files = await promisify(fs.readdir)(basePath);
+    const files = await fs.readdir(basePath);
+
     files.forEach((file: any) => {
         const image = existingImage.split(imagePath)[1];
+        console.log(image, 'image')
         if (image === file) {
           fs.unlink(`${basePath}/${image}`);
         }

@@ -6,13 +6,15 @@ import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import capitalize from 'capitalize';
 import OnlineBadge from './OnlineBadge';
+import moment from 'moment';
 
-const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
+const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarId}: any) => {
   const theme = useTheme();
 
-  const handleWebinarEdit = () => {
+  const handleWebinarEdit = (id: string) => {
     setIsEdit(true)
     setOpenModal(true)
+    setWebinarId(id)
   }
 
   const columns: TableProps<any>['columns'] = [
@@ -21,8 +23,8 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
       key: 'name',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs'>
-            {record.name}
+          <Typography variant='labelxs' className='capitalize'>
+            {record.title}
           </Typography>
       )},
     },
@@ -32,8 +34,8 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
       key: 'author',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.author}
+          <Typography variant='labelxs' color={theme.palette.secondary.light} className='capitalize'>
+            {record.user.firstName} {record.user.lastName}
           </Typography>
       )},
     },
@@ -48,10 +50,10 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
             }}
           >
             <Typography variant='labelxs'>
-              {record.date}
+              {moment(record.webinarDateTime).format('DD MMM YY')}
             </Typography>
             <Typography variant='labelxs' color={theme.palette.secondary.light}>
-              {record.time}
+              {moment(record.webinarDateTime).format('HH:mm')}
             </Typography>
           </Box>
       )},
@@ -64,23 +66,17 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
           <>
           { record.status === 'on-going' 
             ? (<OnlineBadge>
-                <Tag
-                  style={{
-                    color: theme.palette.primary.main  
-                  }}
-                >
+                <Tag color={"green"}>
                   {capitalize.words(record.status)}
                 </Tag>
               </OnlineBadge>
             ) : (
-              <Tag
-                style={{
-                  color: record.status === "completed"
-                          ? theme.palette.primary.darker  
-                          : record.status === "pending"
-                            ? theme.palette.state.warning
-                            : theme.palette.border.main
-                }}
+              <Tag 
+                color={record.status === "completed"
+                ? "lime"  
+                : record.status === "pending"
+                  ? "gold"
+                  : "geekblue"}
               >
                 {capitalize.words(record.status)}
               </Tag>
@@ -100,7 +96,7 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
             }}
           >
             <Typography variant='labelxs'
-              onClick={handleWebinarEdit}
+              onClick={()=>handleWebinarEdit(record._id)}
               sx={{
                 cursor: 'pointer',
                 '&:hover': {

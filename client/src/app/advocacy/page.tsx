@@ -3,7 +3,7 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import PButton, { NButton } from "../components/PButton";
-import { ArrowDownward, ChatBubbleOutline } from "@mui/icons-material";
+import { ArrowDownward, ChatBubbleOutline, CheckCircle } from "@mui/icons-material";
 import Footer from "@/app/components/Footer";
 import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,6 @@ import { useAtom } from "jotai";
 import { modalReg } from "@/lib/atoms";
 import { useSession } from "next-auth/react";
 import { useCreateComplain } from "../admin/hooks/advocacyHook/useAdvocacy";
-import { useRouter } from "next/navigation";
 import Toastify from "../components/ToastifySnack";
 
 const advocacy = [
@@ -36,7 +35,7 @@ export default function page() {
   const [_, setOpenModalReg] = useAtom(modalReg);
   const { data: session } = useSession();
   const createComplainMutation = useCreateComplain();
-  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState<number>(1);
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -253,7 +252,8 @@ export default function page() {
             width: '100%',
             height: 'auto',
             display: 'flex',
-            gap: 2
+            gap: 2,
+            flexDirection: isMobile ? 'column' : 'row'
           }}
         >
           <Box
@@ -270,71 +270,275 @@ export default function page() {
               borderBottomLeftRadius: theme.borderRadius.sm,
             }}
           >
-            {
-              advocacy.map((item, index) => (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    gap: 4,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: '50px',
-                      height: '50px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: '#FFCB00',
-                      borderRadius: theme.borderRadius.full
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelsm.fontSize,
-                        fontWeight: theme.typography.labelsm.fontWeight
-                      }}
-                    >
-                      {index + 1}
-                    </Typography>
-                  </Box>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight
-                    }}
-                  >
-                    {item}
-                  </Typography>
-                </Box>
-              ))
-            }
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 4,
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#FFCB00',
+                  borderRadius: theme.borderRadius.full
+                }}
+              >
+                <Typography variant="labelsm">
+                  {1}
+                </Typography>
+              </Box>
+              <Typography variant="labelsm"
+                sx={{
+                  color: currentStep === 1 ? '#CCA200' : 'black',
+                  '&:hover': {
+                    color: '#CCA200'
+                  },
+                  cursor: 'pointer'
+                }}
+                onClick={()=>setCurrentStep(1)}
+              >
+                {'Informal Complaint (Stage 1)'}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 4,
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#FFCB00',
+                  borderRadius: theme.borderRadius.full
+                }}
+              >
+                <Typography variant="labelsm">
+                  {2}
+                </Typography>
+              </Box>
+              <Typography variant="labelsm"
+                sx={{
+                  color: currentStep === 2 ? '#CCA200' : 'black',
+                  '&:hover': {
+                    color: '#CCA200'
+                  },
+                  cursor: 'pointer'
+                }}
+                onClick={()=>setCurrentStep(2)}
+              >
+                {'Formal Complaint (Stage 2)'}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 4,
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#FFCB00',
+                  borderRadius: theme.borderRadius.full
+                }}
+              >
+                <Typography variant="labelsm">
+                  {3}
+                </Typography>
+              </Box>
+              <Typography variant="labelsm"
+                sx={{
+                  color: currentStep === 3 ? '#CCA200' : 'black',
+                  '&:hover': {
+                    color: '#CCA200'
+                  },
+                  cursor: 'pointer'
+                }}
+                onClick={()=>setCurrentStep(3)}
+              >
+                {'What to Include in your Complaint'}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 4,
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#FFCB00',
+                  borderRadius: theme.borderRadius.full
+                }}
+              >
+                <Typography variant="labelsm">
+                  {4}
+                </Typography>
+              </Box>
+              <Typography variant="labelsm"
+                sx={{
+                  color: currentStep === 4 ? '#CCA200' : 'black',
+                  '&:hover': {
+                    color: '#CCA200'
+                  },
+                  cursor: 'pointer'
+                }}
+                onClick={()=>setCurrentStep(4)}
+              >
+                {'Submit your complaint online'}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 4,
+                alignItems: 'center',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '50px',
+                  height: '50px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#FFCB00',
+                  borderRadius: theme.borderRadius.full
+                }}
+              >
+                <Typography variant="labelsm">
+                  {5}
+                </Typography>
+              </Box>
+              <Typography variant="labelsm"
+                sx={{
+                  color: currentStep === 5 ? '#CCA200' : 'black',
+                  '&:hover': {
+                    color: '#CCA200'
+                  },
+                  cursor: 'pointer'
+                }}
+                onClick={()=>setCurrentStep(5)}
+              >
+                {'Request the HSE to review the complaint'}
+              </Typography>
+            </Box>
           </Box>
-          {!isMobile && (<Box
+          <Box
             sx={{
-              width: '60%',
+              width: isMobile ? '100%' : '60%',
               display: 'flex',
               px: 5, py: 4, gap: 3,
               flexDirection: 'column'
             }}
           >
-            <Typography
-              sx={{
-                fontSize: theme.typography.h3.fontSize,
-                fontWeight: theme.typography.h5.fontWeight
-              }}
-            >
-              Informal Complaint (Stage 1)
+            <Typography variant={isMobile ? 'h5' : 'h3'}>
+              {currentStep === 1 
+                ? 'Informal Complaint (Stage 1)'
+                : currentStep === 2
+                  ? 'Formal Complaint (Stage 2)'
+                  : currentStep === 3
+                    ? 'What to Include in your Complaint'
+                    : currentStep === 4
+                      ? 'Submit your complaint online'
+                      : 'Request the HSE to review the complaint'
+              }
             </Typography>
-            <Typography
-              sx={{
-                fontSize: theme.typography.labelsm.fontSize
-              }}
-            >
-              If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.
+            <Typography variant="paragraphsm">
+              {currentStep === 1
+                ? `If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.`
+                : currentStep === 2
+                  ? `If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.`
+                  : currentStep === 3
+                    ? `If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.`
+                    : currentStep === 4
+                      ? `In your written complaint, include the following information:`
+                      : `If you are unhappy with the response you receive, you can consider asking iPatient to review the complaint (this is Stage 3 of Your Service, Your Say). 
+                      If you want iPatient to review your complaint, you should reply to iPatient within 30 working days to the initial response they gave to your complaint. Your response should include the following request;`
+
+              }
             </Typography>
-          </Box>)}
+            {currentStep === 5 && (
+              <Typography variant="paragraphsm" fontStyle={'italic'}>
+                “I am unhappy with the response I have received to my complaint/unhappy with how my complaint has been handled and request that iPatient undertake a review of the complaint under Stage 3 of Your Service, Your Say.”
+              </Typography>
+            )}
+            {currentStep === 2 && (<Box display={'flex'} flexDirection={'column'}>
+              <Typography variant="labelsm" mb={2}>
+                Timeframe
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> receive acknowledgement within 5 working days
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> receive response to the complaint within 30 working days
+              </Typography>
+            </Box>)}
+            {currentStep === 3 && (<Box display={'flex'} flexDirection={'column'}>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Name and address of the hospital
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Your complaint should also outline what you have done to resolve the issue to date, and what you want to happen now to resolve your issue.
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> You can also attach any documentation to your complaint  that you feel is relevant.
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> In your complaint you should grant permission to the iPatient to access your personal confidential information.
+              </Typography>
+              <Typography variant="paragraphsm">
+                If you don’t grant iPatient permission to access your personal confidential information, they may not be able to effectively process your complaint.
+              </Typography>
+            </Box>)}
+            {currentStep === 4 && (<Box display={'flex'} flexDirection={'column'}>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Your name, phone number, email address, name of the hospital, name of the section in the hospital, who was involved, dates and times of the experience, an accurate description of what happened.
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Email iPatient: You can also send your email to the iPatient complaints inbox
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Online: You can just submit your complaint online by filling out the form below
+              </Typography>
+              <Typography variant="paragraphsm">
+                If you don’t grant the HSE permission to access your personal confidential information, they may not be able to effectively process your complaint.
+              </Typography>
+            </Box>)}
+            {currentStep === 5 && (<Box display={'flex'} flexDirection={'column'}>
+              <Typography variant="labelsm" mb={2}>
+                Timeframe
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Respond to the HSE within 30 working days of the iPatient initial response
+              </Typography>
+              <Typography variant="paragraphsm">
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> iPAtient will then have 20 working days to review the complaint
+              </Typography>
+            </Box>)}
+          </Box>
         </Box>
       </Box>
 

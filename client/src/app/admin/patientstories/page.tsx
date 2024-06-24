@@ -7,36 +7,13 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
+import { useFetchStories } from "../hooks/patientStoriesHook/usePatientStories";
 
 const item = [
   "All",
   "Pending review",
   "Published",
   "Rejected"
-]
-
-const patientData = [
-  {
-    _id: 1,
-    title: "A fighter, a survivor, and an inspiration to us all",
-    author: "Lisa Steve",
-    submittedDate: '05 Dec 2023',
-    status: "published"
-  },
-  {
-    _id: 2,
-    title: "A fighter, a survivor, and an inspiration to us all",
-    author: "Lisa Steve",
-    submittedDate: '05 Dec 2023',
-    status: "review"
-  },
-  {
-    _id: 3,
-    title: "A fighter, a survivor, and an inspiration to us all",
-    author: "Lisa Steve",
-    submittedDate: '05 Dec 2023',
-    status: "rejected"
-  },
 ]
 
 export default function page() {
@@ -47,11 +24,13 @@ export default function page() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [stories, setStories] =  useState<any>([]);
   const router = useRouter();
+  const fetchStoriesMutate = useFetchStories(); 
 
   const filteredData =
     stories &&
     stories.filter((item: any) =>
-      item.author.toLowerCase().includes(searchQuery.toLowerCase())
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,19 +40,28 @@ export default function page() {
     setSearchQuery(cleanedInput);
   };
 
+  const fetchStories = async () => {
+    await fetchStoriesMutate.mutateAsync({}, {
+        onSuccess: async(response: any) => {
+          const patientData = response.results;
+          if(currentItem === "All") {
+            setStories(patientData)
+          } else if(currentItem === "Published") {
+            const filteredData = patientData.filter((stories: any) => stories.status === "published");
+            setStories(filteredData)
+          } else if(currentItem === "Pending review") {
+            const filteredData = patientData.filter((stories: any) => stories.status === "pending");
+            setStories(filteredData)
+          }else if(currentItem === "Rejected") {
+            const filteredData = patientData.filter((stories: any) => stories.status === "rejected");
+            setStories(filteredData)
+          }
+        }
+    })
+  };
+
   useEffect(() => {
-    if(currentItem === "All") {
-      setStories(patientData)
-    } else if(currentItem === "Published") {
-      const filteredData = patientData.filter((stories) => stories.status === "published");
-      setStories(filteredData)
-    } else if(currentItem === "Pending review") {
-      const filteredData = patientData.filter((stories) => stories.status === "review");
-      setStories(filteredData)
-    }else if(currentItem === "Rejected") {
-      const filteredData = patientData.filter((stories) => stories.status === "rejected");
-      setStories(filteredData)
-    }
+    fetchStories()
   },[currentItem]);
 
   return (

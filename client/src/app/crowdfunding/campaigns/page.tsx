@@ -12,63 +12,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const crowdCampaign = [
-    {
-      image: '/crowd2.png',
-      name: 'Kira John',
-      story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-      lastDonation: '15m ago',
-      raised: '200000',
-      amountNeeded: '500000',
-      location: 'Ikeja, Lagos'
-    },
-    {
-      image: '/crowd2.png',
-      name: 'Osaze Kudus',
-      story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-      lastDonation: '15m ago',
-      raised: '400000',
-      amountNeeded: '500000',
-      location: 'Ikeja, Lagos'
-    },
-    {
-      image: '/crowd2.png',
-      name: 'Audu Kelvin',
-      story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-      lastDonation: '15m ago',
-      raised: '300000',
-      amountNeeded: '500000',
-      location: 'Ikeja, Lagos'
-    },
-    {
-      image: '/crowd2.png',
-      name: 'Paul Benji',
-      story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-      lastDonation: '15m ago',
-      raised: '150000',
-      amountNeeded: '500000',
-      location: 'Ikeja, Lagos'
-    },
-    {
-      image: '/crowd2.png',
-      name: 'Kaffy Odenwingie',
-      story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-      lastDonation: '15m ago',
-      raised: '120000',
-      amountNeeded: '900000',
-      location: 'Ikeja, Lagos'
-    },
-    {
-      image: '/crowd2.png',
-      name: 'Kudz Odenwingie',
-      story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-      lastDonation: '15m ago',
-      raised: '90000',
-      amountNeeded: '300000',
-      location: 'Ikeja, Lagos'
-    }
-];
-
 export default function page() {
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
