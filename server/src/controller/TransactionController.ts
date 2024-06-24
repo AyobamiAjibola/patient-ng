@@ -23,9 +23,10 @@ export default class TransactionController {
     @TryCatch
     public async donate(req: Request) {
 
-        const userId = req.user._id
+        // const userId = req.user._id
 
         const { error, value } = Joi.object<any>({
+            userId: Joi.string().optional().label('user id'),
             amount: Joi.number().required().label('Amount'),
             crowedFundingId: Joi.string().required().label("Crowed funding id is required.")
         }).validate(req.body);
@@ -35,14 +36,14 @@ export default class TransactionController {
             return Promise.reject(CustomAPIError.response(HttpStatus.BAD_REQUEST.value, HttpStatus.BAD_REQUEST.code));
 
         const [user, crowdFunding] = await Promise.all([
-            datasources.userDAOService.findById(userId),
+            datasources.userDAOService.findById(value.userId),
             datasources.crowdFundingDAOService.findById(value.crowedFundingId),
         ]);
 
         if(!crowdFunding)
             return Promise.reject(CustomAPIError.response("Crowed funding not found.", HttpStatus.NOT_FOUND.code));
-        if(!user)
-            return Promise.reject(CustomAPIError.response('User does not exist', HttpStatus.NOT_FOUND.code));
+        // if(!user)
+        //     return Promise.reject(CustomAPIError.response('User does not exist', HttpStatus.NOT_FOUND.code));
         if(crowdFunding.status === "done")
             return Promise.reject(CustomAPIError.response('You can no longer donate the crowdfunding is done.', HttpStatus.NOT_FOUND.code));
 
@@ -81,7 +82,7 @@ export default class TransactionController {
         const _amount = Math.round((serviceCharge + amount) * 100);
 
         const initResponse = await axiosClient.post(`${endpoint}`, {
-            email: user.email,
+            email: user ? user.email : 'anonymous@gmail.com',
             amount: _amount,
             callback_url: callbackUrl,
             metadata,
@@ -96,7 +97,7 @@ export default class TransactionController {
             type: 'Payment',
             status: initResponse.data.message,
             amount: value.amount,
-            user: user._id,
+            user: user ? user._id : null,
             crowedFunding: crowedFunding._id
         };
 

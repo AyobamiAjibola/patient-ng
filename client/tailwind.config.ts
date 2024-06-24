@@ -15,6 +15,20 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-animate"),
+    function ({ addUtilities }: any) {
+      addUtilities({
+        '.hide-scrollbar': {
+          /* Hide scrollbar for WebKit browsers */
+          '-ms-overflow-style': 'none',  /* IE and Edge */
+          'scrollbar-width': 'none',  /* Firefox */
+        },
+        '.hide-scrollbar::-webkit-scrollbar': {
+          'display': 'none',  /* Safari and Chrome */
+        }
+      });
+    }
+  ],
 };
 export default config;

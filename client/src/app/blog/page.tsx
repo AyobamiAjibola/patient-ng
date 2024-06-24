@@ -4,66 +4,72 @@ import Navbar from '@/app/components/Navbar'
 import { wordBreaker } from '@/lib/helper';
 import Footer from '@/app/components/Footer';
 import { Box, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
-import { Button } from 'antd';
+import { Tag } from 'antd';
 import Search from 'antd/es/input/Search';
 import { useRouter } from 'next/navigation';
-
-const categories = ["cat1", "cat2", "cat3", "cat4"];
-
-const blog = [
-  {
-    date: '22-10-2024',
-    title: 'Faster ways to reach your customers and their needs.',
-    content: 'In a rapidly evolving business landscape, the ability to connect with customers quickly and effectively is paramount.',
-    image: '/cuisines.jpg'
-  },
-  {
-    date: '22-10-2024',
-    title: 'Faster ways to reach your customers and their needs.',
-    content: 'In a rapidly evolving business landscape, the ability to connect with customers quickly and effectively is paramount.',
-    image: '/cuisines.jpg'
-  },
-  {
-    date: '22-10-2024',
-    title: 'Faster ways to reach your customers and their needs.',
-    content: 'In a rapidly evolving business landscape, the ability to connect with customers quickly and effectively is paramount.',
-    image: '/cuisines.jpg'
-  }
-]
-
-const latest = [
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  }
-]
+import { ChangeEvent, useEffect, useState } from 'react';
+import Pagination from '../components/Pagination';
+import { HourglassEmpty } from '@mui/icons-material';
+import { useGetBlogCategories, useGetBlogs } from '../admin/hooks/blogHook/useBlog';
+import { useSession } from 'next-auth/react';
+import HtmlToText from '../components/HtmlToText';
 
 export default function Blog() {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 900px)');
-  const bodyContent = "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  
+  const [blogs, setBlogs] = useState<any>([]);
+  const [blogCategories, setBlogCategories] = useState<any>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const getBlogsMutation = useGetBlogs();
+  const getBLogsCategory = useGetBlogCategories();
+  const {data: session} = useSession();
+
+  const filteredData =
+  blogs &&
+  blogs.filter((item: any) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.publisher.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const itemsPerPage = filteredData.length ? 10 : filteredData.length;
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+  const currentData = filteredData.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: any) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const cleanedInput = inputValue.replace(/[^a-zA-Z0-9 ]/g, '');
+
+    setSearchQuery(cleanedInput);
+  };
+
+  useEffect(() => {
+    const handleFetchBlogsData = async () => {
+      await getBlogsMutation.mutateAsync({}, {
+        onSuccess: async (response: any) => {
+          const filtered = await response.results.filter((data: any) => data.status === 'publish')
+          setBlogs(filtered)
+        }
+      });
+
+      await getBLogsCategory.mutateAsync({}, {
+        onSuccess: (response: any) => {
+          setBlogCategories(response.results)
+        }
+      });
+    }
+
+    handleFetchBlogsData();
+  },[session]);
+
   return (
     <>
       <Navbar />
@@ -71,7 +77,7 @@ export default function Blog() {
         sx={{
           height: 'auto', 
           width: '100%',
-          px: isMobile ? '20px' : '90px'
+          px: isMobile ? '20px' : '64px'
         }}
       >
         <Box className="w-[100%] h-auto flex flex-col justify-center items-center" sx={{pt: 8, pb: 5}}>
@@ -115,38 +121,61 @@ export default function Blog() {
           </Typography>
         </Box>
 
-          <Grid item 
+        <Grid item 
+          sx={{
+            mx: isMobile ? '20px' : '60px', mt: 5,
+            display: 'flex',
+            justifyContent: 'flex-start',
+            flexDirection: isMobile ? 'column' : 'row', 
+            alignItems: 'center',
+            gap: isMobile ? 4 : 0 
+          }}
+        >
+          <Box 
             sx={{
-              mx: isMobile ? '20px' : '60px', mt: 5,
-              display: 'flex',
-              justifyContent: 'flex-start',
-              flexDirection: isMobile ? 'column' : 'row', 
-              alignItems: 'center',
-              gap: isMobile ? 4 : 0 
+              width: isMobile ? '100%' : '75%', 
+              display: 'flex', 
+              flexDirection: 'row', 
+              gap: 5,
+              overflowX: 'scroll',
+              whiteSpace: 'nowrap',
+              '&::-webkit-scrollbar': {
+                display: 'none',
+              },
+              scrollbarWidth: 'none',
             }}
           >
-            <Box 
+            <Typography
               sx={{
-                width: isMobile ? '100%' : '75%', 
-                display: 'flex', 
-                flexDirection: 'row', 
-                gap: 5,
-                overflowX: 'scroll',
-                whiteSpace: 'nowrap',
-                '&::-webkit-scrollbar': {
-                  display: 'none',
-                },
-                scrollbarWidth: 'none',
+                fontWeight: theme.typography.labelxl.fontWeight
               }}
             >
-              <Typography
+              Tags:
+            </Typography>
+            <Box display={'flex'} alignItems={'center'} gap={2}>
+              <Box 
                 sx={{
-                  fontWeight: theme.typography.labelxl.fontWeight
+                  minWidth: 70, 
+                  width: 'auto',
+                  height: 'auto', 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  flexDirection: 'row',
+                  cursor: 'pointer',
+                  backgroundColor: theme.palette.secondary.lighter,
+                  borderRadius: theme.borderRadius.md,
+                  '&:hover': {
+                    backgroundColor: theme.palette.secondary.light,
+                    color: 'white'
+                  }
                 }}
+                onClick={() => setSearchQuery('')}
               >
-                Tags:
-              </Typography>
-              {categories.map((category, index) => (
+                <Typography variant='paragraphsm' className='capitalize'>
+                  All
+                </Typography>
+              </Box>
+              {blogCategories.map((category: any, index: number) => (
                 <Box sx={{
                     minWidth: 70, 
                     width: 'auto',
@@ -157,135 +186,30 @@ export default function Blog() {
                     cursor: 'pointer',
                     backgroundColor: theme.palette.secondary.lighter,
                     borderRadius: theme.borderRadius.md,
-                    '&:hover': {backgroundColor: theme.palette.secondary.light,}
+                    '&:hover': {
+                      backgroundColor: theme.palette.secondary.light,
+                      color: 'white'
+                    }
                   }}
+                  onClick={() => setSearchQuery(category.name)}
                   key={index}
                 >
-                  <Typography>
-                    { category }
+                  <Typography variant='paragraphsm' className='capitalize'>
+                    { category.name }
                   </Typography>
                 </Box>
               ))}
             </Box>
-
-            <Box sx={{width: isMobile ? '100%' : '25%'}}>
-              <Search
-                placeholder="Search"
-                allowClear
-                enterButton={<Button style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
-                size="large"
-                // onSearch={onSearch}
-              />
-            </Box>
-          </Grid>
-
-        <Grid item
-          sx={{
-            width: '100%',
-            height: 'auto',
-            backgroundColor: theme.palette.secondary.lightest,
-            display: 'flex', gap: 4, mt: isMobile ? 2 : 6
-          }}
-        >
-          <Box 
-            sx={{
-              width: isMobile ? '100%' : '50%',
-              height: 'auto',
-              backgroundColor: "transparent",
-              ml: isMobile ? '20px' : '60px', mt: '40px', mb: '40px'
-            }}
-          >
-            <Box
-              sx={{
-                width: '100%',
-                height: '350px',
-                backgroundColor: theme.palette.secondary.lighter
-              }}
-            >
-              <img
-                src='/cuisines.jpg'
-                alt='cuisine'
-                style={{
-                  width: '100%',
-                  height: '100%'
-                }}
-              />
-            </Box>
-            <Typography sx={{fontWeight: theme.typography.labelsm.fontWeight, mt: 4}}>
-              25 Apr 2023 
-            </Typography>
-            <Typography onClick={() => router.push(`/blog/1`)}
-              sx={{
-                fontWeight: theme.typography.labelsm.fontWeight, 
-                fontSize: theme.typography.paragraphxl.fontSize,
-                mt: 2, cursor: 'pointer',
-                '&:hover': { color: theme.palette.primary.main }
-              }}
-            >
-              Organize your digital assets with a new methodology.
-            </Typography>
-            <Typography
-              sx={{
-                mt: 2,
-                color: theme.palette.secondary.light
-              }}
-            >
-              {wordBreaker(bodyContent, 18)}
-            </Typography>
           </Box>
-          {!isMobile && (<Box 
-            sx={{
-              width: '50%',
-              height: 'auto', 
-              backgroundColor: 'transparent',
-              mr: '60px', mt: '40px', mb: '40px',
-              display: 'flex', flexDirection: 'column',
-              gap: 2
-            }}
-          >
-            {blog.map((blog, index) => (
-              <Box key={index} sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                width: '100%', gap: 3
-              }}>
-                <img
-                  src={blog.image}
-                  alt='blog'
-                  style={{
-                    width: '30%',
-                    height: '160px'
-                  }}
-                />
-                <Box sx={{display: 'flex', flexDirection: 'column'}}>
-                  <Typography
-                    sx={{
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      fontSize: '12px'
-                    }}
-                  >
-                    {blog.date}
-                  </Typography>
-                  <Typography onClick={() => router.push(`/blog/${index}`)}
-                    sx={{
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      mt: 4, '&:hover': { color: theme.palette.primary.main },
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {blog.title}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: theme.palette.secondary.light
-                    }}
-                  >
-                    {wordBreaker(blog.content, 18)}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
-          </Box>)}
+
+          <Box sx={{width: isMobile ? '100%' : '25%'}}>
+            <Search
+              placeholder="Search"
+              allowClear
+              size="large"
+              onChange={handleSearchChange}
+            />
+          </Box>
         </Grid>
 
         <Grid
@@ -294,7 +218,7 @@ export default function Blog() {
             height: 'auto',
             display: 'flex', gap: 4, my: 6,
             justifyContent: 'center',
-            alignItems: 'center', flexDirection: 'column'
+            alignItems: 'center', flexDirection: 'column',
           }}
         >
           <Typography
@@ -303,88 +227,110 @@ export default function Blog() {
               fontSize: theme.typography.h4.fontSize
             }}
           >
-            Latest Blog Posts
+            Blog Posts
           </Typography>
-          <Box
-            sx={{
-              flexWrap: !isMobile ? 'wrap' : 'unset',
-              display: 'flex', width: '100%',
-              gap: 2, flexDirection: 'row', mx: isMobile ? '20px' : '64px',
-              justifyContent: 'center',
-              mt: '10px',
-              overflowX: isMobile ? 'scroll' : 'unset',
-              whiteSpace: isMobile ? 'nowrap' : 'none',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
-              scrollbarWidth: 'none'
-            }}
-          >
-            {latest.map((blog, index) => (
-              <Box key={index}
+          {currentData.length > 0 
+            ? (<Box
                 sx={{
-                  minWidth: isMobile ? '70%' : '32%',
-                  width: isMobile ? '70%' : '32%',
-                  height: 'auto',
-                  backgroundColor: theme.palette.secondary.lightest,
-                  border: `1px solid ${theme.palette.secondary.lighter}`,
-                  borderRadius: theme.borderRadius.sm,
+                  flexWrap: isMobile ? 'normal' : 'wrap',
+                  display: 'flex', width: '100%',
+                  gap: 3,
+                  justifyContent: isMobile ? 'normal' : 'center',
+                  mt: '10px',
+                  overflowX: isMobile ? 'scroll' : 'unset',
+                  whiteSpace: isMobile ? 'nowrap' : 'normal',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none'
                 }}
               >
-                <img
-                  src={blog.image}
-                  alt='blog'
-                  style={{
-                    width: '100%',
-                    height: '50%',
-                    borderTopLeftRadius: theme.borderRadius.sm,
-                    borderTopRightRadius: theme.borderRadius.sm,
-                  }}
-                />
-                <Typography
-                  sx={{
-                    color: theme.palette.primary.main,
-                    mt: 4, mx: isMobile ? 2 : 4,
-                    whiteSpace: isMobile ? 'pre-wrap' : 'none',
-                  }}
-                >
-                  {blog.category}
-                </Typography>
-                <Typography
-                  sx={{
-                    mx: isMobile ? 2 : 4,
-                    fontSize: isMobile ? theme.typography.labelsm : theme.typography.labellg, 
-                    whiteSpace: isMobile ? 'pre-wrap' : 'none',
-                  }}
-                >
-                  {blog.title}
-                </Typography>
-                <Typography
-                  sx={{
-                    mx: isMobile ? 2 : 4,
-                    color: theme.palette.secondary.light,
-                    fontSize: theme.typography.labelsm.fontSize,
-                    whiteSpace: isMobile ? 'pre-wrap' : 'none',
-                  }}
-                >
-                  {isMobile ? wordBreaker(blog.content, 20) : wordBreaker(blog.content, 40)}...
-                </Typography>
-                <Typography
-                  onClick={() => router.push(`/blog/${index }`)}
-                  sx={{
-                    mx: isMobile ? 2 : 4,
-                    color: theme.palette.primary.main,
-                    fontSize: '12px', mt: 2,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Read more...
+                {currentData.map((blog: any, index: number) => (
+                  <Box key={index}
+                    sx={{
+                      minWidth: isMobile ? '70%' : '32%',
+                      width: isMobile ? '70%' : '32%',
+                      height: 'auto',
+                      backgroundColor: theme.palette.secondary.lightest,
+                      border: `1px solid ${theme.palette.secondary.lighter}`,
+                      borderRadius: theme.borderRadius.sm,
+                      flex: '0 0 auto'
+                    }}
+                  >
+                    <img
+                      src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
+                      alt='blog'
+                      style={{
+                        width: '100%',
+                        height: '50%',
+                        borderTopLeftRadius: theme.borderRadius.sm,
+                        borderTopRightRadius: theme.borderRadius.sm,
+                      }}
+                      crossOrigin='anonymous'
+                    />
+                    <Tag className='capitalize' color='green'
+                      style={{
+                        color: theme.palette.primary.main,
+                        marginTop: '2em', marginLeft: isMobile ? '1em' : '1em',
+                        whiteSpace: isMobile ? 'pre-wrap' : 'none',
+                      }}
+                    >
+                      {blog.category.name}
+                    </Tag>
+                    <Typography className='capitalize'
+                      sx={{
+                        mx: isMobile ? 2 : 3,
+                        my: 2,
+                        fontSize: isMobile ? theme.typography.labelsm : theme.typography.labellg, 
+                        whiteSpace: isMobile ? 'pre-wrap' : 'none',
+                      }}
+                    >
+                      {blog.title}
+                    </Typography>
+                    <HtmlToText 
+                      mx={isMobile ? 2 : 3}
+                      htmlString={isMobile ? wordBreaker(blog.content, 20) : wordBreaker(blog.content, 40)}
+                    />
+                    <Typography
+                      onClick={() => router.push(`/blog${blog.urlSlug }`)}
+                      sx={{
+                        mx: isMobile ? 2 : 4,
+                        color: theme.palette.primary.main,
+                        fontSize: '12px', mt: 2,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Read more...
+                    </Typography>
+                  </Box>
+                ))}
+
+              </Box>
+            ) : (
+              <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+                <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+                <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                  No Data
                 </Typography>
               </Box>
-            ))}
-
-          </Box>
+            )
+          }
         </Grid>
+        <Box
+          sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mt: 5
+          }}
+          >
+          {blogs.length !== 0 && (<Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />)}
+        </Box>
       </Box>
       <Footer/>
     </>

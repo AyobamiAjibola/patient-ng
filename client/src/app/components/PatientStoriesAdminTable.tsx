@@ -5,6 +5,7 @@ import type { TableProps } from 'antd';
 import { Box, Typography, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import capitalize from 'capitalize';
+import moment from 'moment';
 
 const PatientStoriesAdminTable: React.FC = ({data}: any) => {
   const router = useRouter();
@@ -24,11 +25,11 @@ const PatientStoriesAdminTable: React.FC = ({data}: any) => {
     {
       title: 'Author',
       dataIndex: 'author',
-      key: 'createdBy',
+      key: 'author',
       render: (_, record) => {
         return (
-          <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
-            {record.author}
+          <Typography variant='paragraphxs' color={theme.palette.secondary.light} className='capitalize'>
+            {record.user.firstName} {record.user.lastName}
           </Typography>
       )},
     },
@@ -38,7 +39,7 @@ const PatientStoriesAdminTable: React.FC = ({data}: any) => {
       render: (_, record) => {
         return (
           <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
-            {record.submittedDate}
+            {moment(record.submittedDate).format('DD MMM YY')}
           </Typography>
       )},
     },
@@ -47,14 +48,12 @@ const PatientStoriesAdminTable: React.FC = ({data}: any) => {
       key: 'status',
       render: (_, record) => {
         return (
-          <Tag
-            style={{
-              color: record.status === "published"
-                      ? theme.palette.primary.main  
-                      : record.status === "review"
-                        ? theme.palette.state.warning
-                        : theme.palette.state.error
-            }}
+          <Tag color={record.status === "published"
+                        ? "green"
+                        : record.status === "pending"
+                          ? "gold"
+                          : "red"
+                        }
           >
             {capitalize.words(record.status)}
           </Tag>

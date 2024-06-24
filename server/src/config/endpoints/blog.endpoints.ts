@@ -10,8 +10,10 @@ import {
     deleteBlogCategoryHandler, 
     deleteBlogHandler, 
     fetchBlogCategoriesHandler, 
+    fetchBlogCommentHandler, 
     fetchBlogsByCategoryHandler, 
-    fetchBlogsHandler, fetchUserBlogsHandler, likeBlogHandler, 
+    fetchBlogsHandler, fetchUserBlogsHandler, likeBlogCommentHandler, likeBlogHandler, 
+    replyBlogCommentHandler, 
     singleBlogHandler, updateBlogHandler 
 } from '../../routes/blogRoute';
 
@@ -53,8 +55,26 @@ const blogEndpoints: RouteEndpoint  = [
         handler: likeBlogHandler
     },
     {
-        name: 'comment on blog',
+        name: 'like blog comment',
         method: 'put',
+        path: '/like-blog-comment/:commentId',
+        handler: likeBlogCommentHandler
+    },
+    {
+        name: 'reply blog comment',
+        method: 'put',
+        path: '/reply-blog-comment/:commentId',
+        handler: replyBlogCommentHandler
+    },
+    {
+        name: 'fetch blog comments',
+        method: 'get',
+        path: '/fetch-blog-comments/:blogId',
+        handler: fetchBlogCommentHandler
+    },
+    {
+        name: 'comment on blog',
+        method: 'post',
         path: '/comment-on-blog/:blogId',
         handler: commentOnBlogHandler
     },

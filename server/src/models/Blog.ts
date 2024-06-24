@@ -13,6 +13,7 @@ interface IBlog {
     user: mongoose.Types.ObjectId;
     urlSlug: string;
     status: string;
+    publisherImage: string;
 }
 
 const blogSchema = new Schema<IBlog>({
@@ -25,6 +26,7 @@ const blogSchema = new Schema<IBlog>({
     titleImage: { type: String },
     bodyImage: { type: String },
     publisher: { type: String },
+    publisherImage: { type: String },
     urlSlug: { type: String },
     status: { type: String },
     user: { type: Schema.Types.ObjectId, ref: 'User' }

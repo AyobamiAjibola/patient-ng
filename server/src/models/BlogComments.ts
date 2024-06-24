@@ -7,6 +7,8 @@ interface IBlogComments {
         user: mongoose.Types.ObjectId
     }[],
     user: mongoose.Types.ObjectId;
+    likes: mongoose.Types.ObjectId[];
+    blog: mongoose.Types.ObjectId;
 }
 
 const blogCommentsSchema = new Schema<IBlogComments>({
@@ -15,17 +17,20 @@ const blogCommentsSchema = new Schema<IBlogComments>({
         reply: { type: String },
         user: { type: Schema.Types.ObjectId, ref: 'User' }
     }],
-    user: { type: Schema.Types.ObjectId, ref: 'User' }
+    likes: [{ type: String }],
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    blog: { type: Schema.Types.ObjectId, ref: 'Blog' }
 }, { timestamps: true });
 
 blogCommentsSchema.pre(['findOne', 'find'], function (next) {
     this.populate({
         path: 'user',
         select: 'firstName lastName image createdAt'
-      });
+      }).populate({
+        path: 'replies.user',
+        select: 'firstName lastName image createdAt'
+      })
     next();
-    // this.populate('user');
-    // next();
 });
 
 export interface IBlogCommentsModel extends Document, IBlogComments {}

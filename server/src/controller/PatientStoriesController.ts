@@ -63,20 +63,10 @@ export default class BlogController {
     public async stories (req: Request) {
         const stories = await datasources.patientStoriesDAOService.findAll({});
 
-        const filteredStories = await Promise.all(stories.map(async (story) => {
-            const user = await datasources.userDAOService.findById(story.user);
-            return {
-                title: story.title,
-                publisher: `${user?.firstName} ${user?.lastName}`,
-                image: story.image,
-                storyId: story._id
-            };
-        }));
-
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: 'Successful.',
-            results: filteredStories
+            results: stories
         };
         
         return Promise.resolve(response);
@@ -84,7 +74,7 @@ export default class BlogController {
 
     @TryCatch
     public async fetchUserStories (req: Request) {
-        const userId = req.user._id;
+        const userId = req.params.userId;
 
         const user = datasources.userDAOService.findById(userId);
         if(!user)
@@ -104,12 +94,45 @@ export default class BlogController {
     @TryCatch
     public async deleteStory (req: Request) {
         const userId = req.user._id;
-        const storyId = req.params.userId;
+        const storyId = req.params.storyId;
         
         const [user, story] = await Promise.all([
             datasources.userDAOService.findById(userId),
             datasources.patientStoriesDAOService.findById(storyId)
         ]);
+
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorised.", HttpStatus.UNAUTHORIZED.code));
+
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
+
+        if(!story)
+            return Promise.reject(CustomAPIError.response("Story not found.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.patientStoriesDAOService.deleteById(story._id);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted story.'
+        };
+        
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async publishStory (req: Request) {
+        const userId = req.user._id;
+        const storyId = req.params.storyId;
+        
+        const [user, story] = await Promise.all([
+            datasources.userDAOService.findById(userId),
+            datasources.patientStoriesDAOService.findById(storyId)
+        ]);
+
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorised.", HttpStatus.UNAUTHORIZED.code));
 
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found..", HttpStatus.NOT_FOUND.code));
@@ -117,11 +140,41 @@ export default class BlogController {
         if(!story)
             return Promise.reject(CustomAPIError.response("Story not found..", HttpStatus.NOT_FOUND.code));
 
-        await datasources.patientStoriesDAOService.deleteById(story._id);
+        await datasources.patientStoriesDAOService.updateByAny({_id: story._id}, {status: 'published'});
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successfully deleted story.'
+            message: 'Successfully published story.'
+        };
+        
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async rejectStory (req: Request) {
+        const userId = req.user._id;
+        const storyId = req.params.storyId;
+        
+        const [user, story] = await Promise.all([
+            datasources.userDAOService.findById(userId),
+            datasources.patientStoriesDAOService.findById(storyId)
+        ]);
+
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorised.", HttpStatus.UNAUTHORIZED.code));
+
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found..", HttpStatus.NOT_FOUND.code));
+
+        if(!story)
+            return Promise.reject(CustomAPIError.response("Story not found..", HttpStatus.NOT_FOUND.code));
+
+        await datasources.patientStoriesDAOService.updateByAny({_id: story._id}, {status: 'rejected'});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully rejected story.'
         };
         
         return Promise.resolve(response);
@@ -150,7 +203,7 @@ export default class BlogController {
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
         
                 const [_image] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePath)
+                    Generic.handleImage(files.image as File, basePath)
                 ]);
 
                 const payload: Partial<IPatientStoriesModel> = {

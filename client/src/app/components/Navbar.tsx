@@ -56,11 +56,11 @@ const pages: PagesProps[] = [
     name: 'Crowdfunding',
     href: '/crowdfunding',
   },
-  {
-    id: 3,
-    name: 'Insight',
-    href: '/insight',
-  },
+  // {
+  //   id: 3,
+  //   name: 'Insight',
+  //   href: '/insight',
+  // },
   {
     id: 3,
     name: 'Resources',
@@ -88,6 +88,10 @@ const resources = [
   {
     name: "Award",
     link: "/award"
+  },
+  {
+    name: 'Insight',
+    link: '/insight',
   }
 ]
 

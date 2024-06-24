@@ -5,7 +5,7 @@ import MModal from "@/app/components/Modal";
 import { NButton } from "@/app/components/PButton";
 import WebinarAdminTable from "@/app/components/WebinarAdminTable";
 import { Add, Close, SearchOutlined } from "@mui/icons-material";
-import { Box, Divider, IconButton, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, IconButton, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -13,52 +13,14 @@ import { useForm } from "react-hook-form";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
-import { DesktopTimePicker } from '@mui/x-date-pickers/DesktopTimePicker';
-
-const webinarData = [
-  {
-    _id: 1,
-    name: "I was suddenly thrust into a world of uncertainty and fear. But amidst the pain.",
-    date: '05 Dec 2023',
-    time: "2pm WAT",
-    status: "pending",
-    author: "Lisa James"
-  },
-  {
-    _id: 2,
-    name: "I was suddenly thrust into a world of uncertainty and fear. But amidst the pain.",
-    date: '05 Dec 2023',
-    time: "2pm WAT",
-    status: "on-going",
-    author: "Kid Kudi"
-  },
-  {
-    _id: 3,
-    name: "I was suddenly thrust into a world of uncertainty and fear. But amidst the pain.",
-    date: '05 Dec 2023',
-    time: "2pm WAT",
-    status: "on-going",
-    author: "Kida Kudx"
-  },
-  {
-    _id: 4,
-    name: "I was suddenly thrust into a world of uncertainty and fear. But amidst the pain.",
-    date: '05 Dec 2023',
-    time: "2pm WAT",
-    status: "completed",
-    author: "Ezi Igi"
-  },
-  {
-    _id: 4,
-    name: "I was suddenly thrust into a world of uncertainty and fear. But amidst the pain.",
-    date: '05 Dec 2023',
-    time: "2pm WAT",
-    status: "draft",
-    author: "Ezi Igi"
-  },
-];
+import Select from "react-select";
+import { customStyles } from "@/constant/customStyles";
+import capitalize from "capitalize";
+import { useGetWebinarCategories, useGetWebinars, usePostWebinar, usePostWebinarCategory } from "../hooks/webinarHook/useWebinar";
+import Toastify from "@/app/components/ToastifySnack";
+import { useSession } from "next-auth/react";
 
 type FormValues = {
   webinarName: string;
@@ -79,11 +41,38 @@ export default function page() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [speakers, setSpeakers] = useState([{
     speakerName: '',
-    occupation: ''
+    occupation: '',
+    image: null
   }]);
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [selectedTime, setSelectedTime] = useState(dayjs());
+  const [selectedDateTime, setSelectedDateTime] = useState(dayjs());
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [webinarCategories, setWebinarCategories] = useState<any>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const postWebinarCategoryMutation = usePostWebinarCategory();
+  const [wcategory, setWCategory] = useState<string>('');
+  const fetchWebinarCategoryMutation = useGetWebinarCategories();
+  const {data: session} = useSession();
+  const [status, setStatus] = useState<string>('');
+  const postWebinarMutation = usePostWebinar();
+  const fetchWebinarsMutation = useGetWebinars();
+  const [webinarId, setWebinarId] = useState('');
+
+  const [openSnack, setOpenSnack] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setOpenSnack(true);
+  };
+
+  const handleModalOpen = () => {
+    setOpen(true)
+  }
 
   const item = [
     "All",
@@ -105,8 +94,17 @@ export default function page() {
   const handleAddSpeaker = () => {
     setSpeakers((prevSpeakers) => [
       ...prevSpeakers,
-      { speakerName: '', occupation: '' },
+      { speakerName: '', occupation: '', image: null },
     ]);
+  };
+
+  const handleImageChange = (e: any, index: number) => {
+    const file = e.target.files[0];
+    if (file) {
+      const newSpeakers = [...speakers];
+      newSpeakers[index].image = file;
+      setSpeakers(newSpeakers);
+    }
   };
 
   const handleRemoveSpeaker = (index: number) => {
@@ -118,12 +116,13 @@ export default function page() {
   const handleModalClose = () => {
     setIsEdit(false)
     setOpenModal(false)
+    setWebinarId('')
   }
 
   const filteredData =
     webinars &&
     webinars.filter((item: any) =>
-      item.author.toLowerCase().includes(searchQuery.toLowerCase())
+      item.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -133,49 +132,114 @@ export default function page() {
     setSearchQuery(cleanedInput);
   };
 
+  const handleFetchWebinars = async () => {
+    await fetchWebinarsMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        const webinarData = response.results;
+        if(currentItem === "All") {
+          setWebinar(webinarData)
+        } else if(currentItem === "Pending") {
+          const filteredData = webinarData.filter((webinars: any) => webinars.status === "pending");
+          setWebinar(filteredData)
+        } else if(currentItem === "On going") {
+          const filteredData = webinarData.filter((webinar: any) => webinar.status === "on-going");
+          setWebinar(filteredData)
+        }else if(currentItem === "Completed") {
+          const filteredData = webinarData.filter((webinar: any) => webinar.status === "completed");
+          setWebinar(filteredData)
+        }else if(currentItem === "Draft") {
+          const filteredData = webinarData.filter((webinar: any) => webinar.status === "draft");
+          setWebinar(filteredData)
+        }
+      }
+    })
+  }
+
+  const handleFetch = async () => {
+    await fetchWebinarCategoryMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        let cat: any[] = [];
+        response.results.map((item: any, _: number) => (
+            cat.push({
+              value: item.name,
+              label: capitalize.words(item.name)
+            })
+        ))
+        setWebinarCategories(cat)
+      }
+    })
+  }
+
+  const handleSubmitWCategory = async () => {
+    await postWebinarCategoryMutation.mutateAsync({name: wcategory.toLocaleLowerCase()}, {
+      onSuccess: async (response) => {
+        await handleFetch()
+        handleOpenNotification('success', response.message)
+        setOpen(false)
+        setWCategory('')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  }
+
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
       defaultValues: {
         webinarName: '',
         description: '',
         webinarLink: '',
-        time: '',
         duration: ''
       },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
 
     const payload = {
-        ...data,
-        speakers,
-        date: selectedDate.toDate(),
-        time: selectedTime.toDate(),
+      title: data.webinarName,
+      webinarLink: data.webinarLink,
+      summary: data.description,
+      duration: data.duration,
+      speakers,
+      webinarDateTime: selectedDateTime.toDate(),
+      category: selectedCategory,
+      status: status
     }
-
-    console.log(payload)
+    
+    await postWebinarMutation.mutateAsync(payload, {
+      onSuccess: async (response) => {
+        await handleFetchWebinars();
+        handleOpenNotification('success', response.message)
+        setOpenModal(false)
+        reset()
+        setSpeakers([{
+          speakerName: '',
+          occupation: '',
+          image: null
+        }]);
+        setSelectedCategory('')
+        setStatus('')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
   };
 
   useEffect(() => {
-    if(currentItem === "All") {
-      setWebinar(webinarData)
-    } else if(currentItem === "Pending") {
-      const filteredData = webinarData.filter((webinars) => webinars.status === "pending");
-      setWebinar(filteredData)
-    } else if(currentItem === "On going") {
-      const filteredData = webinarData.filter((webinar) => webinar.status === "on-going");
-      setWebinar(filteredData)
-    }else if(currentItem === "Completed") {
-      const filteredData = webinarData.filter((webinar) => webinar.status === "completed");
-      setWebinar(filteredData)
-    }else if(currentItem === "Draft") {
-      const filteredData = webinarData.filter((webinar) => webinar.status === "draft");
-      setWebinar(filteredData)
-    }
+    handleFetchWebinars()
   },[currentItem]);
+
+  useEffect(() => {
+    handleFetch();
+  },[]);
 
   return (
     <Box
@@ -270,9 +334,78 @@ export default function page() {
             data={filteredData}
             setIsEdit={setIsEdit}
             setOpenModal={setOpenModal}
+            setWebinarId={setWebinarId}
           />
         </Box>
       </Box>
+
+      <MModal
+        onClose={()=> {
+          setOpen(false)
+          setWCategory('')
+        }}
+        open={open}
+        width={sm ? '95%' : '50%'}
+        showCloseIcon={false}
+        height={'220px'}
+      >
+        <Box className="flex flex-col"
+          sx={{
+            height: screenHeight/100 * 80,
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll'
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              height: '15%',
+              bgcolor: 'white',
+              borderBottom: `1px solid ${theme.palette.border.main}`,
+              alignItems: 'center',
+              px: 2
+            }}
+          >
+              <Typography variant='labellg'>
+                {'Webinar category'}
+            </Typography>
+            <IconButton>
+              <Close 
+                onClick={handleModalClose}
+                sx={{
+                  fontSize: '20px',
+                  color: theme.palette.secondary.light
+                }}
+              />
+            </IconButton>
+          </Box>
+
+          <Box width={'100%'} mb={3}>
+            <InputField
+              label={''}
+              type="text"
+              placeholder="Category"
+              value={wcategory}
+              isBorder={true}
+              onChange={(e) => setWCategory(e.target.value)}
+              labelStyle={{
+                fontSize: theme.typography.labelsm.fontSize,
+                fontWeight: 500
+              }}
+            />
+          </Box>
+          <NButton
+            bkgcolor={theme.palette.primary.main}
+            textcolor="white"
+            width='100%'
+            onClick={handleSubmitWCategory}
+          >
+            {postWebinarCategoryMutation.isLoading ? "Please wait..." : "Save"}
+          </NButton>
+        </Box>
+      </MModal>
 
       <MModal
         onClose={handleModalClose}
@@ -280,11 +413,10 @@ export default function page() {
         width={sm ? '95%' : '60%'}
         showCloseIcon={false}
       >
-          <Box className="flex flex-col"
+          <Box className="flex flex-col hide-scrollbar"
             sx={{
               height: screenHeight/100 * 80,
-              bgcolor: theme.palette.secondary.lightest,
-              overflow: 'scroll'
+              bgcolor: theme.palette.secondary.lightest
             }}
           >
             <Box
@@ -299,9 +431,17 @@ export default function page() {
                 px: 2
               }}
             >
-               <Typography variant='labellg'>
-                  {isEdit ? 'Update webinar' : 'Create webinar'}
-              </Typography>
+               {isEdit ? (
+                <Box display={'flex'}>
+                  <Typography variant='labellg'>
+                    Update webinar
+                  </Typography>
+                </Box>
+              ) : (
+                <Typography variant='labellg'>
+                  Create webinar
+                </Typography>
+              )}
               <IconButton>
                 <Close 
                   onClick={handleModalClose}
@@ -320,7 +460,6 @@ export default function page() {
               }}
             >
               <form onSubmit={handleSubmit(onSubmit)} noValidate>
-
                 <Box
                   sx={{
                     width: '100%',
@@ -350,6 +489,42 @@ export default function page() {
                   <Box
                     sx={{
                         width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}
+                  >
+                      <Typography variant="labelxs"
+                          sx={{
+                              mb: 2
+                          }}
+                      >
+                          Webinar Category
+                      </Typography>
+                      <Select
+                          className="w-full h-10 font-light"
+                          options={webinarCategories}
+                          styles={customStyles}
+                          placeholder="Choose hospitals"
+                          name="rating"
+                          onChange={(item) => {
+                            setSelectedCategory(String(item?.value));
+                          }}
+                          value={{
+                              value: selectedCategory,
+                              label: capitalize.words(selectedCategory),
+                          }}
+                      />
+                      {session?.user.isAdmin && (<Typography 
+                          onClick={handleModalOpen}
+                          variant='labelxs' color={theme.palette.primary.main}
+                          sx={{cursor: 'pointer'}}
+                      >
+                          Add webinar category
+                      </Typography>)}
+                  </Box>
+                  <Box
+                    sx={{
+                        width: '100%',
                         my: 2
                     }}
                   >
@@ -370,8 +545,7 @@ export default function page() {
                   </Box>
                   <Box
                     sx={{
-                      width: '100%',
-                      // mb: 2
+                      width: '100%'
                     }}
                   >
                       <InputField
@@ -398,17 +572,17 @@ export default function page() {
                   >
                     <Box
                       sx={{
-                        width: sm ? '100%' : '40%'
+                        width: sm ? '100%' : '50%'
                       }}
                     >
                       <Typography variant="labelxs">
-                        Date
+                        Date and Time
                       </Typography>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DatePicker']} sx={{width: '100%'}}>
-                          <DatePicker
-                            value={selectedDate}
-                            onChange={(newValue: any) => setSelectedDate(newValue)}
+                        <DemoContainer components={['DateTimePicker']} sx={{width: '100%'}}>
+                          <DateTimePicker
+                            value={selectedDateTime}
+                            onChange={(newValue: any) => setSelectedDateTime(newValue)}
                             slots={{ textField: (params) => (
                               <TextField
                                 {...params}
@@ -432,41 +606,7 @@ export default function page() {
                     </Box>
                     <Box
                       sx={{
-                        width: sm ? '100%' : '40%'
-                      }}
-                    >
-                      <Typography variant="labelxs">
-                        Time
-                      </Typography>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DesktopTimePicker']}>
-                          <DesktopTimePicker
-                            value={selectedTime}
-                            onChange={(newValue: any) => setSelectedTime(newValue)}
-                            slots={{ textField: (params) => (
-                              <TextField
-                                {...params}
-                                variant="outlined"
-                                sx={{ height: 40, width: '100%' }}
-                                InputProps={{
-                                  ...params.InputProps,
-                                  style: { 
-                                    height: 40,
-                                    fontSize: '14px',
-                                    fontWeight: 400,
-                                    borderRadius: theme.borderRadius.sm,
-                                    backgroundColor: 'white'
-                                  }
-                                }}
-                              />
-                            )}}
-                          />
-                        </DemoContainer>
-                      </LocalizationProvider>
-                    </Box>
-                    <Box
-                      sx={{
-                        width: sm ? '100%' : '30%',
+                        width: sm ? '100%' : '50%',
                         mt: 1
                       }}
                     >
@@ -515,7 +655,7 @@ export default function page() {
                           alignItems: 'center'
                         }}
                       >
-                        <Box sx={{width: '50%'}}>
+                        <Box sx={{width: '33%'}}>
                           <InputField
                             label={index === 0 ? 'Speaker Name' : ''}
                             type="text"
@@ -533,7 +673,7 @@ export default function page() {
                             }}
                           />
                         </Box>
-                        <Box sx={{width: '50%'}}>
+                        <Box sx={{width: '33%'}}>
                           <InputField
                             label={index === 0 ? 'Occupation' : ''}
                             type="text"
@@ -551,6 +691,13 @@ export default function page() {
                             }}
                           />
                         </Box>
+                        <Box sx={{ width: '33%', mt: 2 }}>
+                          <input
+                            accept="image/jpeg, image/png"
+                            type="file"
+                            onChange={(e) => handleImageChange(e, index)}
+                          />
+                        </Box>
                         <IconButton onClick={() => handleRemoveSpeaker(index)}
                           disabled={index === 0}
                         >
@@ -566,39 +713,52 @@ export default function page() {
                     ))
                   }
                 </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    width: '100%',
+                    height: '15%',
+                    bgcolor: 'white',
+                    borderTop: `1px solid ${theme.palette.border.main}`,
+                    alignItems: 'center',
+                    gap: 2,
+                    px: 2, py: 2,
+                    mt: 2
+                  }}
+                >
+                  <NButton
+                    type="submit"
+                    bkgcolor={'white'}
+                    textcolor="black"
+                    bordercolor={theme.palette.border.main}
+                    onMouseEnter={()=>setStatus('draft')}
+                  >
+                    Save as draft
+                  </NButton>
+                  <NButton
+                    type="submit"
+                    bkgcolor={theme.palette.primary.main}
+                    textcolor="white"
+                    onMouseEnter={()=>setStatus('publish')}
+                  >
+                    Publish
+                  </NButton>
+                </Box>
                 
               </form>
             </Box>
-
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                width: '100%',
-                height: '15%',
-                bgcolor: 'white',
-                borderTop: `1px solid ${theme.palette.border.main}`,
-                alignItems: 'center',
-                gap: 2,
-                px: 2, py: 2
-              }}
-            >
-              <NButton
-                bkgcolor={'white'}
-                textcolor="black"
-                bordercolor={theme.palette.border.main}
-              >
-                Save as draft
-              </NButton>
-              <NButton
-                bkgcolor={theme.palette.primary.main}
-                textcolor="white"
-              >
-                Publish
-              </NButton>
-            </Box>
           </Box>
       </MModal>
+
+      <Toastify
+        open={openSnack}
+        onClose={() => setOpenSnack(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
     </Box>
   )
 }

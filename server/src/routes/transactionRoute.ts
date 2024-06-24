@@ -4,11 +4,11 @@ import authenticateRouteWrapper from "../middleware/authenticateRouteWrapper";
 
 const transactionController = new TransactionController();
 
-export const donateyHandler = authenticateRouteWrapper(async (req, res) =>  {
+export const donateyHandler = async (req: Request, res: Response) =>  {
     const response = await transactionController.donate(req);
 
     res.status(response.code).json(response);
-});
+};
 
 export const initTransactionCallbackHandler = async (req: Request, res: Response) =>  {
     const response = await transactionController.initTransactionCallback(req);

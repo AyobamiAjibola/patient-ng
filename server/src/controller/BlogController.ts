@@ -125,6 +125,9 @@ export default class BlogController {
 
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+        
+        if(blog.likes.includes(user._id)) 
+            return Promise.reject(CustomAPIError.response("You already liked the blog.", HttpStatus.FORBIDDEN.code));
 
         blog.likes.push(user._id);
         await blog.save();
@@ -136,6 +139,70 @@ export default class BlogController {
       
         return Promise.resolve(response);
 
+    }
+
+    @TryCatch
+    public async likeComment (req: Request) {
+        const userId = req.user._id;
+        const commentId = req.params.commentId;
+
+        const [user, blogComment] = await Promise.all([
+            datasources.userDAOService.findById(userId),
+            datasources.blogCommentsDAOService.findById(commentId)
+        ]);
+
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found", HttpStatus.NOT_FOUND.code));
+
+        if(!blogComment)
+            return Promise.reject(CustomAPIError.response("Blog comment not found", HttpStatus.NOT_FOUND.code));
+
+        blogComment.likes.push(user._id);
+        await blogComment.save();
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully liked comment.'
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async replyBlogComment (req: Request) {
+        const userId = req.user._id;
+        const commentId = req.params.commentId;
+
+        const { error, value } = Joi.object<any>({
+            reply: Joi.string().required().label('Reply')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const [user, blogComment] = await Promise.all([
+            datasources.userDAOService.findById(userId),
+            datasources.blogCommentsDAOService.findById(commentId)
+        ]);
+
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found", HttpStatus.NOT_FOUND.code));
+
+        if(!blogComment)
+            return Promise.reject(CustomAPIError.response("Blog comment not found", HttpStatus.NOT_FOUND.code));
+
+        blogComment.replies.unshift({
+            reply: value.reply,
+            user: user._id
+        });
+        await blogComment.save();
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully replied.'
+        };
+      
+        return Promise.resolve(response);
+        
     }
 
     @TryCatch
@@ -162,7 +229,8 @@ export default class BlogController {
         const blogComment = await datasources.blogCommentsDAOService.create(
             { 
                 comment: value.comment,
-                user: user._id
+                user: user._id,
+                blog: blog._id
             } as IBlogCommentsModel);
 
         blog.comments.push(blogComment._id);
@@ -170,7 +238,7 @@ export default class BlogController {
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successfully created comment.'
+            message: 'Successfully commented.'
         };
       
         return Promise.resolve(response);
@@ -216,6 +284,21 @@ export default class BlogController {
             code: HttpStatus.OK.code,
             message: 'Successfully retrieved blogs.',
             results: blogs
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async fetchBlogComments (req: Request) {
+        const blogId = req.params.blogId
+
+        const comments = await datasources.blogDAOService.findAll({ blog: blogId });
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully retrieved comments.',
+            results: comments
         };
       
         return Promise.resolve(response);
@@ -401,7 +484,8 @@ export default class BlogController {
                     category: category._id,
                     titleImage: _titleImage ? _titleImage : '',
                     bodyImage: _bodyImage ? _bodyImage : '',
-                    hot: value.hot
+                    hot: value.hot,
+                    publisherImage: user?.image || ''
                 }
 
                 const blog: any = await datasources.blogDAOService.create(payload as IBlogModel);
@@ -441,6 +525,13 @@ export default class BlogController {
 
                 if(!blog)
                     return reject(CustomAPIError.response("Blog does not exist.", HttpStatus.NOT_FOUND.code));
+
+                if (value.urlSlug && value.urlSlug !== blog.urlSlug) {
+                    const existingBlogWithSlug = await datasources.blogDAOService.findByAny({ urlSlug: value.urlSlug });
+                    if (existingBlogWithSlug) {
+                        return reject(CustomAPIError.response("A blog with this title already exists.", HttpStatus.FORBIDDEN.code));
+                    }
+                }
         
                 let category;
                 if(value.category) {
@@ -459,12 +550,12 @@ export default class BlogController {
 
                 const imagePathtitle = 'blogtitleimg/'
                 if (_titleImage && blog.titleImage) {
-                    await Generic.deleteExistingImage(blog.titleImage, basePathTitleImage, imagePathtitle);
+                    Generic.deleteExistingImage(blog.titleImage, basePathTitleImage, imagePathtitle);
                 }
         
                 const imagePathbody = 'blogbodyimg/'
                 if (_bodyImage && blog.bodyImage) {
-                    await Generic.deleteExistingImage(blog.bodyImage, basePathBodyImage, imagePathbody);
+                    Generic.deleteExistingImage(blog.bodyImage, basePathBodyImage, imagePathbody);
                 }
         
                 const payload: Partial<IBlogModel> = {

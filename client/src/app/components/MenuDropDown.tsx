@@ -1,3 +1,4 @@
+import { Insights } from '@mui/icons-material';
 import { Box, Typography, useTheme } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -176,7 +177,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
             </Box>
           </Box>
         </MenuItem>
-        <MenuItem onClick={() => handleClose('award')}>
+        <MenuItem onClick={() => handleClose('/award')}>
           <Box className='flex flex-col'>
             <Box className='flex gap-4 justify-start'>
               <Image
@@ -193,6 +194,39 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                 }}
               >
                 Award
+              </Typography>
+            </Box>
+            <Box className='flex gap-5 justify-start'>
+              <Box sx={{width: 20, height: 20}}/>
+              <Typography 
+                sx={{
+                  color: theme.palette.secondary.light,
+                  fontSize: theme.typography.paragraphsm,
+                  whiteSpace: 'pre-line'
+                }}
+              >
+                The latest industry news, updates and info.
+              </Typography> 
+            </Box>
+          </Box>
+        </MenuItem>
+        <MenuItem onClick={() => handleClose('/insight')}>
+          <Box className='flex flex-col'>
+            <Box className='flex gap-4 justify-start'>
+              <Insights
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontSize: 26
+                }}
+              />
+              <Typography 
+                sx={{
+                  color: theme.palette.secondary.main,
+                  fontSize: theme.typography.labelbase.fontSize,
+                  fontWeight: 500
+                }}
+              >
+                Insight
               </Typography>
             </Box>
             <Box className='flex gap-5 justify-start'>
