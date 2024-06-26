@@ -1,5 +1,6 @@
 'use client';
 
+import { useGetUserInsights } from "@/app/admin/hooks/insightHook/useInsight";
 import PButton from "@/app/components/PButton";
 import Pagination from "@/app/components/Pagination";
 import { setMenuIndex } from "@/lib/atoms";
@@ -9,38 +10,19 @@ import { Box, Rating, Typography, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import capitalize from "capitalize";
 import { useAtom } from "jotai";
+import moment from "moment";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const reviews = [
-  {
-    hospital: 'Vine Clinic',
-    review: `To a general advertiser outdoor advertising is worthy of consideration. Outdoor advertising is considered as the oldest form of advertising. Posting bills on wooden boards in the late 19th century led to the birth of the term billboard. Today, outdoor advertising includes`,
-    rating: 4,
-    date: '26th Oct 2023',
-    status: 'Pending'
-  },
-  {
-    hospital: 'Socale Clinic',
-    review: `To a general advertiser outdoor advertising is worthy of consideration. Outdoor advertising is considered as the oldest form of advertising. Posting bills on wooden boards in the late 19th century led to the birth of the term billboard. Today, outdoor advertising includes`,
-    rating: 2,
-    date: '26th Oct 2023',
-    status: 'Approved'
-  },
-  {
-    hospital: 'General Clinic',
-    review: `To a general advertiser outdoor advertising is worthy of consideration. Outdoor advertising is considered as the oldest form of advertising. Posting bills on wooden boards in the late 19th century led to the birth of the term billboard. Today, outdoor advertising includes`,
-    rating: 3,
-    date: '26th Oct 2023',
-    status: 'Refused'
-  }
-]
 
 export default function Reviews() {
   const [_, setCurrentIndex] = useAtom(setMenuIndex);
   const theme = useTheme();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const router = useRouter();
+  const insightMutation = useGetUserInsights();
+  const {data: session} = useSession();
+  const [reviews, setReviews] = useState<any[]>([]);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(reviews.length / itemsPerPage);
@@ -48,6 +30,18 @@ export default function Reviews() {
   const handlePageChange = (newPage: any) => {
     setCurrentPage(newPage);
   };
+
+  const fetchReview = async () => {
+    await insightMutation.mutateAsync(session?.user.userId, {
+      onSuccess: (response: any) => {
+        setReviews(response.results)
+      } 
+    })
+  }
+
+  useEffect(() => {
+    fetchReview()
+  },[session]);
 
   useEffect(() => {
     setCurrentIndex(2)
@@ -81,18 +75,13 @@ export default function Reviews() {
                 alignItems: 'center'
               }}
             >
-              <Typography
-                sx={{
-                  fontSize: theme.typography.labellg.fontSize,
-                  fontWeight: theme.typography.labellg.fontWeight
-                }}
-              >
-                {review.hospital}
+              <Typography variant="labellg">
+                {review.hospitalName}
               </Typography>
               <Tag 
                 color={review.status.toLowerCase() === 'approved'
                         ? 'success'
-                        : review.status.toLowerCase() === 'refused'
+                        : review.status.toLowerCase() === 'rejected'
                           ? 'error'
                           : 'warning'
                       }
@@ -108,7 +97,7 @@ export default function Reviews() {
                 color: theme.palette.secondary.light
               }}
             >
-              {wordBreaker(review.review, 40)}
+              {wordBreaker(review.comment, 40)}
             </Typography>
 
             <Box
@@ -131,7 +120,7 @@ export default function Reviews() {
                     fontSize: theme.typography.labelxs.fontSize
                   }}
                 >
-                  {review.date}
+                  {moment(review.createdAt).format('DD MMM YY')}
                 </Typography>
               </Box>
 
@@ -153,12 +142,11 @@ export default function Reviews() {
               </Box> 
             </Box>
 
-            {review.status.toLowerCase() !== 'approved' && 
-            (<PButton transBg={true} bg={false} width='10%'
-              onClick={() => router.push(`/account/reviews/${index}`)}
+            <PButton transBg={true} bg={false} width='10%'
+              onClick={() => router.push(`/account/reviews/${review._id}`)}
             >
               Modify
-            </PButton>)}
+            </PButton>
           </Box>
         ))
       }

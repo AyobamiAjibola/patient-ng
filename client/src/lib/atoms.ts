@@ -11,10 +11,11 @@ export const setIsLoggedIn = atom<boolean>(false);
 export const modalReg = atom<boolean>(false);
 export const sessionErrorMsg = atom<string>("");
 export const sessionErrorModal = atom<boolean>(false);
-export const setOpenSignInModal = atom<boolean>(false);
+export const setOpenSignInModal = atom<boolean>(false); //setFundraisingId
 export const selectedImageArrayAtom2 = atom<any>([]);
 export const speakerData = atom([{
     speakerName: '',
     occupation: '',
     image: null
-}])
+}]);
+export const setFundraisingId = atom<string>('');

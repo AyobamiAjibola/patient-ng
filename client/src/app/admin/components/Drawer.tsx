@@ -12,6 +12,7 @@ import MButtonIcon from './MButtonIcon';
 import { createElement, useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import { setDrawerOpen } from '@/lib/atoms';
+import { useFetchSingleUser } from '../hooks/userHook/useUser';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: theme.drawerWidth,
@@ -107,10 +108,27 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
   const isMobile = useMediaQuery('(max-width: 900px)');
   const [_, setOpen] = useAtom(setDrawerOpen);
   const { data: session } = useSession();
+  const getUserMutation = useFetchSingleUser();
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [image, setImage] = useState<string>('');
 
   const handleLogout = async () => {
-    await signOut();
+    await signOut({
+      redirect: true,
+      callbackUrl: '/'
+    });
     router.push(`/`);
+  };
+
+  const fetchSingleUser = async (id: any) => {
+    await getUserMutation.mutateAsync(id, {
+      onSuccess: (response: any) => {
+        setName(`${response.result.firstName} ${response.result.lastName}`)
+        setEmail(response.result.email)
+        setImage(response.result.image)
+      }
+    })
   };
 
   useEffect(() => {
@@ -133,6 +151,10 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
       }
     }
   },[]);
+
+  useEffect(() => {
+    fetchSingleUser(session?.user.userId)
+  },[session]);
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -311,12 +333,14 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
               gap: 2
             }}
           >
-            <Avatar
-              src='/model.png'
+            <img
+              crossOrigin='anonymous'
+              src={image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` : '/person.png'}
               alt='profile image'
-              sx={{
+              style={{
                 width: 30,
-                height: 30
+                height: 30,
+                borderRadius: '50%'
               }}
             />
             <Box
@@ -327,15 +351,15 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
                 justifyContent: 'flex-start'
               }}
             >
-              <Typography variant='labelxxs' color={'black'}>
-                Brian Ford
+              <Typography variant='labelxxs' color={'black'} className='capitalize'>
+                {name}
               </Typography>
               <Typography variant='paragraphxxs' color={theme.palette.secondary.light}
                 sx={{
                   textTransform: 'none'
                 }}
               >
-                ford@gmail.com
+                {email}
               </Typography>
             </Box>
           </Box>)}

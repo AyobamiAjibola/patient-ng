@@ -4,13 +4,16 @@ import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import moment from 'moment';
 
-const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModalOpen}: any) => {
+const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModalOpen, setCurrentAwardId}: any) => {
   const theme = useTheme();
 
-  const handleAward = () => {
+  const handleAward = (id: any) => {
+    console.log(id, 'id from table')
     setIsEdit(true)
     setOpenModal(true)
+    setCurrentAwardId(id)
   }
 
   const columns: TableProps<any>['columns'] = [
@@ -19,7 +22,7 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
       key: 'awardName',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs'>
+          <Typography variant='labelxs' className='capitalize'>
             {record.awardName}
           </Typography>
       )},
@@ -30,7 +33,7 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
       key: 'recipient',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs' color={theme.palette.secondary.light}>
+          <Typography variant='labelxs' color={theme.palette.secondary.light} className='capitalize'>
             {record.recipient}
           </Typography>
       )},
@@ -40,7 +43,7 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
       render: (_, record) => {
         return (
           <Typography variant='labelxs'>
-            {record.dateRecieved}
+            {moment(record.dateRecieved).format('DD MMM YY')}
           </Typography>
       )},
     },
@@ -49,19 +52,19 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
       render: (_, record) => {
         return (
           <Typography variant='labelxs'>
-            {record.nominees}
+            {record.nominees.length}
           </Typography>
       )},
     },
-    {
-      title: 'Category',
-      render: (_, record) => {
-        return (
-          <Typography variant='labelxs'>
-            {record.category}
-          </Typography>
-      )},
-    },
+    // {
+    //   title: 'Category',
+    //   render: (_, record) => {
+    //     return (
+    //       <Typography variant='labelxs'>
+    //         {record.category}
+    //       </Typography>
+    //   )},
+    // },
     {
       title: 'Action',
       key: 'action',
@@ -73,7 +76,7 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
               alignItems: 'center',
             }}
           >
-            <IconButton onClick={handleAward}>
+            <IconButton onClick={()=>handleAward(record._id)} >
               <Edit sx={{color: theme.palette.primary.main}}/>
             </IconButton>
             <IconButton onClick={() => setDeleteModalOpen(true)}>

@@ -5,18 +5,50 @@ import Navbar from "../components/Navbar";
 import { ExitToAppOutlined, FavoriteBorderOutlined, FlagOutlined, MedicationOutlined, PersonOutlineOutlined } from "@mui/icons-material";
 import { useAtom } from "jotai";
 import { setMenuIndex } from "@/lib/atoms";
+import { useFetchSingleUser } from "../admin/hooks/userHook/useUser";
+import { useEffect, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function layout({ children }: any) {
     const theme = useTheme();
     const [currentIndex, setCurrentIndex] = useAtom(setMenuIndex);
     const isMobile = useMediaQuery('(max-width: 900px)');
+    const getUserMutation = useFetchSingleUser();
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [image, setImage] = useState<string>('');
+    const {data: session} = useSession();
+    const pathname = usePathname();
+    const router = useRouter();
 
     const menu = [
         'Account Information',
         'Crowdfunding',
-        'Hospital Reviews',
+        'Insights',
         'Advocacy',
     ];
+
+    const fetchSingleUser = async (id: any) => {
+        await getUserMutation.mutateAsync(id, {
+            onSuccess: (response: any) => {
+                setName(`${response.result.firstName} ${response.result.lastName}`)
+                setEmail(response.result.email)
+                setImage(response.result.image)
+            }
+        })
+    };
+    
+    const handleLogout = async () => {
+        await signOut({
+          redirect: true,
+          callbackUrl: '/'
+        });
+    };
+
+    useEffect(() => {
+        fetchSingleUser(session?.user.userId)
+    },[session]);
 
     return (
         <>
@@ -63,23 +95,19 @@ export default function layout({ children }: any) {
                                 flexDirection: 'column'
                             }}
                         >
-                            <Avatar
-                                src='/model.png'
+                            <img
+                                src={image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` : '/model.png'}
                                 alt='profile image'
-                                sx={{
+                                style={{
                                     width: '50px',
                                     height: '50px',
-                                    mb: 2
+                                    marginBottom: 2,
+                                    borderRadius: '50%'
                                 }}
+                                crossOrigin="anonymous"
                             />
-                            <Typography
-                                sx={{
-                                    fontSize: theme.typography.labelsm.fontSize,
-                                    fontWeight: theme.typography.labelsm.fontWeight,
-                                    textAlign: 'center'
-                                }}
-                            >
-                                Olowu Abayomi
+                            <Typography variant="labelsm" className="capitalize" textAlign={'center'}>
+                                {name}
                             </Typography>
                             {!isMobile && (<Typography
                                 sx={{
@@ -87,7 +115,7 @@ export default function layout({ children }: any) {
                                     color: theme.palette.secondary.light
                                 }}
                             >
-                                abayomi@patient.ng
+                                {email}
                             </Typography>)}
                             {!isMobile && (<Box 
                                 sx={{
@@ -101,7 +129,12 @@ export default function layout({ children }: any) {
                                 {
                                     menu.map((item, index) => (
                                         <Box key={index}
-                                            onClick={() => setCurrentIndex(index)}
+                                            onClick={() => {
+                                                if(pathname.includes('/crowdfunding/') || pathname.includes('/reviews/') || pathname.includes('/advocacy/')){
+                                                    router.push('/account')
+                                                }
+                                                setCurrentIndex(index)
+                                            }}
                                             sx={{
                                                 border: index === currentIndex ? `1px solid ${theme.palette.primary.main}` : 'none',
                                                 px: 4, py: 2,
@@ -177,6 +210,7 @@ export default function layout({ children }: any) {
                                             border: `1px solid ${theme.palette.primary.main}`,
                                         }
                                     }}
+                                    onClick={handleLogout}
                                 >
                                     <ExitToAppOutlined />
                                     {!isMobile && (<Typography

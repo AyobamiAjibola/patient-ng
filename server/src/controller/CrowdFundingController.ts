@@ -228,7 +228,35 @@ export default class CrowdFundingontroller {
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
 
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorised.", HttpStatus.UNAUTHORIZED.code));
+
         await datasources.crowdFundingDAOService.deleteById(crowdFunding._id);
+
+        const response: HttpResponse<ICrowdFundingModel> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async softDeleteCrowdFunding (req: Request) {
+        const crowdFundingId = req.params.crowdFundingId;
+        const loggedInUser = req.user._id;
+
+        const [user, crowdFunding] = await Promise.all([
+            datasources.userDAOService.findById(loggedInUser),
+            datasources.crowdFundingDAOService.findById(crowdFundingId)
+        ]);
+
+        if(!crowdFunding) 
+            return Promise.reject(CustomAPIError.response("Crowd funding not found.", HttpStatus.NOT_FOUND.code));
+        if(!user)
+            return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.crowdFundingDAOService.updateByAny({_id: crowdFunding._id}, { status: 'deleted' });
 
         const response: HttpResponse<ICrowdFundingModel> = {
             code: HttpStatus.OK.code,
@@ -336,11 +364,11 @@ export default class CrowdFundingontroller {
                     description: Joi.string().label('Content'),
                     amountNeeded: Joi.string().label('Amount raised'),
                     image: Joi.any().label('Image'),
-                    video: Joi.any().label('Video'),
-                    fundraisingFor: Joi.string().label('Fundraiser'),
-                    accountNumber: Joi.string().label('Account Number'),
-                    bank: Joi.string().label('Bank'),
-                    accountName: Joi.string().label('Account Name'),
+                    // video: Joi.any().label('Video'),
+                    // fundraisingFor: Joi.string().label('Fundraiser'),
+                    // accountNumber: Joi.string().label('Account Number'),
+                    // bank: Joi.string().label('Bank'),
+                    address: Joi.string().label('Address'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -351,6 +379,9 @@ export default class CrowdFundingontroller {
 
                 if(!crowdFunding) 
                     return reject(CustomAPIError.response("Crowd funding not found.", HttpStatus.NOT_FOUND.code));
+
+                if(crowdFunding.status !== 'pending')
+                    return reject(CustomAPIError.response("You can not edit this fundraiser as it is eigther active or rejected.", HttpStatus.NOT_FOUND.code));
 
                 if(!user)
                     return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
@@ -372,17 +403,18 @@ export default class CrowdFundingontroller {
                     description: value.description ? value.description : crowdFunding.description,
                     amountNeeded: value.amountNeeded ? value.amountNeeded : crowdFunding.amountNeeded,
                     image: _image ? _image : crowdFunding.image,
-                    video: _video ? _video : crowdFunding.video,
-                    fundraisingFor: value.fundraisingFor ? value.fundraisingFor : crowdFunding.fundraisingFor,
-                    account: {
-                        accountName: value.accountName ? value.accountName : crowdFunding.account.accountName,
-                        accountNumber: value.accountNumber ? value.accountNumber : crowdFunding.account.accountNumber,
-                        bank: value.bank ? value.bank : crowdFunding.account.bank
-                    },
-                    location: {
-                        state: value.state ? value.state : crowdFunding.location.state,
-                        lga: value.lga ? value.lga : crowdFunding.location.lga
-                    }
+                    address: value.address ? value.address : crowdFunding.address,
+                    // video: _video ? _video : crowdFunding.video,
+                    // fundraisingFor: value.fundraisingFor ? value.fundraisingFor : crowdFunding.fundraisingFor,
+                    // account: {
+                    //     accountName: value.accountName ? value.accountName : crowdFunding.account.accountName,
+                    //     accountNumber: value.accountNumber ? value.accountNumber : crowdFunding.account.accountNumber,
+                    //     bank: value.bank ? value.bank : crowdFunding.account.bank
+                    // },
+                    // location: {
+                    //     state: value.state ? value.state : crowdFunding.location.state,
+                    //     lga: value.lga ? value.lga : crowdFunding.location.lga
+                    // }
                 }
 
                 const updatedCrowdFunding = await datasources.crowdFundingDAOService.updateByAny({_id: crowdFunding._id}, payload as ICrowdFundingModel);

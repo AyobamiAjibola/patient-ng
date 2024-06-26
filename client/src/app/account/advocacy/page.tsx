@@ -1,5 +1,6 @@
 'use client';
 
+import { useUsersAdvocacies } from "@/app/admin/hooks/advocacyHook/useAdvocacy";
 import PButton from "@/app/components/PButton";
 import Pagination from "@/app/components/Pagination";
 import { setMenuIndex } from "@/lib/atoms";
@@ -8,6 +9,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import capitalize from "capitalize";
 import { useAtom } from "jotai";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -40,13 +42,28 @@ export default function Advocacy() {
   const theme = useTheme();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const router = useRouter();
+  const advocacyMutation = useUsersAdvocacies();
+  const [advocacies, setAdvocacies] = useState<any[]>([]);
+  const {data: session} = useSession();
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(advocacy.length / itemsPerPage);
+  const totalPages = Math.ceil(advocacies.length / itemsPerPage);
 
   const handlePageChange = (newPage: any) => {
     setCurrentPage(newPage);
   };
+
+  const fetchAdvocacies = async () => {
+    await advocacyMutation.mutateAsync(session?.user.userId, {
+      onSuccess: (response: any) => {
+        setAdvocacies(response.results)
+      } 
+    })
+  }
+
+  useEffect(() => {
+    fetchAdvocacies()
+  },[session]);
 
   useEffect(() => {
     setCurrentIndex(3)
@@ -61,8 +78,8 @@ export default function Advocacy() {
       }}
     >
       {
-        advocacy.map((advocacy: any, index: number) => (
-          <Box
+        advocacies.map((advocacy: any, index: number) => (
+          <Box key={advocacy._id}
             sx={{
               width: '100%',
               height: 'auto',
@@ -84,9 +101,9 @@ export default function Advocacy() {
                 {advocacy.hospitalName}
               </Typography>
               <Tag 
-                color={advocacy.status.toLowerCase() === 'approved'
+                color={advocacy.status === 'approved'
                         ? 'success'
-                        : advocacy.status.toLowerCase() === 'closed'
+                        : advocacy.status === 'closed'
                           ? 'error'
                           : 'warning'
                       }
@@ -106,7 +123,7 @@ export default function Advocacy() {
             
             <PButton transBg={true} bg={false} width='10%'
               onClick={() => {
-                router.push(`/account/advocacy/${index}`)
+                router.push(`/account/advocacy/${advocacy._id}`)
               }}
             >
               Modify
@@ -124,7 +141,7 @@ export default function Advocacy() {
             mt: 5
         }}
       >
-        {advocacy.length !== 0 && (<Pagination
+        {advocacies.length !== 0 && (<Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}

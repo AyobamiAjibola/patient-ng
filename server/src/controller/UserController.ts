@@ -11,6 +11,7 @@ import formidable, { File } from 'formidable';
 import { UPLOAD_BASE_PATH } from "../config/constants";
 import Generic from "../utils/Generic";
 import { IInsightModel } from "../models/Insight";
+import { IAwardModel } from "../models/Award";
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 form.setMaxListeners(15);
@@ -32,6 +33,136 @@ export default class UserController {
             code: HttpStatus.OK.code,
             message: 'Successful.',
             results: filteredUsers
+        };
+
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async createAward (req: Request) {
+        const loggedInUser = req.user._id;
+
+        const { error, value } = Joi.object<any>({
+            awardName: Joi.string().required().label('Award Name'),
+            recipient: Joi.string().required().label('Recipient'),
+            nominees: Joi.array().required().label('Nominees'),
+            dateRecieved: Joi.date().required().label('Date Received')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const user = await datasources.userDAOService.findById(loggedInUser);
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        const awardExist = await datasources.awardDAOService.findByAny({ awardName: value.awardName.toLowerCase() });
+        if(awardExist) 
+            return Promise.reject(CustomAPIError.response("Award already exist.", HttpStatus.BAD_REQUEST.code))
+    
+        await datasources.awardDAOService.create({
+            awardName: value.awardName.toLowerCase(),
+            recipient: value.recipient.toLowerCase(),
+            nominees: value.nominees
+        } as IAwardModel);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully created award.'
+        };
+
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async updateAward (req: Request) {
+        const loggedInUser = req.user._id;
+        const awardId = req.params.awardId;
+
+        const { error, value } = Joi.object<any>({
+            awardName: Joi.string().label('Award Name'),
+            recipient: Joi.string().label('Recipient'),
+            nominees: Joi.array().label('Nominees')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const user = await datasources.userDAOService.findById(loggedInUser);
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        const award = await datasources.awardDAOService.findById(awardId);
+        if(!award) 
+            return Promise.reject(CustomAPIError.response("Award does not exist.", HttpStatus.BAD_REQUEST.code));
+
+        if (value.awardName && value.awardName !== award.awardName) {
+            const existingAward = await datasources.awardDAOService.findByAny({ awardName: value.awardName.toLowerCase() });
+            if (existingAward) {
+                return Promise.reject(CustomAPIError.response("Award with this name already exist.", HttpStatus.FORBIDDEN.code));
+            }
+        }
+    
+        await datasources.awardDAOService.updateByAny({_id: award._id}, {
+            awardName: value.awardName ? value.awardName.toLowerCase() : award.awardName,
+            recipient: value.recipient ? value.recipient.toLowerCase() : award.recipient,
+            nominees: value.nominees ? value.nominees : award.nominees
+        } as IAwardModel);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated award.'
+        };
+
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async getSingleAward (req: Request) {
+        const awardId = req.params.awardId;
+
+        const award = await datasources.awardDAOService.findById(awardId);
+        if(!award)
+            return Promise.reject(CustomAPIError.response("Award not found.", HttpStatus.NOT_FOUND.code));
+        
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            result: award
+        };
+
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getAllAwards (req: Request) {
+
+        const awards = await datasources.awardDAOService.findAll({});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: awards
+        };
+
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async deleteAward (req: Request) {
+        const loggedInUser = req.user._id;
+        const awardId = req.params.awardId;
+
+        const user = await datasources.userDAOService.findById(loggedInUser);
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorised.", HttpStatus.UNAUTHORIZED.code));
+
+        const awardExist = await datasources.awardDAOService.findById(awardId);
+        if(!awardExist) return Promise.reject(CustomAPIError.response("Award does not exist.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.awardDAOService.deleteById(awardExist._id)
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted award.'
         };
 
         return Promise.resolve(response);
@@ -507,9 +638,9 @@ export default class UserController {
                     age: Joi.string().label('Age'),
                     gender: Joi.string().label('Gender'),
                     address: Joi.string().label('Address'),
-                    // healthInterests: Joi.string().label('Health Interests'),
+                    userType: Joi.string().label('user types'),
+                    healthInterests: Joi.array().optional().label('Health Interests'),
                     image: Joi.any().label('image'),
-                    userType: Joi.string().label('user type'),
                     state: Joi.string().label('State'),
                     lga: Joi.string().label('LGA'),
                 }).validate(fields);
@@ -522,10 +653,17 @@ export default class UserController {
                 if(!user)
                     return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
 
+                if (value.email && value.email !== user.email) {
+                    const existingUserWithEmail = await datasources.userDAOService.findByAny({ email: value.email });
+                    if (existingUserWithEmail) {
+                        return reject(CustomAPIError.response("Email is already in use by another user.", HttpStatus.FORBIDDEN.code));
+                    }
+                }
+
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
         
                 const [_image] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePath)
+                    Generic.handleImage(files.image as File, basePath)
                 ]);
 
                 const imagePath = 'photo/'
@@ -533,31 +671,24 @@ export default class UserController {
                     await Generic.deleteExistingImage(user.image, basePath, imagePath);
                 };
 
-                // let healthInterests;
-                // if(value.healthInterests) {
-                //     healthInterests = JSON.parse(value.healthInterests)
-                // }
-
                 let userType;
                 if(value.userType) {
                     userType = JSON.parse(value.userType)
                 }
 
                 const payload: Partial<IUserModel> = {
-                    email: value.email 
-                            ? user.isAdmin
-                                ? user.email : value.email
-                            : user.email,
+                    email: value.email ? value.email : user.email,
                     firstName: value.firstName ? value.firstName : user.firstName,
                     lastName: value.lastName ? value.lastName : user.lastName,
                     phone: value.phone ? value.phone : user.phone,
                     age: value.age ? value.age : user.age,
                     gender: value.gender ? value.gender : user.gender,
                     address: value.address ? value.address : user.address,
-                    // healthInterests: healthInterests.length > 0 ? healthInterests : user.healthInterests,
-                    userType: userType.length > 0 ? userType : user.userType,
+                    healthInterests: value.healthInterests > 0 ? value.healthInterests : user.healthInterests,
+                    userType: userType && userType.length > 0 ? userType : user.userType,
                     state: value.state ? value.state : user.state,
-                    lga: value.lga ? value.lga : user.lga
+                    lga: value.lga ? value.lga : user.lga,
+                    image: _image ? _image : user.image
                 }
 
                 const updatedUser: any = await datasources.userDAOService.updateByAny({_id: user._id}, payload as IUserModel);

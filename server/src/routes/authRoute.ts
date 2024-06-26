@@ -36,11 +36,11 @@ export const signInAdminUserHandler = async (req: Request, res: Response) =>  {
     res.status(response.code).json(response);
 };
 
-export const changePasswordHandler = async (req: Request, res: Response) =>  {
+export const changePasswordHandler = authenticateRouteWrapper(async (req: Request, res: Response) =>  {
     const response = await authController.changePassword(req);
 
     res.status(response.code).json(response);
-};
+});
 
 export const getAccessTokenHandler = async (req: Request, res: Response) =>  {
     const response = await authController.getAccessToken(req);

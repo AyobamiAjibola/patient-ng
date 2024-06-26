@@ -2,14 +2,18 @@ import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
     createAdvocacyHandler,
+    createAwardHandler,
     createInsightHandler,
     deactivateUserHandler, 
     deleteAdvocacyHandler, 
+    deleteAwardHandler, 
     deleteInsightHandler, 
     getAllAdvocaciesHandler, 
     getAllInsightsHandler, 
     getAllUserHandler, 
+    getAwardsHandler, 
     getSingleAdvocateHandler, 
+    getSingleAwardHandler, 
     getSingleInsightHandler, 
     getSingleUserHandler, 
     getUserAdvocaciesHandler, 
@@ -17,6 +21,7 @@ import {
     reviewOnInsightHandler, 
     updateAdvocacyHandler, 
     updateAdvocacyStatusHandler, 
+    updateAwardHandler, 
     updateInsightHandler, 
     updateUserOnboardingHandler, 
     updateUserProfileHandler
@@ -139,6 +144,37 @@ const userEndpoints: RouteEndpoint  = [
         path: '/get-user-advocacies/:userId',
         handler: getUserAdvocaciesHandler
     },
+    //Awards
+    {
+        name: 'post award',
+        method: 'post',
+        path: '/post-award',
+        handler: createAwardHandler
+    },
+    {
+        name: 'update award',
+        method: 'put',
+        path: '/update-award',
+        handler: updateAwardHandler
+    },
+    {
+        name: 'get single award',
+        method: 'get',
+        path: '/get-single-award/:awardId',
+        handler: getSingleAwardHandler
+    },
+    {
+        name: 'get awards',
+        method: 'get',
+        path: '/get-awards',
+        handler: getAwardsHandler
+    },
+    {
+        name: 'delete award',
+        method: 'delete',
+        path: '/delete-award/:awardId',
+        handler: deleteAwardHandler
+    }
 ]
 
 export default userEndpoints;

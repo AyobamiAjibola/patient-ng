@@ -1,9 +1,11 @@
 import useAxiosAuth from "@/app/hooks/useAxiosAuth";
 import { types } from "../../../../../types/models";
+import { useSession } from "next-auth/react";
 
 
 export const useUserApi = () => {
   const axiosAuth = useAxiosAuth();
+  const {data: session} = useSession();
 
   const createUser = async (
     requestParameters: types.CreateUserRequest
@@ -45,8 +47,9 @@ export const useUserApi = () => {
     formData.append('age', data.age.toString());
     formData.append('gender', data.gender);
     formData.append('address', data.address);
+    formData.append('image', data.image);
 
-    if(data.userType.length > 0) {
+    if(data.userType && data.userType.length > 0 && session?.user.isAdmin) {
       formData.append('userType', JSON.stringify(data.userType));
     }
  
@@ -126,6 +129,16 @@ export const useUserApi = () => {
     return response.data;
   }; 
 
+  const changePassword = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      ('/change-password', requestParameters);
+    return response.data;
+  }; 
+
   const toggleUserStatus = async (
     requestParameters: string
   ): Promise<types.ApiResponseSuccess<any>> => {
@@ -135,8 +148,61 @@ export const useUserApi = () => {
     return response.data;
   }; 
 
+  const createAward = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      ('/post-award', requestParameters);
+    return response.data;
+  };
+
+  const updateAward = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      (`/update-award/${data.awardId}`, data);
+    return response.data;
+  };
+
+  const fetchAwards = async (): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/get-awards`);
+    return response.data;
+  };
+
+  const getSingleAward = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/get-single-award/${data}`);
+    return response.data;
+  };
+
+  const deleteAward = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.delete<
+      types.ApiResponseSuccess<any>>
+      (`/delete-award/${data}`);
+    return response.data;
+  };
+
   return {
+    deleteAward,
+    getSingleAward,
+    fetchAwards,
+    updateAward,
+    createAward,
     toggleUserStatus,
+    changePassword,
     resetUserPassword,
     updateUserOnboarding,
     validateSignUpToken,
