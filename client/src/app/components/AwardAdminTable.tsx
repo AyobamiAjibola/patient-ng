@@ -10,7 +10,6 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
   const theme = useTheme();
 
   const handleAward = (id: any) => {
-    console.log(id, 'id from table')
     setIsEdit(true)
     setOpenModal(true)
     setCurrentAwardId(id)
@@ -56,15 +55,15 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
           </Typography>
       )},
     },
-    // {
-    //   title: 'Category',
-    //   render: (_, record) => {
-    //     return (
-    //       <Typography variant='labelxs'>
-    //         {record.category}
-    //       </Typography>
-    //   )},
-    // },
+    {
+      title: 'Category',
+      render: (_, record) => {
+        return (
+          <Typography variant='labelxs' className='capitalize'>
+            {record.awardCategory || ''}
+          </Typography>
+      )},
+    },
     {
       title: 'Action',
       key: 'action',
@@ -79,7 +78,7 @@ const AwardAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setDeleteModa
             <IconButton onClick={()=>handleAward(record._id)} >
               <Edit sx={{color: theme.palette.primary.main}}/>
             </IconButton>
-            <IconButton onClick={() => setDeleteModalOpen(true)}>
+            <IconButton onClick={() => {setDeleteModalOpen(true), setCurrentAwardId(record._id)}}>
               <Delete sx={{color: theme.palette.state.error}}/>
             </IconButton>
           </Box>

@@ -44,7 +44,9 @@ export default class UserController {
 
         const { error, value } = Joi.object<any>({
             awardName: Joi.string().required().label('Award Name'),
+            address: Joi.string().required().label('Facility address'),
             recipient: Joi.string().required().label('Recipient'),
+            awardCategory: Joi.string().required().label('Award Category'),
             nominees: Joi.array().required().label('Nominees'),
             dateRecieved: Joi.date().required().label('Date Received')
         }).validate(req.body);
@@ -61,7 +63,10 @@ export default class UserController {
         await datasources.awardDAOService.create({
             awardName: value.awardName.toLowerCase(),
             recipient: value.recipient.toLowerCase(),
-            nominees: value.nominees
+            nominees: value.nominees,
+            dateRecieved: value.dateRecieved,
+            awardCategory: value.awardCategory,
+            address: value.address
         } as IAwardModel);
 
         const response: HttpResponse<any> = {
@@ -80,8 +85,12 @@ export default class UserController {
 
         const { error, value } = Joi.object<any>({
             awardName: Joi.string().label('Award Name'),
+            awardId: Joi.string().label('Award Name'),
             recipient: Joi.string().label('Recipient'),
-            nominees: Joi.array().label('Nominees')
+            nominees: Joi.array().label('Nominees'),
+            awardCategory: Joi.string().label('Award Category'),
+            dateRecieved: Joi.date().label('Date Received'),
+            address: Joi.string().label('Facility address'),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -103,7 +112,10 @@ export default class UserController {
         await datasources.awardDAOService.updateByAny({_id: award._id}, {
             awardName: value.awardName ? value.awardName.toLowerCase() : award.awardName,
             recipient: value.recipient ? value.recipient.toLowerCase() : award.recipient,
-            nominees: value.nominees ? value.nominees : award.nominees
+            nominees: value.nominees ? value.nominees : award.nominees,
+            dateRecieved: value.dateRecieved ? value.dateRecieved : award.dateRecieved,
+            awardCategory: value.awardCategory ? value.awardCategory : award.awardCategory,
+            address: value.address ? value.address : award.address
         } as IAwardModel);
 
         const response: HttpResponse<any> = {
