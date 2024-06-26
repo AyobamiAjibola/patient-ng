@@ -154,7 +154,7 @@ const userEndpoints: RouteEndpoint  = [
     {
         name: 'update award',
         method: 'put',
-        path: '/update-award',
+        path: '/update-award/:awardId',
         handler: updateAwardHandler
     },
     {

@@ -7,7 +7,6 @@ import { Add, Close, SearchOutlined } from "@mui/icons-material";
 import { Box, IconButton, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -17,41 +16,9 @@ import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
 import AwardAdminTable from "@/app/components/AwardAdminTable";
 import MultipleTextField from "@/app/components/MultipleTextField";
-import { useGetAwards, useGetSingleAward, usePostAward } from "../hooks/userHook/useUser";
+import { useDeleteAward, useGetAwards, useGetSingleAward, usePostAward, useUpdateAward } from "../hooks/userHook/useUser";
 import Toastify from "@/app/components/ToastifySnack";
-
-const awards = [
-  {
-    _id: 1,
-    awardName: "Excellence in Patient Care Award.",
-    dateRecieved: '05 Dec 2023',
-    recipient: 'ABC Hospital',
-    nominees: 10,
-    category: "award"
-  },
-  {
-    _id: 3,
-    awardName: "Excellence in Patient Care Award.",
-    dateRecieved: '05 Dec 2023',
-    recipient: 'ABC Hospital',
-    nominees: 10,
-    category: "award"
-  },
-  {
-    _id: 3,
-    awardName: "Excellence in Patient Care Award.",
-    dateRecieved: '05 Dec 2023',
-    recipient: 'ABC Hospital',
-    nominees: 10,
-    category: "award"
-  },
-];
-
-const PodcastSource = [
-  {value: 'youtube', label: 'Youtube'}, 
-  {value: 'apple', label: 'Apple'},
-  {value: 'spotify', label: 'Spotify'}
-];
+import capitalize from "capitalize";
 
 export default function page() {
   const theme = useTheme();
@@ -67,10 +34,14 @@ export default function page() {
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
   const [awardName, setAwardname] = useState<string>('');
   const postAwardMutation = usePostAward();
+  const updateAwardMutation = useUpdateAward();
   const fetchAwardsMutation = useGetAwards();
   const fetchSingleAwardMutation = useGetSingleAward();
+  const deleteAwardMutation = useDeleteAward();
   const [awards, setAwards] = useState<any[]>([]);
   const [currentAwardId, setCurrentAwardId] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
 
   const [openSnack, setOpenSnack] = useState(false);
   const [message, setMessage] = useState('');
@@ -87,10 +58,12 @@ export default function page() {
   const handleGetSingleAward = async () => {
     await fetchSingleAwardMutation.mutateAsync(currentAwardId, {
       onSuccess: (response: any) => {
-        console.log(response, 'response')
         setAwardname(response.result.awardName)
-        setNominee(response.result.recipient)
-
+        setNominee(capitalize.words(response.result.recipient))
+        setCategory(response.result.awardCategory)
+        setSelectedDate(dayjs(response.result.dateRecieved))
+        setItems(response.result.nominees)
+        setAddress(response.result.address)
       }
     })
   }
@@ -107,6 +80,13 @@ export default function page() {
   const handleModalClose = () => {
     setIsEdit(false)
     setOpenModal(false)
+    setAwardname('')
+    setNominees([])
+    setNominee('')
+    setCategory('')
+    setItems([])
+    setCurrentAwardId('')
+    setAddress('')
   }
 
   const filteredData =
@@ -131,17 +111,14 @@ export default function page() {
   }
 
   const handleOnSubmit = async () => {
-    let array = [];
-    for (let x of nominees) {
-      //@ts-ignore
-      array.push(x.value);
-    }
 
     const payload = {
       dateRecieved: selectedDate.toDate(),
       recipient: nominee,
-      nominees: array,
-      awardName: awardName
+      nominees: items,
+      awardName: awardName,
+      awardCategory: category,
+      address
     }
 
     await postAwardMutation.mutateAsync(payload, {
@@ -149,9 +126,48 @@ export default function page() {
         await handleFetchAwards()
         handleOpenNotification('success', response.message)
         handleModalClose()
-        setAwardname('')
-        setNominees([])
-        setNominee('')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+
+  };
+
+  const handleOnUpdateSubmit = async () => {
+
+    const payload = {
+      dateRecieved: selectedDate.toDate(),
+      recipient: nominee,
+      nominees: items,
+      awardName: awardName,
+      awardCategory: category,
+      awardId: currentAwardId,
+      address
+    }
+
+    await updateAwardMutation.mutateAsync(payload, {
+      onSuccess: async (response) => {
+        await handleFetchAwards()
+        handleOpenNotification('success', response.message)
+        handleModalClose()
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+
+  };
+
+  const handleDeleteAward = async () => {
+    await deleteAwardMutation.mutateAsync(currentAwardId, {
+      onSuccess: async (response) => {
+        await handleFetchAwards()
+        handleOpenNotification('success', response.message)
+        setDeleteModalOpen(false)
+        setCurrentAwardId('')
       },
       onError: (error: any) => {
         const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
@@ -182,7 +198,7 @@ export default function page() {
       handleGetSingleAward()
     }
   },[currentAwardId])
-console.log(currentAwardId, 'id')
+
   return (
     <Box
       sx={{
@@ -343,6 +359,7 @@ console.log(currentAwardId, 'id')
                   setItems={setItems}
                 />
               </Box>
+              
               <Box
                 sx={{
                   width: '100%',
@@ -364,6 +381,35 @@ console.log(currentAwardId, 'id')
                   value={{
                     value: nominee,
                     label: nominee,
+                  }}
+                />
+              </Box>
+
+              <Box
+                sx={{
+                  width: '100%',
+                  mb: 3
+                }}
+              >
+                <Typography variant="labelxs">
+                  Select award category
+                </Typography>
+                <Select
+                  className="w-full h-10 font-light mt-[2px]"
+                  options={[
+                    {value: 'Hospital', label: 'Hospital'},
+                    {value: 'Facility', label: 'Facility'},
+                    {value: 'Health', label: 'Health'}
+                  ]}
+                  styles={customStyles}
+                  placeholder="Choose category"
+                  name="category"
+                  onChange={(item) => {
+                    setCategory(String(item?.value));
+                  }}
+                  value={{
+                    value: category,
+                    label: category,
                   }}
                 />
               </Box>
@@ -402,6 +448,27 @@ console.log(currentAwardId, 'id')
                   </DemoContainer>
                 </LocalizationProvider>
               </Box>
+
+              <Box
+                sx={{
+                  width: '100%',
+                  mt: 4
+                }}
+              >
+                <InputField
+                  label="Facility Address"
+                  placeholder="Enter facility address"
+                  isBorder={true}
+                  rows={4}
+                  multiline={true}
+                  labelStyle={{
+                    fontSize: theme.typography.labelsm.fontSize,
+                    fontWeight: 500
+                  }}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </Box>
             </Box>
           </Box>
 
@@ -419,9 +486,10 @@ console.log(currentAwardId, 'id')
             }}
           >
             <NButton
+              width="200px"
               bkgcolor={theme.palette.primary.main}
               textcolor="white"
-              onClick={handleOnSubmit}
+              onClick={() => {isEdit ? handleOnUpdateSubmit() : handleOnSubmit()}}
             >
               {postAwardMutation.isLoading ? 'Saving...' : 'Save'}
             </NButton>
@@ -434,10 +502,11 @@ console.log(currentAwardId, 'id')
         open={deleteModalOpen}
         width={sm ? '80%' : '40%'}
         showCloseIcon={false}
+        height='140px'
       >
         <Box className="flex flex-col items-center justify-center p-5">
             <Typography variant="labellg" mb={4}>
-              Are you sure want to delete this award?
+              Are you sure you want to delete this award?
             </Typography>
             <Box
               sx={{
@@ -450,9 +519,9 @@ console.log(currentAwardId, 'id')
               <NButton
                 bkgcolor={theme.palette.primary.main}
                 textcolor="white"
-                onClick={() => setDeleteModalOpen(false)}
+                onClick={handleDeleteAward}
               >
-                Yes
+                {deleteAwardMutation.isLoading ? 'Deleting...' : 'Yes'}
               </NButton>
               <NButton
                 bkgcolor={theme.palette.state.error}

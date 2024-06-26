@@ -2,6 +2,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface IAward {
     awardName: string;
+    address: string;
+    awardCategory: string;
     recipient: string;
     nominees: string[];
     dateRecieved: Date;
@@ -9,6 +11,8 @@ interface IAward {
 
 const awardSchema = new Schema<IAward>({
     awardName: { type: String },
+    address: { type: String },
+    awardCategory: { type: String },
     recipient: { type: String },
     nominees: [{ type: String }],
     dateRecieved: { type: Date, default: new Date() }

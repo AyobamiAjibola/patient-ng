@@ -729,7 +729,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               </Box>
             )}
 
-            {!isLogged 
+            {!session?.user
               ? (<Box className='flex flex-row gap-1 items-center' sx={{mt: '80px'}}>
                   <PButton bg={false} transBg={true} onClick={()=>setOpenModalReg(true)}>
                     Sign Up
@@ -746,13 +746,15 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                   alignItems: 'center', mt: 6
                 }}
               >
-                <Avatar
-                  src='/model.png'
+                <img
+                  src={image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` : '/person.png'}
                   alt='profile image'
                   style={{
                     width: '30px',
-                    height: '30px'
+                    height: '30px',
+                    borderRadius: '50%'
                   }}
+                  crossOrigin='anonymous'
                 />
                 <Box
                   sx={{
@@ -766,7 +768,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                       fontWeight: theme.typography.labelxs.fontWeight
                     }}
                   >
-                    Abayomi Oluwo
+                    {capitalize.words(session?.user?.fullName)}
                   </Typography>
                   <Typography
                     sx={{
@@ -774,7 +776,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                       color: theme.palette.secondary.light
                     }}
                   >
-                    email@gmail.com
+                    {session?.user?.email}
                   </Typography>
                 </Box>
                 <IconButton onClick={(e: any) => handleClick2(e)}>

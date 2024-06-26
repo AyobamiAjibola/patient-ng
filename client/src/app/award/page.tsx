@@ -5,8 +5,9 @@ import Navbar from "../components/Navbar";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import capitalize from "capitalize";
 import Pagination from "../components/Pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MModal from "../components/Modal";
+import { useGetAwards } from "../admin/hooks/userHook/useUser";
 
 const awards = [
     {
@@ -69,9 +70,9 @@ const awards = [
 ]
 
 const awardCategories = [
-    "hospitals",
-    "facility",
-    "health"
+    "Hospital",
+    "Facility",
+    "Health"
 ]
 
 export default function Award() {
@@ -84,12 +85,22 @@ export default function Award() {
     const [currentPage, setCurrentPage] = useState(1);
     const [nominees, setNominees] = useState<string[]>([]);
     const [openModal, setModalOpen] = useState<boolean>(false);
+    const [awards, setAwards] = useState<any[]>([]);
+    const fetchAwardsMutation = useGetAwards();
 
+    const handleFetchAwards = async () => {
+        await fetchAwardsMutation.mutateAsync({}, {
+          onSuccess: (response: any) => {
+            setAwards(response.results)
+          }
+        })
+    }
+    
     const filteredData = awards.filter((item) => {
         if(value === 'All' && currYear === 'All') {
             return item;
         }
-        return item.category.toLowerCase().includes(value.toLowerCase()) || item.year.includes(currYear)
+        return item.awardCategory.includes(value) || new Date(item.dateRecieved).getFullYear().toString().includes(currYear)
     });
 
     const itemsPerPage = filteredData.length === awards.length ? 10 : filteredData.length;
@@ -112,6 +123,10 @@ export default function Award() {
         setModalOpen(false)
         setNominees([])
     }
+
+    useEffect(() => {
+        handleFetchAwards();
+    },[]);
 
     return (
         <>
@@ -309,8 +324,8 @@ export default function Award() {
                     }}
                 >
                     {
-                        currentData.map((award, index) => (
-                            <Box key={index}
+                        currentData.map((award: any, index) => (
+                            <Box key={award._id}
                                 sx={{
                                     display: 'flex',
                                     width: isMobile ? '100%' : '45%',
@@ -330,7 +345,7 @@ export default function Award() {
                                         width: '50%'
                                     }}
                                 />
-                                <Typography
+                                <Typography className="capitalize"
                                     sx={{
                                         fontSize: theme.typography.labelsm.fontSize,
                                         fontWeight: theme.typography.labelsm.fontWeight,
@@ -339,13 +354,8 @@ export default function Award() {
                                 >
                                     {award.awardName}
                                 </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: theme.typography.labelsm.fontSize,
-                                        fontWeight: theme.typography.labelsm.fontWeight
-                                    }}
-                                >
-                                    {award.facilityName}
+                                <Typography variant="labelsm" className="capitalize">
+                                    {award.recipient}
                                 </Typography>
                                 <Typography
                                     sx={{
@@ -397,7 +407,7 @@ export default function Award() {
                     onPageChange={handlePageChange}
                 />)}
             </Box>
-            <MModal open={openModal} onClose={handleCloseModal}>
+            <MModal open={openModal} onClose={handleCloseModal} height='auto'>
                 <Box
                     sx={{
                         display: 'flex',
@@ -410,15 +420,15 @@ export default function Award() {
                 >
                     {
                         nominees.length ? (
-                            nominees.map((nominee, index) => (
-                                <Typography key={index}
-                                    sx={{
-                                        fontSize: theme.typography.labellg.fontSize,
-                                    }}
-                                >
-                                    { capitalize.words(nominee) }
-                                </Typography>
-                            ))
+                            <ol>
+                                {nominees.map((nominee, index) => (
+                                <li key={index}>
+                                    <Typography variant="paragraphsm">
+                                        {index + 1} {capitalize.words(nominee)}
+                                    </Typography>
+                                </li>
+                                ))}
+                            </ol>
                         ) : (
                             <Typography>
                                 No nominees for this award
