@@ -30,7 +30,7 @@ import MModal from './Modal';
 import InputField from './InputField';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Toastify from './ToastifySnack';
-import { useForgotPassword, useResetPassword, useSendSignUpOtp, useSignUp, useUpdateUserOnboarding, useValidateSignUpOtp } from '../admin/hooks/userHook/useUser';
+import { useFetchSingleUser, useForgotPassword, useResetPassword, useSendSignUpOtp, useSignUp, useUpdateUserOnboarding, useValidateSignUpOtp } from '../admin/hooks/userHook/useUser';
 import OtpInputField from './OtpInputField';
 import { MyCheckbox2 } from './CheckBox';
 import { useLocalStorage } from '@uidotdev/usehooks';
@@ -150,7 +150,17 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const [selectedDistrict, setSelectedDistrict] = useState<string>('');
   const [selectedState, setSelectedState] = useState('');
   const [sessionError, setSessionError] = useAtom(sessionErrorMsg)
-  const [sessionErrorModalOpen, setSessionErrorModalOpen] = useAtom(sessionErrorModal)
+  const [sessionErrorModalOpen, setSessionErrorModalOpen] = useAtom(sessionErrorModal);
+  const getUserMutation = useFetchSingleUser();
+  const [image, setImage] = useState<string>('');
+
+  const fetchSingleUser = async (id: any) => {
+    await getUserMutation.mutateAsync(id, {
+      onSuccess: (response: any) => {
+        setImage(response.result.image)
+      }
+    })
+  };
 
   const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
     setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
@@ -401,6 +411,10 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   }, []);
 
   useEffect(() => {
+    fetchSingleUser(session?.user.userId)
+  },[session]);
+
+  useEffect(() => {
     if(pathname === '/blog' || 
         pathname === '/webinar' || 
         pathname === '/patient-stories' ||
@@ -577,14 +591,16 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               cursor: 'pointer'
             }}
           >
-            <Avatar
-              src='/model.png'
+            <img
+              src={image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` : '/person.png'}
               alt='profile image'
               style={{
                 width: '40px',
                 height: '40px',
-                marginRight: 12
+                marginRight: 12,
+                borderRadius: '50%'
               }}
+              crossOrigin='anonymous'
             />
             <Box
               sx={{
@@ -715,10 +731,10 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
 
             {!isLogged 
               ? (<Box className='flex flex-row gap-1 items-center' sx={{mt: '80px'}}>
-                  <PButton bg={false} transBg={true}>
+                  <PButton bg={false} transBg={true} onClick={()=>setOpenModalReg(true)}>
                     Sign Up
                   </PButton>
-                  <PButton bg={true} width='100px' transBg={false}>
+                  <PButton bg={true} width='100px' transBg={false} onClick={()=>setOpenModal(true)}>
                     {'Log In'}
                   </PButton>
                 </Box>
@@ -786,7 +802,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={handleModalClose}
         open={openModal}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={true}
       >
         <Box className="flex flex-col justify-center items-center"
@@ -964,7 +980,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={handleModalClose2}
         open={forgotPassModal}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={false}
       >
         <Box className="flex flex-col justify-center items-center"
@@ -1033,7 +1049,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={handleModalClose3}
         open={successForgotPassModal}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={true}
       >
         <Box className="flex flex-col justify-center items-center"
@@ -1064,7 +1080,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={handleModalClose4}
         open={enterResetPasswordModal}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={false}
         onClickOut={false}
       >
@@ -1151,7 +1167,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={handleModalRegClose}
         open={openModalReg}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={true}
         onClickOut={true}
       >
@@ -1389,7 +1405,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={()=>setOpenAccountVerifyModal(false)}
         open={openAccountVerifyModal}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={false}
         onClickOut={false}
       >
@@ -1449,7 +1465,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={() => setOpenModalReg2(false)}
         open={openModalReg2}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={false}
         onClickOut={false}
       >
@@ -1616,7 +1632,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       <MModal
         onClose={() => setSessionErrorModalOpen(false)}
         open={sessionErrorModalOpen}
-        width={isMobile ? '95%' : '30%'}
+        width={isMobile ? '95%' : '40%'}
         showCloseIcon={false}
         onClickOut={false}
         height='260px'

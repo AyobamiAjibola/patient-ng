@@ -10,12 +10,14 @@ interface ImagePreviewSingleProps {
   label?: string;
   props?: any;
   showButton?: boolean;
+  height?: string;
 }
 
 const ImagePreviewSingle: React.FC<ImagePreviewSingleProps> = ({
   image,
   label,
   showButton = true,
+  height = '100%',
   props
 }) => {
   const theme = useTheme();
@@ -42,7 +44,7 @@ const ImagePreviewSingle: React.FC<ImagePreviewSingleProps> = ({
             alt="Uploaded"
             style={{
               objectFit: 'fill',
-              height: '100%',
+              height: height, //'100%',
               width: '100%',
             }}
           />

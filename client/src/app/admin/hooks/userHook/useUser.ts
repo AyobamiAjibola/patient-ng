@@ -127,6 +127,27 @@ export const useResetPassword = () => {
   });
 };
 
+export const useChangePassword = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.changePassword(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['change-password'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error getting user:', error);
+    },
+  });
+};
+
 export const useSignUp = () => {
   const api = useUserApi();
   const queryClient = useQueryClient();
@@ -246,6 +267,111 @@ export const useToggleUserStatus = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['toggle-user-status'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const usePostAward = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.createAward(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['create-award'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useUpdateAward = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.updateAward(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['update-award'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useGetSingleAward = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.getSingleAward(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['single-award'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useGetAwards = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.fetchAwards();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-awards'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useDeleteAward = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.deleteAward(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['delete-award'] });
     },
     onError: (error: Error) => {
       console.error('Error:', error);

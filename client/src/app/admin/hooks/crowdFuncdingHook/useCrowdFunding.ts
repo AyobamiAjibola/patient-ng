@@ -120,10 +120,31 @@ export const useGetUserCrowdfundings = () => {
       return api.getUserCrowdfundings();
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['delete_crowdfunding'] });
+      await queryClient.invalidateQueries({ queryKey: ['get_crowdfunding'] });
     },
     onError: (error: Error) => {
       console.error('Error creating user:', error);
+    },
+  });
+};
+
+export const useSoftDeleteCrowdfunding = () => {
+  const api = useCrowdFundingApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.softDeleteCrowdfunding(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['soft_delete_crowdfunding'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
     },
   });
 };

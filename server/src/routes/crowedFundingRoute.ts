@@ -58,6 +58,12 @@ export const deleteCrowdFundingHandler = authenticateRouteWrapper(async (req, re
     res.status(response.code).json(response);
 });
 
+export const softDeleteCrowdFundingHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await crowdFundingController.softDeleteCrowdFunding(req);
+
+    res.status(response.code).json(response);
+});
+
 export const likeCrowdFundingHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await crowdFundingController.likeCrowdFunding(req);
 

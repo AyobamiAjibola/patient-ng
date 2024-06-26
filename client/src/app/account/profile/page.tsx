@@ -1,11 +1,14 @@
 'use client';
 
+import { useChangePassword, useFetchSingleUser, useUpdateUser } from "@/app/admin/hooks/userHook/useUser";
 import InputField from "@/app/components/InputField";
-import PButton from "@/app/components/PButton";
+import { NButton } from "@/app/components/PButton";
+import Toastify from "@/app/components/ToastifySnack";
 import { customStyles } from "@/constant/customStyles";
 import { stateLga } from "@/constant/state";
 import { FileDownloadOutlined, Upload } from "@mui/icons-material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
@@ -37,6 +40,46 @@ export default function Profile() {
   const [imagePreview, setImagePreview] = useState<string>('');
   const fileInputRef = useRef<any>(null);
   const [profileImage, setProfileImage] = useState(null);
+  const updateUserMutation = useUpdateUser();
+  const getUserMutation = useFetchSingleUser();
+  const {data: session} = useSession();
+  const changePassworcMutation = useChangePassword();
+  const [oldPassword, setOldPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+
+  const [openSnack, setOpenSnack] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setOpenSnack(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenSnack(false)
+  }
+
+  const handleChangePassword = async () => {
+    await changePassworcMutation.mutateAsync({
+      currentPassword: oldPassword,
+      newPassword
+    }, {
+      onSuccess: async () => {
+        await fetchSingleUser(session?.user.userId)
+        handleOpenNotification('success', 'Successfully changed password.')
+        setNewPassword('')
+        setOldPassword('')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  }
 
   const handleDistrict = (value: any) => {
     if (!value) {
@@ -60,6 +103,24 @@ export default function Profile() {
     setDistrict(districtArray);
   };
 
+  const fetchSingleUser = async (id: any) => {
+    await getUserMutation.mutateAsync(id, {
+      onSuccess: (response: any) => {
+        const data = response.result;
+        setValue('firstName', data.firstName)
+        setValue('lastName', data.lastName)
+        setValue('email', data.email)
+        setValue('phone', data.phone)
+        setValue('age', data.age)
+        setValue('address', data.address)
+        setImagePreview(data.image)
+        setSelectedGender(data.gender)
+        setSelectedState(data.state)
+        setSelectedDistrict(data.lga)
+      }
+    })
+  }
+
   const handleImageClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -68,18 +129,34 @@ export default function Profile() {
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
-      ...data,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      age: data.age,
+      address: data.address,
       image: profileImage,
       gender: selectedGender,
       state: selectedState,
-      lga: selectedDistrict
+      lga: selectedDistrict,
+      userId: session?.user.userId
     }
-    console.log(payload, 'data')
+
+    updateUserMutation.mutateAsync(payload, {
+      onSuccess: async () => {
+        await fetchSingleUser(session?.user.userId)
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
   }
 
   const {
     handleSubmit,
     register,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -88,9 +165,7 @@ export default function Profile() {
       email: '',
       phone: '',
       age: 0,
-      address: '',
-      oldPassword: '',
-      newPassword: ''
+      address: ''
     },
   });
 
@@ -106,6 +181,10 @@ export default function Profile() {
     });
     setState(stateArray);
   }, []);
+
+  useEffect(() => {
+    fetchSingleUser(session?.user.userId)
+  },[session]);
 
   return (
     <Box
@@ -140,9 +219,10 @@ export default function Profile() {
           <div onClick={handleImageClick} style={{ cursor: 'pointer' }}>
             {imagePreview && (
             <img
-              src={imagePreview}
+              src={imagePreview.includes('uploads/') ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${imagePreview}` : imagePreview}
               alt=""
               className="w-[150px] h-[150px] rounded-[50%] mt-5"
+              crossOrigin="anonymous"
             />)}
             {!imagePreview && (
               <div
@@ -348,7 +428,7 @@ export default function Profile() {
           sx={{
             width: '100%',
             flexDirection: isMobile ? 'column' : 'row',
-            display: 'flex', gap: 3, mt: 4
+            display: 'flex', gap: 3, mt: 4, mb: 3
           }}
         >
           <Box
@@ -388,9 +468,9 @@ export default function Profile() {
           >
             <Typography
               sx={{
-                  fontSize: theme.typography.labelxs.fontSize,
-                  fontWeight: theme.typography.labelsm.fontWeight,
-                  mb: 2
+                fontSize: theme.typography.labelxs.fontSize,
+                fontWeight: theme.typography.labelsm.fontWeight,
+                mb: 2
               }}
             >
                 LGA
@@ -412,6 +492,19 @@ export default function Profile() {
           </Box>
         </Box>
 
+        <NButton
+          textcolor="white"
+          bkgcolor={theme.palette.primary.main}
+          width="100%" 
+          type="submit"
+        >
+          <Typography sx={{fontSize: theme.typography.labelsm.fontSize}}>
+            <FileDownloadOutlined/> {updateUserMutation.isLoading ? 'Saving...' : `Save`}
+          </Typography>
+        </NButton>
+      </form>
+
+      <Box width={'100%'} mb={6}>
         <Typography
           sx={{
             fontSize: theme.typography.h4.fontSize,
@@ -442,8 +535,8 @@ export default function Profile() {
                   fontSize: theme.typography.labelxs.fontSize,
                   fontWeight: theme.typography.labelsm.fontWeight
                 }}
-                // onChange={(e) => setData({...data, title: e.target.value})}
-                // value={data.title}
+                onChange={(e) => setOldPassword(e.target.value)}
+                value={oldPassword}
             />
           </Box>
           <Box
@@ -460,18 +553,31 @@ export default function Profile() {
                   fontSize: theme.typography.labelxs.fontSize,
                   fontWeight: theme.typography.labelsm.fontWeight
                 }}
-                // onChange={(e) => setData({...data, title: e.target.value})}
-                // value={data.title}
+                onChange={(e) => setNewPassword(e.target.value)}
+                value={newPassword}
             />
           </Box>
         </Box>
-
-        <PButton transBg={false} bg={true} width="100%" type="submit">
+        
+        <NButton 
+          textcolor="white"
+          bkgcolor={theme.palette.primary.main}
+          width="100%" 
+          onClick={handleChangePassword}
+        >
           <Typography sx={{fontSize: theme.typography.labelsm.fontSize}}>
-            <FileDownloadOutlined/> Apply Changes
+            <FileDownloadOutlined/> {changePassworcMutation.isLoading ? 'Apllying...' : 'Apply Changes'}
           </Typography>
-        </PButton>
-      </form>
+        </NButton>
+      </Box>
+
+      <Toastify
+        open={openSnack}
+        onClose={handleModalClose}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
     </Box>
   )
 }

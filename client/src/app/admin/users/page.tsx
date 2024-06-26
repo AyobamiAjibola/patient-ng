@@ -47,7 +47,6 @@ export default function page() {
   const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [selectedOptions, setSelectedOptions] = useState<OptionType[]>([]);
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const createUserMutation = useCreateUser();
@@ -100,9 +99,6 @@ export default function page() {
   const onSubmit = async (data: FormValues) => {
 
     if(!selectedOptions) {
-      setSnackbarOpen(true)
-      setIsError(true)
-      setError("Please select permissions for the user.")
       handleOpenNotification('error', '', "Please select permissions for the user.")
     };
 

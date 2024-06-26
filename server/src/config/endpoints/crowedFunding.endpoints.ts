@@ -10,6 +10,7 @@ import {
     likeCrowdFundingHandler, 
     markCrowdFundingDoneHandler, 
     singleCrowdFundingHandler, 
+    softDeleteCrowdFundingHandler, 
     updateCrowdFundingHandler
 } from '../../routes/crowedFundingRoute';
 
@@ -67,6 +68,12 @@ const crowedFundingEndpoints: RouteEndpoint  = [
         method: 'delete',
         path: '/delete-crowedFunding/:crowdFundingId',
         handler: deleteCrowdFundingHandler
+    },
+    {
+        name: 'soft delete crowedFunding',
+        method: 'delete',
+        path: '/soft-delete-crowedFunding/:crowdFundingId',
+        handler: softDeleteCrowdFundingHandler
     },
     {
         name: 'like crowedFunding',

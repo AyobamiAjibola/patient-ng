@@ -34,6 +34,38 @@ export const deactivateUserHandler = authenticateRouteWrapper(async (req, res) =
     res.status(response.code).json(response);
 });
 
+//Award
+export const createAwardHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.createAward(req);
+
+    res.status(response.code).json(response);
+});
+
+export const updateAwardHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.updateAward(req);
+
+    res.status(response.code).json(response);
+});
+
+export const getSingleAwardHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getSingleAward(req);
+
+    res.status(response.code).json(response);
+};
+
+export const getAwardsHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getAllAwards(req);
+
+    res.status(response.code).json(response);
+};
+
+export const deleteAwardHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.deleteAward(req);
+
+    res.status(response.code).json(response);
+});
+
+
 //advocacy
 export const getUserAdvocaciesHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await userController.getUserAdvocacies(req);

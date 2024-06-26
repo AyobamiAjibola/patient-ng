@@ -347,13 +347,12 @@ export default class AuthenticationController {
   
       const { error, value } = Joi.object({
         newPassword: Joi.string()
-          .regex(/^(?=.*\d)(?=.*[a-z])(?=.*\W)(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
+          .regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,20}$/)
           .messages({
             "string.pattern.base": `Password does not meet requirement.`,
           })
           .required()
           .label("password"),
-        confirmPassword: Joi.ref("newPassword"),
         currentPassword: Joi.string().required(),
       }).validate(req.body);
   
@@ -368,7 +367,7 @@ export default class AuthenticationController {
       const user = await datasources.userDAOService.findById(userId);
       if(!user)
         return Promise.reject(CustomAPIError.response("User not found", HttpStatus.NOT_FOUND.code));
-  
+
       //verify password
       const hash = user.password;
       const password = value.currentPassword;
@@ -380,10 +379,10 @@ export default class AuthenticationController {
     
         if(!isMatch)
             return Promise.reject(
-            CustomAPIError.response("The current password does not match.",
+            CustomAPIError.response("The old password does not match, with your current.",
             HttpStatus.NOT_FOUND.code));
 
-        const _password = await this.passwordEncoder?.encode(value.password as string);
+        const _password = await this.passwordEncoder?.encode(value.newPassword as string);
   
         await datasources.userDAOService.updateByAny(
             { _id: user._id },

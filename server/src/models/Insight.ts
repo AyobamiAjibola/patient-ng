@@ -7,6 +7,7 @@ interface IInsight {
     image: string;
     rating: number;
     comment: string;
+    status: string;
     reviews: {
         review: string;
         user: mongoose.Types.ObjectId;
@@ -18,6 +19,7 @@ const insightSchema = new Schema<IInsight>({
     hospitalName: { type: String },
     hospitalAddress: { type: String },
     state: { type: String },
+    status: { type: String, default: 'pending' },
     image: { type: String },
     rating: { type: Number },
     comment: { type: String },

@@ -17,8 +17,10 @@ import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
 import AwardAdminTable from "@/app/components/AwardAdminTable";
 import MultipleTextField from "@/app/components/MultipleTextField";
+import { useGetAwards, useGetSingleAward, usePostAward } from "../hooks/userHook/useUser";
+import Toastify from "@/app/components/ToastifySnack";
 
-const awardData = [
+const awards = [
   {
     _id: 1,
     awardName: "Excellence in Patient Care Award.",
@@ -51,13 +53,6 @@ const PodcastSource = [
   {value: 'spotify', label: 'Spotify'}
 ];
 
-type FormValues = {
-  awardName: string;
-  podcastLink: string;
-  duration: string;
-  description: string;
-}
-
 export default function page() {
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.down('md'));
@@ -70,6 +65,35 @@ export default function page() {
   const [items, setItems] = useState<any>([]);
   const [nominees, setNominees] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [awardName, setAwardname] = useState<string>('');
+  const postAwardMutation = usePostAward();
+  const fetchAwardsMutation = useGetAwards();
+  const fetchSingleAwardMutation = useGetSingleAward();
+  const [awards, setAwards] = useState<any[]>([]);
+  const [currentAwardId, setCurrentAwardId] = useState<string>('');
+
+  const [openSnack, setOpenSnack] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setOpenSnack(true);
+  };
+
+  const handleGetSingleAward = async () => {
+    await fetchSingleAwardMutation.mutateAsync(currentAwardId, {
+      onSuccess: (response: any) => {
+        console.log(response, 'response')
+        setAwardname(response.result.awardName)
+        setNominee(response.result.recipient)
+
+      }
+    })
+  }
 
   const getHeight = () => {
     if (typeof window !== 'undefined') {
@@ -86,9 +110,8 @@ export default function page() {
   }
 
   const filteredData =
-    awardData &&
-    awardData.filter((item: any) =>
-      item.recipient.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    awards &&
+    awards.filter((item: any) =>
       item.awardName.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -99,29 +122,43 @@ export default function page() {
     setSearchQuery(cleanedInput);
   };
 
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<FormValues>({
-      defaultValues: {
-        awardName: '',
-        podcastLink: '',
-        duration: '',
-        description: ''
-      },
-  });
+  const handleFetchAwards = async () => {
+    await fetchAwardsMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        setAwards(response.results)
+      }
+    })
+  }
 
-  const onSubmit = (data: FormValues) => {
-
-    const payload = {
-      ...data,
-      date: selectedDate.toDate(),
-      recipient: nominee,
-      nominees
+  const handleOnSubmit = async () => {
+    let array = [];
+    for (let x of nominees) {
+      //@ts-ignore
+      array.push(x.value);
     }
 
-    console.log(payload)
+    const payload = {
+      dateRecieved: selectedDate.toDate(),
+      recipient: nominee,
+      nominees: array,
+      awardName: awardName
+    }
+
+    await postAwardMutation.mutateAsync(payload, {
+      onSuccess: async (response) => {
+        await handleFetchAwards()
+        handleOpenNotification('success', response.message)
+        handleModalClose()
+        setAwardname('')
+        setNominees([])
+        setNominee('')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+
   };
 
   useEffect(() => {
@@ -136,6 +173,16 @@ export default function page() {
     setNominees(arr)
   },[items]);
 
+  useEffect(() => {
+    handleFetchAwards();
+  },[]);
+
+  useEffect(() => {
+    if(currentAwardId) {
+      handleGetSingleAward()
+    }
+  },[currentAwardId])
+console.log(currentAwardId, 'id')
   return (
     <Box
       sx={{
@@ -203,6 +250,7 @@ export default function page() {
             //@ts-ignore
             data={filteredData}
             setIsEdit={setIsEdit}
+            setCurrentAwardId={setCurrentAwardId}
             setOpenModal={setOpenModal}
             setDeleteModalOpen={setDeleteModalOpen}
           />
@@ -254,110 +302,107 @@ export default function page() {
               p: 4
             }}
           >
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
               <Box
                 sx={{
                   width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column'
+                  my: 2
                 }}
               >
-                <Box
-                  sx={{
-                    width: '100%',
-                    my: 2
+                <InputField
+                  label="Award Name"
+                  placeholder="Enter award name"
+                  isBorder={true}
+                  labelStyle={{
+                    fontSize: theme.typography.labelsm.fontSize,
+                    fontWeight: 500
                   }}
-                >
-                  <InputField
-                    label="Award Name"
-                    placeholder="Enter award name"
-                    isBorder={true}
-                    labelStyle={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      fontWeight: 500
-                    }}
-                    errorMessage={errors.awardName?.message}
-                    error={!!errors.awardName}
-                    register={register('awardName')}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    width: '100%',
-                    mb: 3
-                  }}
-                >
-                  <MultipleTextField
-                    label={"Nominees"}
-                    labelStyle={{
-                      fontSize: theme.typography.fontSize.labelxs,
-                      fontWeight: 500
-                    }}
-                    items={items}
-                    setItems={setItems}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    width: '100%',
-                    mb: 3
-                  }}
-                >
-                  <Typography variant="labelxs">
-                    Select recipient
-                  </Typography>
-                  <Select
-                    className="w-full h-10 font-light mt-[2px]"
-                    options={nominees}
-                    styles={customStyles}
-                    placeholder="Choose podcast source"
-                    name="podcast source"
-                    onChange={(item) => {
-                      setNominee(String(item?.value));
-                    }}
-                    value={{
-                      value: nominee,
-                      label: nominee,
-                    }}
-                  />
-                </Box>
-
-                <Box
-                  sx={{
-                    width: '100%'
-                  }}
-                >
-                  <Typography variant="labelxs">
-                    Date received
-                  </Typography>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DatePicker']} sx={{width: '100%'}}>
-                      <DatePicker
-                        value={selectedDate}
-                        onChange={(newValue: any) => setSelectedDate(newValue)}
-                        slots={{ textField: (params) => (
-                          <TextField
-                            {...params}
-                            variant="outlined"
-                            sx={{ height: 40, width: '100%' }}
-                            InputProps={{
-                              ...params.InputProps,
-                              style: { 
-                                height: 40,
-                                fontSize: '14px',
-                                fontWeight: 400,
-                                borderRadius: theme.borderRadius.sm,
-                                backgroundColor: 'white'
-                              }
-                            }}
-                          />
-                        )}}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                </Box>
+                  value={awardName}
+                  onChange={(e) => setAwardname(e.target.value)}
+                />
               </Box>
-            </form>
+              <Box
+                sx={{
+                  width: '100%',
+                  mb: 3
+                }}
+              >
+                <MultipleTextField
+                  label={"Nominees"}
+                  labelStyle={{
+                    fontSize: theme.typography.fontSize.labelxs,
+                    fontWeight: 500
+                  }}
+                  items={items}
+                  setItems={setItems}
+                />
+              </Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  mb: 3
+                }}
+              >
+                <Typography variant="labelxs">
+                  Select recipient
+                </Typography>
+                <Select
+                  className="w-full h-10 font-light mt-[2px]"
+                  options={nominees}
+                  styles={customStyles}
+                  placeholder="Choose podcast source"
+                  name="podcast source"
+                  onChange={(item) => {
+                    setNominee(String(item?.value));
+                  }}
+                  value={{
+                    value: nominee,
+                    label: nominee,
+                  }}
+                />
+              </Box>
+
+              <Box
+                sx={{
+                  width: '100%'
+                }}
+              >
+                <Typography variant="labelxs">
+                  Date received
+                </Typography>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DatePicker']} sx={{width: '100%'}}>
+                    <DatePicker
+                      value={selectedDate}
+                      onChange={(newValue: any) => setSelectedDate(newValue)}
+                      slots={{ textField: (params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          sx={{ height: 40, width: '100%' }}
+                          InputProps={{
+                            ...params.InputProps,
+                            style: { 
+                              height: 40,
+                              fontSize: '14px',
+                              fontWeight: 400,
+                              borderRadius: theme.borderRadius.sm,
+                              backgroundColor: 'white'
+                            }
+                          }}
+                        />
+                      )}}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </Box>
+            </Box>
           </Box>
 
           <Box
@@ -376,8 +421,9 @@ export default function page() {
             <NButton
               bkgcolor={theme.palette.primary.main}
               textcolor="white"
+              onClick={handleOnSubmit}
             >
-              Save
+              {postAwardMutation.isLoading ? 'Saving...' : 'Save'}
             </NButton>
           </Box>
         </Box>
@@ -419,6 +465,14 @@ export default function page() {
             </Box>
         </Box>
       </MModal>
+
+      <Toastify
+        open={openSnack}
+        onClose={() => setOpenSnack(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
     </Box>
   )
 }

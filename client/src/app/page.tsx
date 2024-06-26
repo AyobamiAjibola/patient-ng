@@ -1,7 +1,7 @@
 'use client';
 
 import Navbar from '@/app/components/Navbar'
-import PButton, { PButton2 } from '@/app/components/PButton';
+import PButton, { NButton, PButton2 } from '@/app/components/PButton';
 import { characterBreaker, formAmount, wordBreaker } from '@/lib/helper';
 import { ArrowForward, ArrowRight, DesktopWindows, LocationOn, Mic } from '@mui/icons-material';
 import { Box, Button, Grid, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from '@mui/material'
@@ -15,63 +15,11 @@ import { useAtom } from 'jotai';
 import { setIsLoggedIn } from '@/lib/atoms';
 import { useSession } from 'next-auth/react';
 import Footer from './components/Footer';
-
-const crowdCampaign = [
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '200000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '400000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '300000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '150000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '120000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  },
-  {
-    image: '/crowd2.png',
-    name: 'Osaze Odenwingie',
-    story: `In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`,
-    lastDonation: '15m ago',
-    raised: '90000',
-    amountNeeded: '500000',
-    location: 'Ikeja, Lagos'
-  }
-];
+import { useGetCrowdfundings } from './admin/hooks/crowdFuncdingHook/useCrowdFunding';
+import moment from 'moment';
+import { useGetBlogs } from './admin/hooks/blogHook/useBlog';
+import HtmlToText from './components/HtmlToText';
+import { useFetchStories } from './admin/hooks/patientStoriesHook/usePatientStories';
 
 const blogs = [
   {
@@ -261,6 +209,12 @@ export default function HomePage() {
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 900px)');
   const isLoggedIn = true;
+  const getCrowdfundingMutation = useGetCrowdfundings();
+  const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
+  const [blogs, setBlogs] = useState<any>([]);
+  const getBlogsMutation = useGetBlogs();
+  const fetchStoriesMutate = useFetchStories(); 
+  const [stories, setStories] = useState<any>([]);
 
   const getHeight = () => {
     if (typeof window !== 'undefined') {
@@ -283,6 +237,36 @@ export default function HomePage() {
       backgroundColor: theme.palette.primary.main
     },
   }));
+
+  const fetchCrowedfunding = async () => {
+    await getCrowdfundingMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        setCrowdCampaign(response.results)
+      }
+    })
+  }
+
+  const fetchBlogs = async () => {
+    await getBlogsMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        setBlogs(response.results)
+      }
+    })
+  }
+
+  const fetchStories = async () => {
+    await fetchStoriesMutate.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        setStories(response.results)
+      }
+    })
+  }
+
+  useEffect(() => {
+    fetchCrowedfunding()
+    fetchBlogs()
+    fetchStories()
+  },[]);
 
   return (
     <>
@@ -359,9 +343,10 @@ export default function HomePage() {
         <Box
           sx={{
             height: isMobile ? '250px' : '700px',
-            mx: isMobile ? '20px' : '90px',
+            px: isMobile ? '20px' : '90px',
             position: 'absolute',
-            top: isMobile ? '14rem' : '35rem'
+            top: isMobile ? '14rem' : '35rem',
+            width: '100%'
           }}
         >
           <img
@@ -428,159 +413,161 @@ export default function HomePage() {
           }}
         >
           { crowdCampaign.slice(0, 3).map((fundraiser: any, index: number) => {
-            const percent = (+fundraiser.raised/+fundraiser.amountNeeded) * 100;
+              const percent = (+fundraiser.amountRaised/+fundraiser.amountNeeded) * 100;
 
-            return ( 
-            <Box key={index}
-              sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '550px',
-                  minWidth: '300px',
-                  width: isMobile ? '100%' : '32%',
-                  border: `1px solid ${theme.palette.secondary.lighter}`,
-                  borderRadius: theme.borderRadius.sm
-                }}
-              >
-                <img
-                  src={fundraiser.image}
-                  alt='crowd funding image'
-                  style={{
-                    height: '50%',
-                    width: '100%',
-                    borderTopLeftRadius: theme.borderRadius.sm,
-                    borderTopRightRadius: theme.borderRadius.sm
-                  }}
-                  crossOrigin="anonymous"
-                />
-                <Box
+              return ( 
+                <Box key={fundraiser}
                   sx={{
-                    px: '10px',
-                    pt: '10px',
                     display: 'flex',
                     flexDirection: 'column',
-                    height: '70%', justifyContent: 'space-evenly'
+                    height: '550px',
+                    minWidth: '300px',
+                    width: isMobile ? '100%' : '32%',
+                    border: `1px solid ${theme.palette.secondary.lighter}`,
+                    borderRadius: theme.borderRadius.sm
                   }}
                 >
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelxs.fontSize,
-                        fontWeight: theme.typography.labelxs.fontWeight,
-                        ml: -1
-                      }}
-                    >
-                      <LocationOn
-                        sx={{
-                          color: theme.palette.primary.main, 
-                          fontSize: '16px'
-                        }}
-                      /> { fundraiser.location }
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelsm.fontSize,
-                        fontWeight: theme.typography.labelxs.fontWeight,
-                        my: 1
-                      }}
-                    >
-                      { characterBreaker(fundraiser.name, 20)}
-                    </Typography>
-                  </Box>
-
-                  <Typography
+                  <img
+                    src={fundraiser.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${fundraiser.image}` : '/crowd2.png'}
+                    alt='crowd funding image'
+                    style={{
+                      height: '50%',
+                      width: '100%',
+                      borderTopLeftRadius: theme.borderRadius.sm,
+                      borderTopRightRadius: theme.borderRadius.sm
+                    }}
+                    crossOrigin="anonymous"
+                  />
+                  <Box
                     sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      lineHeight: theme.typography.labelxs.lineHeight,
-                      color: theme.palette.secondary.light,
-                      whiteSpace: 'pre-wrap'
+                      px: '10px',
+                      pt: '10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '70%', justifyContent: 'space-evenly'
                     }}
                   >
-                    { wordBreaker(fundraiser.story, 10) }...
-                  </Typography>
-                 
-                  <Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        gap: 1, mt: 3
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          color: theme.palette.secondary.light,
-                          fontSize: theme.typography.labelxs.fontSize
-                        }}
-                      >
-                        Last donation
-                      </Typography>
+                    <Box>
                       <Typography
                         sx={{
                           fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelxs.fontWeight
+                          fontWeight: theme.typography.labelxs.fontWeight,
+                          ml: -1
                         }}
+                        className="capitalize"
                       >
-                        { fundraiser.lastDonation }
+                        <LocationOn
+                          sx={{
+                            color: theme.palette.primary.main, 
+                            fontSize: '16px'
+                          }}
+                        /> { `${fundraiser.location.lga ? fundraiser.location.lga : 'Ikeja'}, ${fundraiser.location.state ? fundraiser.location.state : 'Lagos'}` }
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelsm.fontSize,
+                          fontWeight: theme.typography.labelxs.fontWeight,
+                          my: 1
+                        }}
+                        className="capitalize"
+                      >
+                        { characterBreaker(fundraiser.fundraisingFor, 20)}
                       </Typography>
                     </Box>
-                    <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
-                    <Box
+
+                    <Typography
                       sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1
+                        fontSize: theme.typography.labelxs.fontSize,
+                        lineHeight: theme.typography.labelxs.lineHeight,
+                        color: theme.palette.secondary.light,
+                        whiteSpace: 'pre-wrap'
                       }}
                     >
-                      <Typography
+                      { wordBreaker(fundraiser.description, 10) }...
+                    </Typography>
+                  
+                    <Box>
+                      <Box
                         sx={{
-                          fontSize: theme.typography.labelxxs.fontSize
+                          display: 'flex',
+                          gap: 1, mt: 3
                         }}
                       >
-                        {formAmount(+fundraiser.raised)} raised
-                      </Typography>
-                      <Typography
+                        <Typography
+                          sx={{
+                            color: theme.palette.secondary.light,
+                            fontSize: theme.typography.labelxs.fontSize
+                          }}
+                        >
+                          Last donation
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: theme.typography.labelxs.fontSize,
+                            fontWeight: theme.typography.labelxs.fontWeight
+                          }}
+                        >
+                          { moment(fundraiser.donations[0].date).fromNow() }
+                        </Typography>
+                      </Box>
+                      <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
+                      <Box
                         sx={{
-                          fontSize: theme.typography.labelxxs.fontSize,
-                          color: theme.palette.secondary.light
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1
                         }}
                       >
-                        of {formAmount(+fundraiser.amountNeeded)}
+                        <Typography
+                          sx={{
+                            fontSize: theme.typography.labelxxs.fontSize
+                          }}
+                        >
+                          {formAmount(+fundraiser.amountRaised)} raised
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: theme.typography.labelxxs.fontSize,
+                            color: theme.palette.secondary.light
+                          }}
+                        >
+                          of {formAmount(+fundraiser.amountNeeded)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Box
+                    sx={{
+                      height: '30%', mt: 3,
+                      backgroundColor: theme.palette.secondary.lightest,
+                      borderBottomRightRadius: theme.borderRadius.sm,
+                      borderBottomLeftRadius: theme.borderRadius.sm,
+                      borderTop: `1px solid ${theme.palette.secondary.lighter}`
+                    }}
+                  >
+                    <Box 
+                      sx={{
+                        display: 'flex', 
+                        alignItems: 'center',
+                        height: '100%',
+                        px: '10px'
+                      }}
+                    >
+                      <Typography onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
+                        sx={{
+                          cursor: 'pointer',
+                          color: theme.palette.primary.main,
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelxs.fontWeight,
+                        }}
+                      >
+                        See More Information
                       </Typography>
                     </Box>
                   </Box>
                 </Box>
-                <Box
-                  sx={{
-                    height: '30%', mt: 3,
-                    backgroundColor: theme.palette.secondary.lightest,
-                    borderBottomRightRadius: theme.borderRadius.sm,
-                    borderBottomLeftRadius: theme.borderRadius.sm,
-                    borderTop: `1px solid ${theme.palette.secondary.lighter}`
-                  }}
-                >
-                  <Box 
-                    sx={{
-                      display: 'flex', 
-                      alignItems: 'center',
-                      height: '100%',
-                      px: '10px'
-                    }}
-                  >
-                    <Typography onClick={() => router.push(`/crowdfunding/${index}`)}
-                      sx={{
-                        cursor: 'pointer',
-                        color: theme.palette.primary.main,
-                        fontSize: theme.typography.labelxs.fontSize,
-                        fontWeight: theme.typography.labelxs.fontWeight,
-                      }}
-                    >
-                      See More Information
-                    </Typography>
-                  </Box>
-                  </Box>
-              </Box>
-            )})
-          }
+              )})
+            }
         </Box>
 
         <Box 
@@ -588,13 +575,17 @@ export default function HomePage() {
             display: 'flex', justifyContent: 'center',
             mt: 4, mb: 4
           }}
-          onClick={() => router.push('/crowdfunding/campaigns')}
         >
-          <PButton2 transBg={false} bg={false} width='250px'>
+          <NButton
+            bkgcolor={theme.palette.primary.main}
+            textcolor='white'
+            width='250px'
+            onClick={() => router.push('/crowdfunding/campaigns')}
+          >
             <Typography sx={{color: 'black'}}>
               See all crowdfunding <ArrowForward/>
             </Typography>
-          </PButton2>
+          </NButton>
         </Box>
       </Box>
 
@@ -653,8 +644,8 @@ export default function HomePage() {
             }}
           >
             {
-              blogs.slice(0, 2).map((blog, index) => (
-                <Box key={index}
+              blogs.slice(0, 2).map((blog: any) => (
+                <Box key={blog._id}
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -668,7 +659,7 @@ export default function HomePage() {
                     }}
                   >
                     <img
-                      src={blog.image}
+                      src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
                       alt='blog image'
                       crossOrigin='anonymous'
                       style={{
@@ -683,21 +674,22 @@ export default function HomePage() {
                       color: theme.palette.secondary.light
                     }}
                   >
-                    {blog.date}
+                    {moment(blog.createdAt).format('DD MMM YY')}
                   </Typography>
-                  <Typography
+                  <Typography className='capitalize'
                     sx={{
                       fontSize: theme.typography.labellg.fontSize,
                       fontWeight: theme.typography.labelxl.fontWeight
                     }}
                   >
-                    {blog.title}
+                    {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
                   </Typography>
                   <Typography
                     sx={{
                       fontSize: theme.typography.labelxs.fontSize,
                       color: theme.palette.primary.main
                     }}
+                    onClick={() => router.push(`/blog${blog.urlSlug }`)}
                   >
                     Learn more <ArrowForward sx={{fontSize: '16px'}}/>
                   </Typography>
@@ -720,7 +712,7 @@ export default function HomePage() {
               }}
             >
               <img
-                src='model.png'
+                src={blogs[2]?.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blogs[2]?.titleImage}` : '/logo.png'}
                 alt='blog image'
                 crossOrigin='anonymous'
                 style={{
@@ -735,29 +727,21 @@ export default function HomePage() {
                   color: theme.palette.secondary.light
                 }}
               >
-                25 Apr 2023
+                {moment(blogs[2]?.createdAt).format('DD MMM YY')}
               </Typography>
-              <Typography
-                sx={{
-                  fontSize: theme.typography.labellg.fontSize,
-                  fontWeight: theme.typography.labelxl.fontWeight
-                }}
-              >
-                Maximize User Reach and Engagement with the Latest and Most Advanced Tools Available on the Market.
+              <Typography variant='labellg' className='capitalize'>
+                {blogs[2]?.title.length > 7 ? `${wordBreaker(blogs[2]?.title, 7)}...` : blogs[2]?.title}
               </Typography>
-              <Typography
-                sx={{
-                  fontSize: theme.typography.labelxs.fontSize,
-                  color: theme.palette.secondary.light
-                }}
-              >
-                {wordBreaker(`In a rapidly evolving business landscape, the ability to connect with customers quickly and effectively is paramount. In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task.`, 30)}...
-              </Typography>
+              <HtmlToText
+                mx={isMobile ? 2 : 3}
+                htmlString={isMobile ? wordBreaker(blogs[2]?.content, 20) : wordBreaker(blogs[2]?.content, 40)}
+              />
               <Typography
                 sx={{
                   fontSize: theme.typography.labelxs.fontSize,
                   color: theme.palette.primary.main
                 }}
+                onClick={() => router.push(`/blog${blogs[2].urlSlug }`)}
               >
                 Learn more <ArrowForward sx={{fontSize: '16px'}}/>
               </Typography>
@@ -771,8 +755,8 @@ export default function HomePage() {
             }}
           >
             {
-              blogs.slice(2, 4).map((blog, index) => (
-                <Box key={index}
+              blogs.slice(3, 5).map((blog: any) => (
+                <Box key={blog._id}
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -785,7 +769,7 @@ export default function HomePage() {
                     }}
                   >
                     <img
-                      src={blog.image}
+                      src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
                       alt='blog image'
                       crossOrigin='anonymous'
                       style={{
@@ -801,21 +785,22 @@ export default function HomePage() {
                       color: theme.palette.secondary.light
                     }}
                   >
-                    {blog.date}
+                    {moment(blog.createdAt).format('DD MMM YY')}
                   </Typography>
-                  <Typography
+                  <Typography className='capitalize'
                     sx={{
                       fontSize: theme.typography.labellg.fontSize,
                       fontWeight: theme.typography.labelxl.fontWeight
                     }}
                   >
-                    {blog.title}
+                    {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
                   </Typography>
                   <Typography
                     sx={{
                       fontSize: theme.typography.labelxs.fontSize,
                       color: theme.palette.primary.main
                     }}
+                    onClick={() => router.push(`/blog${blog.urlSlug }`)}
                   >
                     Learn more <ArrowForward/>
                   </Typography>
@@ -830,9 +815,10 @@ export default function HomePage() {
             display: 'flex', justifyContent: 'center',
             mb: 4, mt: isMobile ? 0 : 4
           }}
-          onClick={() => router.push('/blog')}
         >
-          <PButton2 transBg={false} bg={false} width='250px'>
+          <PButton2 transBg={false} bg={false} width='250px'
+            onClick={()=>router.push('/blog')}
+          >
             <Typography sx={{color: 'black'}}>
               See all blog posts <ArrowForward/>
             </Typography>
@@ -897,8 +883,10 @@ export default function HomePage() {
           <Typography
             sx={{
               fontSize: theme.typography.labelxs.fontSize,
-              color: theme.palette.primary.main
+              color: theme.palette.primary.main,
+              cursor: 'pointer'
             }}
+            onClick={()=>router.push('/podcast')}
           >
             See all Podcasts <ArrowForward sx={{fontSize: '14px'}}/>
           </Typography>
@@ -1057,8 +1045,10 @@ export default function HomePage() {
           <Typography
             sx={{
               fontSize: theme.typography.labelxs.fontSize,
-              color: theme.palette.primary.main
+              color: theme.palette.primary.main,
+              cursor: 'pointer'
             }}
+            onClick={()=>router.push('/webinar')}
           >
             See all Webinars <ArrowForward sx={{fontSize: '14px'}}/>
           </Typography>
@@ -1235,8 +1225,8 @@ export default function HomePage() {
             }}
           >
             {
-              stories.slice(0, 3).map((story, index) => (
-                <Box key={index}
+              stories.slice(0, 3).map((story: any) => (
+                <Box key={story._id}
                   sx={{
                     minWidth: isMobile ? '70%' : '32%',
                     minHeight: '150px',
@@ -1254,16 +1244,16 @@ export default function HomePage() {
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    "{wordBreaker(story.content, 20)}..."
+                    {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
                   </Typography>
-                  <Typography
+                  <Typography className='capitalize'
                     sx={{
                       fontSize: theme.typography.labelxs.fontSize,
                       fontWeight: theme.typography.labelsm.fontWeight,
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    -{story.name}
+                    -{story.user.firstName} {story.user.lastName}
                   </Typography>
                   <Typography
                     sx={{
@@ -1271,6 +1261,7 @@ export default function HomePage() {
                       fontWeight: theme.typography.labelsm.fontWeight,
                       color: theme.palette.primary.main
                     }}
+                    onClick={() => router.push(`/patient-stories/${story._id}`)}
                   >
                     Read full story <ArrowForward sx={{fontSize: '13px'}}/>
                   </Typography>
@@ -1292,8 +1283,8 @@ export default function HomePage() {
             }}
           >
             {
-              stories.slice(4, 7).map((story, index) => (
-                <Box key={index}
+              stories.slice(4, 7).map((story: any) => (
+                <Box key={story._id}
                   sx={{
                     minWidth: '32%',
                     minHeight: '150px',
@@ -1311,16 +1302,16 @@ export default function HomePage() {
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    "{wordBreaker(story.content, 20)}..."
+                    {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
                   </Typography>
-                  <Typography
+                  <Typography className='capitalize'
                     sx={{
                       fontSize: theme.typography.labelxs.fontSize,
                       fontWeight: theme.typography.labelsm.fontWeight,
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    -{story.name}
+                    -{story.user.firstName} {story.user.lastName}
                   </Typography>
                   <Typography
                     sx={{
@@ -1328,6 +1319,7 @@ export default function HomePage() {
                       fontWeight: theme.typography.labelsm.fontWeight,
                       color: theme.palette.primary.main
                     }}
+                    onClick={() => router.push(`/patient-stories/${story._id}`)}
                   >
                     Read full story <ArrowForward sx={{fontSize: '13px'}}/>
                   </Typography>
@@ -1349,8 +1341,8 @@ export default function HomePage() {
             }}
           >
             {
-              stories.slice(7, 10).map((story, index) => (
-                <Box key={index}
+              stories.slice(7, 10).map((story: any) => (
+                <Box key={story._id}
                   sx={{
                     minWidth: '32%',
                     minHeight: '150px',
@@ -1368,16 +1360,16 @@ export default function HomePage() {
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    "{wordBreaker(story.content, 20)}..."
+                    {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
                   </Typography>
-                  <Typography
+                  <Typography className='capitalize'
                     sx={{
                       fontSize: theme.typography.labelxs.fontSize,
                       fontWeight: theme.typography.labelsm.fontWeight,
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    -{story.name}
+                    -{story.user.firstName} {story.user.lastName}
                   </Typography>
                   <Typography
                     sx={{
@@ -1385,10 +1377,11 @@ export default function HomePage() {
                       fontWeight: theme.typography.labelsm.fontWeight,
                       color: theme.palette.primary.main
                     }}
+                    onClick={() => router.push(`/patient-stories/${story._id}`)}
                   >
                     Read full story <ArrowForward sx={{fontSize: '13px'}}/>
                   </Typography>
-                </Box> 
+                </Box>  
               ))
             }
           </Box>)}
@@ -1440,7 +1433,7 @@ export default function HomePage() {
             >
               Have you had a negative experience at a hospital? Report it to us and help create a safer, more compassionate healthcare system. Your voice matters!
             </Typography>
-            <Button
+            <Button onClick={()=> router.push('/advocacy')}
               sx={{
                 textTransform: 'none',
                 borderRadius: theme.borderRadius.sm,

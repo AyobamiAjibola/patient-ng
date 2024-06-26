@@ -100,7 +100,7 @@ export default function CrowdFundings() {
 
     handleFetchData();
   },[session]);
-
+  console.log(crowdCampaign, 'campain')
   return (
     <>
       <Navbar/>
