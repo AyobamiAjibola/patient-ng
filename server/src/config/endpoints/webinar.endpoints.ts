@@ -1,6 +1,7 @@
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
+    changeWebinarStatusHandler,
     createWebinarCategoryHandler, 
     createWebinarHandler, 
     createWebinarWaitlistHandler, 
@@ -88,6 +89,12 @@ const webinarEndpoints: RouteEndpoint  = [
         path: '/delete-webinar-waitlist/:watchOnDemandId',
         handler: deleteWebinarWaitlistHandler
     },
+    {
+        name: 'update webinar status',
+        method: 'put',
+        path: '/update-webinar-status/:webinarId',
+        handler: changeWebinarStatusHandler
+    }
 ];
 
 export default webinarEndpoints;

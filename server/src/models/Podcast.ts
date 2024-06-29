@@ -10,13 +10,17 @@ interface IPodcast {
     },
     image: string,
     category: string,
-    user: mongoose.Types.ObjectId
+    user: mongoose.Types.ObjectId,
+    duration: string,
+    status: string,
+    releaseDate: Date
 }
 
 const podcastSchema = new Schema<IPodcast>({
     title: { type: String },
     producedBy: { type: String },
     summary: { type: String },
+    status: { type: String },
     channels: [
         {
             source: { type: String },
@@ -25,6 +29,8 @@ const podcastSchema = new Schema<IPodcast>({
     ],
     image: { type: String },
     category: { type: String },
+    duration: { type: String },
+    releaseDate: { type: Date },
     user: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 

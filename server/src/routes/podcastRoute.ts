@@ -34,11 +34,11 @@ export const updatePodcastHandler = authenticateRouteWrapper(async (req, res) =>
     res.status(response.code).json(response);
 });
 
-export const podcastsHandler = authenticateRouteWrapper(async (req, res) =>  {
+export const podcastsHandler = async (req: Request, res: Response) =>  {
     const response = await podcastController.podcasts(req);
 
     res.status(response.code).json(response);
-});
+};
 
 export const fetchUsersPodcastsHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await podcastController.fetchUsersPodcasts(req);
@@ -54,6 +54,12 @@ export const singlePodcastHandler = async (req: Request, res: Response) =>  {
 
 export const deletePodcastHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await podcastController.deletePodcast(req);
+
+    res.status(response.code).json(response);
+});
+
+export const changePodcastStatusHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await podcastController.changePodcastStatus(req);
 
     res.status(response.code).json(response);
 });

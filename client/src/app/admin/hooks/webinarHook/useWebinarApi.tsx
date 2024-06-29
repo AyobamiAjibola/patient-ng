@@ -81,17 +81,12 @@ export const useWebinarApi = () => {
         formData.append('webinarLink', data.webinarLink);
         formData.append('webinarDateTime', data.webinarDateTime);
         formData.append('summary', data.summary);
-        formData.append('status', data.status);
         formData.append('duration', data.duration);
-        formData.append('speakers', data.speakers);
+        // formData.append('speakers', data.speakers);
 
         if(data.speakers.length > 0) {
             formData.append('speakers', JSON.stringify(data.speakers));
         }
-
-        // if(data.hostedBy.length > 0) {
-        //     formData.append('hostedBy', JSON.stringify(data.hostedBy));
-        // }
 
         const response = await axiosAuth.put<
         types.ApiResponseSuccess<any>>
@@ -150,8 +145,18 @@ export const useWebinarApi = () => {
         return response.data;
     };
 
+    const changeWebinarStatus = async (
+        data: any
+        ): Promise<types.ApiResponseSuccess<any>> => {
+            const response = await axiosAuth.put<
+            types.ApiResponseSuccess<any>>
+            (`/update-webinar-status/${data.webinarId}`, { status: data.status });
+            return response.data;
+    }; 
+
     return {
         postWebinarCategory,
+        changeWebinarStatus,
         getWebinarWaitlistUsers,
         createWebinarWaitlist,
         deleteWebinarWaitlistUser,

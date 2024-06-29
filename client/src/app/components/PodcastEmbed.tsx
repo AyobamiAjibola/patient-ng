@@ -7,7 +7,7 @@ const PodcastEmbed = ({ link }: { link: string }) => {
         src={link}
         height="176px" 
         frameBorder="0" 
-        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation" 
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation allow-presentation" 
         allow="autoplay *; encrypted-media *; clipboard-write; accelerometer; gyroscope; picture-in-picture; web-share" 
         referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen

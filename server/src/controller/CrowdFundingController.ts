@@ -307,10 +307,21 @@ export default class CrowdFundingontroller {
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
                 const basePathVid = `${UPLOAD_BASE_PATH}/video`;
                 
-                const [_image, _video] = await Promise.all([
-                    Generic.handleImage(files.image as File, basePath),
-                    Generic.handleVideo(files.video as File, basePathVid)
-                ]);
+                // const [_image, _video] = await Promise.all([
+                //     Generic.handleImage(files.image as File, basePath),
+                //     Generic.handleVideo(files.video as File, basePathVid)
+                // ]);
+
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                const { result: _video, error: vidError } = await Generic.handleVideo(files.video as File, basePathVid);
+                if (vidError) {
+                    return reject(CustomAPIError.response(vidError, HttpStatus.BAD_REQUEST.code));
+                }
+                
 
                 // const bank = await datasources.bankDAOService.findByAny({ name: value.bank });
                 // if(!bank)
@@ -393,10 +404,19 @@ export default class CrowdFundingontroller {
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
                 const basePathVid = `${UPLOAD_BASE_PATH}/video`;
                 
-                const [_image, _video] = await Promise.all([
-                    Generic.handleImage(files.image as File, basePath),
-                    Generic.handleVideo(files.video as File, basePathVid)
-                ]);
+                // const [_image, _video] = await Promise.all([
+                //     Generic.handleImage(files.image as File, basePath),
+                //     Generic.handleVideo(files.video as File, basePathVid)
+                // ]);
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                const { result: _video, error: vidError } = await Generic.handleVideo(files.video as File, basePathVid);
+                if (vidError) {
+                    return reject(CustomAPIError.response(vidError, HttpStatus.BAD_REQUEST.code));
+                }
 
                 const payload = {
                     title: value.title ? value.title : crowdFunding.title,

@@ -9,7 +9,8 @@ import {
     fetchPodcastCategoriesHandler,
     singlePodcastHandler,
     updatePodcastHandler,
-    podcastsHandler
+    podcastsHandler,
+    changePodcastStatusHandler
 } from '../../routes/podcastRoute';
 
 const podcastEndpoints: RouteEndpoint  = [
@@ -22,7 +23,7 @@ const podcastEndpoints: RouteEndpoint  = [
     {
         name: 'delete podcast category',
         method: 'delete',
-        path: '/delete-podcast-category',
+        path: '/delete-podcast-category/:podcastCategoryId',
         handler: deletePodcastCategoryHandler
     },
     {
@@ -32,15 +33,15 @@ const podcastEndpoints: RouteEndpoint  = [
         handler: fetchPodcastCategoriesHandler
     },
     {
-        name: 'create podcast categories',
+        name: 'create podcast',
         method: 'post',
         path: '/post-podcast',
         handler: createPodcastHandler
     },
     {
-        name: 'update podcast categories',
+        name: 'update podcast',
         method: 'put',
-        path: '/update-podcast',
+        path: '/update-podcast/:podcastId',
         handler: updatePodcastHandler
     },
     {
@@ -58,14 +59,20 @@ const podcastEndpoints: RouteEndpoint  = [
     {
         name: 'get single podcasts',
         method: 'get',
-        path: '/get-single-podcast',
+        path: '/get-single-podcast/:podcastId',
         handler: singlePodcastHandler
     },
     {
         name: 'delete podcast',
         method: 'delete',
-        path: '/delete-podcast',
+        path: '/delete-podcast/:podcastId',
         handler: deletePodcastHandler
+    },
+    {
+        name: 'change podcast status',
+        method: 'put',
+        path: '/change-podcast-status/:podcastId',
+        handler: changePodcastStatusHandler
     }
 ];
 

@@ -5,13 +5,15 @@ import Navbar from "../components/Navbar";
 import { Button } from 'antd';
 import Search from 'antd/es/input/Search';
 import MyCheckbox from "../components/CheckBox";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { characterBreaker } from "@/lib/helper";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import { ArrowForward } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
-import { useGetWebinars } from "../admin/hooks/webinarHook/useWebinar";
+import { useGetWebinarCategories, useGetWebinars } from "../admin/hooks/webinarHook/useWebinar";
+import Pagination from "../components/Pagination";
+import { useSession } from "next-auth/react";
 
 const topics = [
     "Nutrition and Diet",
@@ -23,56 +25,66 @@ const topics = [
     "Healthy Aging",
     "Preventative Health",
     "Community Health and Wellness"
-]
-
-const webinars = [
-    {
-        categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-        title: "Healthy Eating Habits for Busy Lifestyles.",
-        description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-    },
-    {
-        categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-        title: "Healthy Eating Habits for Busy Lifestyles.",
-        description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-    },
-    {
-        categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-        title: "Healthy Eating Habits for Busy Lifestyles.",
-        description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-    },
-    {
-        categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-        title: "Healthy Eating Habits for Busy Lifestyles.",
-        description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-    },
-    {
-        categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-        title: "Healthy Eating Habits for Busy Lifestyles.",
-        description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-    },
-    {
-        categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-        title: "Healthy Eating Habits for Busy Lifestyles.",
-        description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-    }
-]
+];
 
 export default function Webinars() {
     const theme = useTheme();
-    const isLoggedIn = true;
     const router = useRouter();
     const [checkedTopics, setCheckedTopics] = useState<string[]>([]);
     const md = useMediaQuery(theme.breakpoints.down('md'));
     const fetchWebinarsMutation = useGetWebinars();
     const [webinars, setWebinars] = useState<any>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const {data: session} = useSession();
+    const webinarCategoriesMutation = useGetWebinarCategories();
+    const [webinarCategories, setWebinarCategories] = useState<any>([]);
+
+    const filteredData = webinars && webinars.filter((item: any) => {
+        if (checkedTopics.length === 0 && !searchQuery) {
+            return true;
+        }
+    
+        const matchesTopics = checkedTopics.length > 0 ? checkedTopics.includes(item.category.toLowerCase()) : true;
+        const matchesSearch = searchQuery ? item.title.toLowerCase().includes(searchQuery.toLowerCase()) : true;
+    
+        return matchesTopics && matchesSearch;
+    });
+    
+
+    const itemsPerPage = filteredData.length === webinars.length ? 10 : filteredData.length;
+
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+    const currentData = filteredData.slice(startIndex, endIndex);
+
+    const handlePageChange = (newPage: any) => {
+        setCurrentPage(newPage);
+    };
+
+    const handleWebinarCategory = async () => {
+        await webinarCategoriesMutation.mutateAsync({}, {
+            onSuccess: (response: any) => {
+                setWebinarCategories(response.results)
+            }
+        })
+    }
+
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        const cleanedInput = inputValue.replace(/[^a-zA-Z0-9 ]/g, '');
+    
+        setSearchQuery(cleanedInput);
+    };
 
     const handleFetchWebinars = async () => {
         await fetchWebinarsMutation.mutateAsync({}, {
-        onSuccess: (response: any) => {
-            const filtered = response.results.filter((data: any) => data.status !== "draft")
-            setWebinars(filtered)
-        }
+            onSuccess: (response: any) => {
+                const filtered = response.results.filter((data: any) => data.status !== "draft")
+                setWebinars(filtered)
+            }
         })
     }
 
@@ -85,7 +97,8 @@ export default function Webinars() {
     };
 
     useEffect(() => {
-        handleFetchWebinars()
+        handleFetchWebinars();
+        handleWebinarCategory()
     },[]);
 
     return (
@@ -147,9 +160,8 @@ export default function Webinars() {
                                 <Search
                                     placeholder="Search"
                                     allowClear
-                                    enterButton={<Button style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
                                     size="large"
-                                    // onSearch={onSearch}
+                                    onChange={handleSearchChange}
                                 />
                             </Box>
                         </Box>
@@ -179,8 +191,8 @@ export default function Webinars() {
                             }}
                         >
                             {
-                                topics.map((topic: any, index: number) => (
-                                    <Box key={index}
+                                webinarCategories.map((category: any, index: number) => (
+                                    <Box key={category._id}
                                         sx={{
                                             display: 'flex',
                                             gap: 2,
@@ -188,11 +200,12 @@ export default function Webinars() {
                                         }}
                                     >
                                         <MyCheckbox
-                                            checked={checkedTopics.includes(topic)}
-                                            onChange={(checked) => handleCheckboxChange(topic, checked)}
+                                            checked={checkedTopics.includes(category.name)}
+                                            onChange={(checked) => handleCheckboxChange(category.name, checked)}
                                         >
-                                            <Typography sx={{fontWeight: theme.typography.labelxs.fontWeight, fontSize: theme.typography.labelxs.fontSize}}>
-                                                {topic}
+                                            <Typography className="capitalize"
+                                                sx={{fontWeight: theme.typography.labelxs.fontWeight, fontSize: theme.typography.labelxs.fontSize}}>
+                                                {category.name}
                                             </Typography>
                                         </MyCheckbox>
                                         
@@ -222,8 +235,8 @@ export default function Webinars() {
                         }}
                     >
                         {
-                            webinars.map((webinar: any, index: number) => (
-                                <Box key={index}
+                            currentData.map((webinar: any, index: number) => (
+                                <Box key={webinar._id}
                                     sx={{
                                         width: md ? '100%' : '280px',
                                         height: '400px',
@@ -231,7 +244,7 @@ export default function Webinars() {
                                         border: `1px solid ${theme.palette.secondary.lighter}`
                                     }}
                                 >
-                                    <Box onClick={() => router.push(`/webinar/${index}`)}
+                                    <Box onClick={() => router.push(`/webinar/${webinar._id}`)}
                                         sx={{
                                             width: '100%',
                                             height: '60%',
@@ -248,7 +261,7 @@ export default function Webinars() {
                                             height={100}
                                             width={100}
                                         />
-                                        <Typography variant='labelsm'
+                                        <Typography variant='labelsm' className="capitalize"
                                             sx={{
                                                 color: index % 2 === 0 ? 'white' : theme.palette.secondary.main
                                             }}
@@ -260,7 +273,9 @@ export default function Webinars() {
                                         sx={{
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            p: 3
+                                            p: 3,
+                                            justifyContent: 'space-between',
+                                            height: '40%'
                                         }}
                                     >
                                         <Typography variant='paragraphsm'
@@ -268,17 +283,17 @@ export default function Webinars() {
                                                 color: theme.palette.secondary.light
                                             }}
                                         >
-                                            {`${characterBreaker(webinar.description, 160)}...`}
+                                            {webinar.summary.length > 40 ? `${characterBreaker(webinar.summary, 160)}...` : webinar.summary}
                                         </Typography>
 
-                                        {!isLoggedIn ? 
+                                        {!session?.user ? 
                                             (<Typography variant='labelxs'
-                                            sx={{
-                                                color: theme.palette.primary.main,
-                                                cursor: 'pointer', mt: 2
-                                            }}
+                                                sx={{
+                                                    color: theme.palette.primary.main,
+                                                    cursor: 'pointer', mt: 2
+                                                }}
                                             >
-                                                Signup <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
+                                                Signin <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
                                             </Typography>
                                             ) : (
                                             <Typography
@@ -301,37 +316,18 @@ export default function Webinars() {
                     </Box>
                     <Box
                         sx={{
+                            width: '100%',
                             display: 'flex',
-                            justifyContent: 'space-between',
+                            justifyContent: 'center',
                             alignItems: 'center',
-                            width: '100%', mt: 5
+                            mt: 5
                         }}
                     >
-                        <Typography
-                            sx={{
-                                fontSize: theme.typography.labelxs.fontSize,
-                                '&:hover': {color: theme.palette.primary.main},
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <ArrowBack/> Prev
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontSize: theme.typography.labelxs.fontSize,
-                            }}
-                        >
-                            Pages 1 to 8
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontSize: theme.typography.labelxs.fontSize,
-                                '&:hover': {color: theme.palette.primary.main},
-                                cursor: 'pointer'
-                            }}
-                        >
-                            Next <ArrowForward/>
-                        </Typography>
+                        {filteredData.length !== 0 && (<Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />)}
                     </Box>
                 </Box>
             </Box>

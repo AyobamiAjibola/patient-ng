@@ -5,13 +5,20 @@ import type { TableProps } from 'antd';
 import { Box, Typography, useTheme } from '@mui/material';
 import capitalize from 'capitalize';
 import OnlineBadge from './OnlineBadge';
+import moment from 'moment';
 
-const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
+const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setPodcastId, setIsStatus}: any) => {
   const theme = useTheme();
 
-  const handleWebinarEdit = () => {
+  const handleWebinarEdit = (id: string) => {
     setIsEdit(true)
     setOpenModal(true)
+    setPodcastId(id)
+  }
+
+  const handleChangeStatus = (id: string) => {
+    setIsStatus(true)
+    setPodcastId(id)
   }
 
   const columns: TableProps<any>['columns'] = [
@@ -20,7 +27,7 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
       key: 'title',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs'>
+          <Typography variant='labelxs' className='capitalize'>
             {record.title}
           </Typography>
       )},
@@ -32,7 +39,7 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
       render: (_, record) => {
         return (
           <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.releaseDate}
+            {moment(record.releaseDate).format('DD MMM YY')}
           </Typography>
       )},
     },
@@ -90,7 +97,7 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
             }}
           >
             <Typography variant='labelxs'
-              onClick={handleWebinarEdit}
+              onClick={()=>handleWebinarEdit(record._id)}
               sx={{
                 cursor: 'pointer',
                 '&:hover': {
@@ -99,6 +106,18 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal}: any) => {
               }}
             >
               View details
+            </Typography>
+            <Typography variant='labelxs'
+              color={theme.palette.primary.main}
+              onClick={()=>handleChangeStatus(record._id)}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  color: theme.palette.primary.darker
+                }
+              }}
+            >
+              Change Status
             </Typography>
           </Box>
       )},

@@ -2,13 +2,47 @@
 
 import Navbar from '@/app/components/Navbar'
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PodcastEmbed from '@/app/components/PodcastEmbed'
 import { wordBreaker } from '@/lib/helper';
+import { useGetSinglePodcast } from '@/app/admin/hooks/podcastHook/usePodcast';
+import PButton, { NButton } from '@/app/components/PButton';
 
-export default function page() {
+const sources = [
+  "Youtube",
+  "Sportify",
+  "Apple"
+]
+
+export default function page({params}: any) {
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
+  const getSinglePodcastMutation = useGetSinglePodcast();
+  const [links, setLinks] = useState<any>([]);
+  const [description, setDescription] = useState<string>('');
+  const [producedBy, setProducedBy] = useState<string>('');
+  const [value, setValue] = useState<string>('');
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  const handlegetSinglePodcast = async () => {
+    await getSinglePodcastMutation.mutateAsync(params.podcastId, {
+      onSuccess: (response: any) => {
+        setLinks(response.result.channels)
+        setDescription(response.result.summary)
+        setProducedBy(response.result.producedBy)
+      }
+    })
+  }
+
+  useEffect(() => {
+    handlegetSinglePodcast() 
+  },[params]);
+
+  useEffect(() => {
+    if(links.length > 0) {
+      setValue(links[0].link)
+    }
+  },[links]);
 
   return (
     <>
@@ -35,7 +69,6 @@ export default function page() {
             position: 'absolute',
             backgroundColor: 'white',
             top: '8em',
-            // mt: '6rem',
             width: !isMobile ? '60%' : '90%',
             display: 'flex',
             borderRadius: theme.borderRadius.sm,
@@ -46,9 +79,33 @@ export default function page() {
           }}
         >
           <PodcastEmbed
-            link='https://embed.podcasts.apple.com/us/podcast/108-dr-jordan-b-peterson-we-who-wrestle-with-god/id1492492083?i=1000654660669&amp;itsct=podcast_box_player&amp;itscg=30200&amp;ls=1&amp;theme=auto'//'https://www.youtube.com/embed/kW1kwLeCFis?si=bGcF1DaxX9qnXGX-'//'https://open.spotify.com/embed/episode/64S83bNTSVn08f62qNi1lI?utm_source=generator'
+            link={value}
           />
-
+          <Box display={'flex'} gap={2}>
+            {
+              links.map((source: any, index: number) => (
+                <Box key={index} mt={3}>
+                  <NButton
+                    onClick={() => {
+                      setValue(source.link)
+                      setSelectedIndex(index)
+                    }}
+                    bkgcolor={selectedIndex === index ? theme.palette.primary.main : 'white'}
+                    textcolor={selectedIndex === index ? 'white' : theme.palette.primary.main}
+                    bordercolor={selectedIndex === index ? theme.palette.primary.main : theme.palette.border.main}
+                  >
+                    <Typography className="capitalize"
+                      sx={{
+                        fontSize: isMobile ? theme.typography.labelxs : theme.typography.labelsm
+                      }}
+                    >
+                      {source.source}
+                    </Typography>
+                  </NButton>
+                </Box>
+              ))
+            }
+          </Box>
           <Typography
             sx={{
               fontSize: theme.typography.h5.fontSize,
@@ -62,12 +119,10 @@ export default function page() {
             sx={{
               fontSize: theme.typography.labelsm.fontSize,
               color: theme.palette.secondary.light,
-              py: 4
+              pt: 2, pb: 4
             }}
           >
-            {wordBreaker(`It all began when rock musician David Byrne swapped bodies with a Barbie doll in a Freaky Friday-style transformation. That's what prompted him and his partner Mala Gaonkar to turn a 15,000 square foot warehouse in Denver, Colorado into the Theater of the Mind, a cerebral amusement park.
-            In this episode, Byrne and neuroscientist Thalia Wheatley have a live discussion at the Denver Center for the Performing Arts, which is moderated by co-host Latif Nasser. The three discuss how we don't see or hear or know what we believe we do, but also how all of that... can actually be a wonderful thing.
-            We would especially want to thank Charlie Miller and the Denver Center for the Performing Arts team, Emily Simoness and the Arbutus Foundation team, Boen Wang, and Heather Radke.`, 100)}
+            {description}
           </Typography>
 
           <Typography
@@ -92,24 +147,15 @@ export default function page() {
             >
               Produced by
             </Typography>
-            <Typography
+            <Typography className='capitalize'
               sx={{
                 fontSize: theme.typography.labelxs.fontSize,
                 color: theme.palette.primary.main
               }}
             >
-              Suzie Lechtenberg
+              {producedBy}
             </Typography>
           </Box>
-          <Typography
-            sx={{
-              fontSize: theme.typography.labelxs.fontSize,
-              color: theme.palette.secondary.light
-            }}
-          >
-            {`We publish a newsletter every Wednesday. Short essays, suggestions, and information on additional ways to engage with the show are all included. Register at newsletter.
-            Follow us on social media at on Instagram, Twitter, and Facebook, and send us your feedback at www.google.com`}
-          </Typography>
         </Box>
         <Box sx={{height: 5, width: '100%', mt: '30rem', }}/>
       </Box>

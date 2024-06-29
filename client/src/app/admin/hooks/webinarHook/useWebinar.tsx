@@ -232,3 +232,24 @@ export const useGetWebinarWaitlist = () => {
       },
     });
 };
+
+export const useChangeWebinarStatus = () => {
+  const api = useWebinarApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.changeWebinarStatus(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['change_webinar_status'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};

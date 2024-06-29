@@ -202,10 +202,14 @@ export default class BlogController {
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
         
-                const [_image] = await Promise.all([
-                    Generic.handleImage(files.image as File, basePath)
-                ]);
-
+                // const [_image] = await Promise.all([
+                //     Generic.handleImage(files.image as File, basePath)
+                // ]);
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+                
                 const payload: Partial<IPatientStoriesModel> = {
                     ...value,
                     image: _image ? _image : '',
@@ -246,9 +250,13 @@ export default class BlogController {
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
         
-                const [_image] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePath)
-                ]);
+                // const [_image] = await Promise.all([
+                //     Generic.handleImage(files.titleImage as File, basePath)
+                // ]);
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
 
                 const imagePath = 'photo/'
                 if (_image && story.image) {
