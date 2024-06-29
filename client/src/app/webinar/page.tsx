@@ -59,7 +59,7 @@ export default function Webinars() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
     const currentData = filteredData.slice(startIndex, endIndex);
-    console.log(filteredData, 'webina')
+
     const handlePageChange = (newPage: any) => {
         setCurrentPage(newPage);
     };
