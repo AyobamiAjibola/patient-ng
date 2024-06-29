@@ -470,10 +470,20 @@ export default class BlogController {
                 const basePathBodyImage = `${UPLOAD_BASE_PATH}/blogbodyimg`;
                 const basePathTitleImage = `${UPLOAD_BASE_PATH}/blogtitleimg`;
 
-                const [_titleImage, _bodyImage] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePathTitleImage),
-                    Generic.handleImage(files.bodyImage as File, basePathBodyImage)
-                ]);
+                const { result: _titleImage, error: imageError } = await Generic.handleImage(files.image as File, basePathTitleImage);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                };
+
+                const { result: _bodyImage, error: imageBodyError } = await Generic.handleImage(files.image as File, basePathBodyImage);
+                if (imageBodyError) {
+                    return reject(CustomAPIError.response(imageBodyError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                // const [_titleImage, _bodyImage] = await Promise.all([
+                //     Generic.handleImage(files.titleImage as File, basePathTitleImage),
+                //     Generic.handleImage(files.bodyImage as File, basePathBodyImage)
+                // ]);
 
                 const blogExist = await datasources.blogDAOService.findByAny({urlSlug: value.urlSlug});
                 if(blogExist)
@@ -543,10 +553,20 @@ export default class BlogController {
                 const basePathBodyImage = `${UPLOAD_BASE_PATH}/blogbodyimg`;
                 const basePathTitleImage = `${UPLOAD_BASE_PATH}/blogtitleimg`;
 
-                const [_titleImage, _bodyImage] = await Promise.all([
-                    Generic.handleImage(files.titleImage as File, basePathTitleImage),
-                    Generic.handleImage(files.bodyImage as File, basePathBodyImage)
-                ]);
+                const { result: _titleImage, error: imageError } = await Generic.handleImage(files.image as File, basePathTitleImage);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                };
+
+                const { result: _bodyImage, error: imageBodyError } = await Generic.handleImage(files.image as File, basePathBodyImage);
+                if (imageBodyError) {
+                    return reject(CustomAPIError.response(imageBodyError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                // const [_titleImage, _bodyImage] = await Promise.all([
+                //     Generic.handleImage(files.titleImage as File, basePathTitleImage),
+                //     Generic.handleImage(files.bodyImage as File, basePathBodyImage)
+                // ]);
 
                 const imagePathtitle = 'blogtitleimg/'
                 if (_titleImage && blog.titleImage) {

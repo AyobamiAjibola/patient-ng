@@ -4,12 +4,14 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import PButton from "../components/PButton";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { wordBreaker } from "@/lib/helper";
 import { PlayArrow } from "@mui/icons-material";
 import Pagination from "../components/Pagination";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
+import { useGetPodcastCategories, useGetPodcasts } from "../admin/hooks/podcastHook/usePodcast";
+import moment from "moment";
 
 const channels = [
     '/apple-pod.png',
@@ -19,86 +21,11 @@ const channels = [
     '/youtube-pod.png'
   ]
 
-  const podcastCategories = [
-    'All',
-    'Web Design',
-    'Development',
-    'Marketing',
-    'Education',
-    'Technology'
-  ]
-
   const podIcons = [
     '/icon1.png',
     '/icon2.png',
     '/icon3.png',
     '/icon4.png'
-  ]
-
-  const podcasts = [
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'education',
-        source: 'youtube'
-    },
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'education',
-        source: 'youtube'
-    },
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'marketing',
-        source: 'apple'
-    },
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'marketing',
-        source: 'soundcloud'
-    },
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'development',
-        source: 'google'
-    },
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'web design',
-        source: 'spotify'
-    },
-    {
-        title: 'Ep 25: Method Practicing Playful Creation',
-        description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-        date: 'October 27,2022',
-        duration: '1hr',
-        image: '/model.png',
-        category: 'development',
-        source: 'youtube'
-    }
   ]
 
 export default function Podcasts() {
@@ -108,8 +35,12 @@ export default function Podcasts() {
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState(1);
     const router = useRouter();
+    const podcastCategoryMutation = useGetPodcastCategories();
+    const fetchPodcastsMutation = useGetPodcasts(); 
+    const [podcasts, setPodcasts] = useState<any>([]);
+    const [podcastCategories, setPodcastCategories] = useState<any>([]);
 
-    const filteredData = podcasts.filter((item) => {
+    const filteredData = podcasts.filter((item: any) => {
         if(value === 'All') {
             return item;
         }
@@ -127,6 +58,27 @@ export default function Podcasts() {
     const handlePageChange = (newPage: any) => {
         setCurrentPage(newPage);
     };
+
+    const handleFetchPodcasts = async () => {
+        await fetchPodcastsMutation.mutateAsync({}, {
+            onSuccess: (response: any) => {
+                setPodcasts(response.results)
+            }
+        })
+    }
+
+    const handlePodCategory = async () => {
+        await podcastCategoryMutation.mutateAsync({}, {
+            onSuccess: (response: any) => {
+                setPodcastCategories(response.results)
+            }
+        })
+    }
+
+    useEffect(() => {
+        handleFetchPodcasts()
+        handlePodCategory()
+    },[]);
 
     return (
         <>
@@ -265,23 +217,41 @@ export default function Podcasts() {
                                 mt: 4, mb: 6
                             }}
                         >
+                            <Box>
+                                <PButton 
+                                    onClick={() => {
+                                        setValue("All")
+                                        setSelectedIndex(0)
+                                    }}
+                                    transBg={selectedIndex === 0 ? false : true}
+                                    bg={selectedIndex === 0 ? true : false}
+                                >
+                                    <Typography className="capitalize"
+                                        sx={{
+                                            fontSize: isMobile ? theme.typography.labelxs : theme.typography.labelsm
+                                        }}
+                                    >
+                                        {"All"}
+                                    </Typography>
+                                </PButton>
+                            </Box>
                             {
                                 podcastCategories.map((category: any, index: number) => (
-                                    <Box>
+                                    <Box key={index}>
                                         <PButton 
                                             onClick={() => {
-                                                setValue(category)
-                                                setSelectedIndex(index)
+                                                setValue(category.name)
+                                                setSelectedIndex(index + 1)
                                             }}
-                                            transBg={selectedIndex === index ? false : true}
-                                            bg={selectedIndex === index ? true : false}
+                                            transBg={selectedIndex === index + 1 ? false : true}
+                                            bg={selectedIndex === index + 1 ? true : false}
                                         >
-                                            <Typography 
+                                            <Typography className="capitalize"
                                                 sx={{
                                                     fontSize: isMobile ? theme.typography.labelxs : theme.typography.labelsm
                                                 }}
                                             >
-                                                {category}
+                                                {category.name}
                                             </Typography>
                                         </PButton>
                                     </Box>
@@ -310,7 +280,7 @@ export default function Podcasts() {
                                         }}
                                     >
                                         {!isMobile && (<img
-                                            src={podcast.image}
+                                            src={podcast.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${podcast.image}` : '/logo.png'}
                                             alt='podcast image'
                                             style={{
                                                 width: '20%',
@@ -349,7 +319,7 @@ export default function Podcasts() {
                                                                 color: theme.palette.secondary.light
                                                             }}
                                                         >
-                                                            {podcast.date}
+                                                            {moment(podcast.releaseDate).format('MMMM DD, YYYY')}
                                                         </Typography>
                                                     </Box>
                                                 </Box>
@@ -380,7 +350,7 @@ export default function Podcasts() {
                                                 </Box>
                                             </Box>
 
-                                            <Typography
+                                            <Typography className="capitalize"
                                                 sx={{
                                                     fontSize: isMobile ? theme.typography.h6.fontSize : theme.typography.h5.fontSize,
                                                     fontWeight: theme.typography.h5.fontWeight
@@ -394,7 +364,7 @@ export default function Podcasts() {
                                                     color: theme.palette.secondary.light
                                                 }}
                                             >
-                                                {wordBreaker(podcast.description, 40)}
+                                                {wordBreaker(podcast.summary, 40)}
                                             </Typography>
                                             <Box
                                                 sx={{
@@ -404,7 +374,7 @@ export default function Podcasts() {
                                                     flexDirection: isMobile ? 'column' : 'row'
                                                 }}
                                             >
-                                                <PButton transBg={false} bg={true} onClick={() => router.push(`/podcast/${index}`)}>
+                                                <PButton transBg={false} bg={true} onClick={() => router.push(`/podcast/${podcast._id}`)}>
                                                     <Typography 
                                                         sx={{
                                                             fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize

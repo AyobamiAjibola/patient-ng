@@ -8,12 +8,17 @@ import capitalize from 'capitalize';
 import OnlineBadge from './OnlineBadge';
 import moment from 'moment';
 
-const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarId}: any) => {
+const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarId, setIsStatus}: any) => {
   const theme = useTheme();
 
   const handleWebinarEdit = (id: string) => {
     setIsEdit(true)
     setOpenModal(true)
+    setWebinarId(id)
+  }
+
+  const handleChangeStatus = (id: string) => {
+    setIsStatus(true)
     setWebinarId(id)
   }
 
@@ -73,7 +78,7 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarI
             ) : (
               <Tag 
                 color={record.status === "completed"
-                ? "lime"  
+                ? "green"  
                 : record.status === "pending"
                   ? "gold"
                   : "geekblue"}
@@ -106,9 +111,18 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarI
             >
               Open
             </Typography>
-            <IconButton>
-              <Delete sx={{color: 'red', fontSize: theme.typography.labelsm}}/>
-            </IconButton>
+            <Typography variant='labelxs'
+              color={theme.palette.primary.main}
+              onClick={()=>handleChangeStatus(record._id)}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  color: theme.palette.primary.darker
+                }
+              }}
+            >
+              Change Status
+            </Typography>
           </Box>
       )},
     },

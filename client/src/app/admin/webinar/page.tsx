@@ -18,7 +18,7 @@ import dayjs from 'dayjs';
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
 import capitalize from "capitalize";
-import { useGetWebinarCategories, useGetWebinars, usePostWebinar, usePostWebinarCategory } from "../hooks/webinarHook/useWebinar";
+import { useChangeWebinarStatus, useGetSingleWebinar, useGetWebinarCategories, useGetWebinars, usePostWebinar, usePostWebinarCategory, useUpdateWebinar } from "../hooks/webinarHook/useWebinar";
 import Toastify from "@/app/components/ToastifySnack";
 import { useSession } from "next-auth/react";
 
@@ -37,7 +37,6 @@ export default function page() {
   const [currentItem, setCurrentItem] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [webinars, setWebinar] =  useState<any>([]);
-  const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [speakers, setSpeakers] = useState([{
     speakerName: '',
@@ -57,6 +56,11 @@ export default function page() {
   const postWebinarMutation = usePostWebinar();
   const fetchWebinarsMutation = useGetWebinars();
   const [webinarId, setWebinarId] = useState('');
+  const singleWebinarMutattion = useGetSingleWebinar();
+  const [isStatus, setIsStatus] = useState<boolean>(false);
+  const [activeStatus, setActiveStatus] = useState('');
+  const updateWebinarMutation = useUpdateWebinar();
+  const changeWebinarStatusMutation = useChangeWebinarStatus();
 
   const [openSnack, setOpenSnack] = useState(false);
   const [message, setMessage] = useState('');
@@ -72,12 +76,45 @@ export default function page() {
 
   const handleModalOpen = () => {
     setOpen(true)
+  };
+
+  const handleGetSingleWebinar = async () => {
+    await singleWebinarMutattion.mutateAsync(webinarId, {
+      onSuccess: async(response: any) => {
+        setValue('webinarName', response.result.title)
+        setValue('webinarLink', response.result.webinarLink)
+        setValue('description', response.result.summary)
+        setValue('duration', response.result.duration)
+        setSpeakers(response.result.speakers)
+        setSelectedDateTime(dayjs(response.result.speakers.webinarDateTime))
+        setSelectedCategory(response.result.category)
+        setStatus(response.result.status)
+        setActiveStatus(response.result.status)
+      }
+    })
+  }
+
+  const handleChangeStatus = async () => {
+    await changeWebinarStatusMutation.mutateAsync({
+      status,
+      webinarId
+    }, {
+      onSuccess: async (response: any) => {
+        await handleFetchWebinars()
+        handleOpenNotification('success', response.message)
+        setIsStatus(false)
+        setWebinarId('')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
   }
 
   const item = [
     "All",
-    "Pending",
-    "On going",
+    "Published",
     "Completed",
     sm ? "" : "Draft"
   ]
@@ -138,11 +175,8 @@ export default function page() {
         const webinarData = response.results;
         if(currentItem === "All") {
           setWebinar(webinarData)
-        } else if(currentItem === "Pending") {
-          const filteredData = webinarData.filter((webinars: any) => webinars.status === "pending");
-          setWebinar(filteredData)
-        } else if(currentItem === "On going") {
-          const filteredData = webinarData.filter((webinar: any) => webinar.status === "on-going");
+        } else if(currentItem === "Published") {
+          const filteredData = webinarData.filter((webinars: any) => webinars.status === "published");
           setWebinar(filteredData)
         }else if(currentItem === "Completed") {
           const filteredData = webinarData.filter((webinar: any) => webinar.status === "completed");
@@ -188,6 +222,7 @@ export default function page() {
   const {
     handleSubmit,
     register,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
@@ -201,36 +236,70 @@ export default function page() {
 
   const onSubmit = async (data: FormValues) => {
 
-    const payload = {
-      title: data.webinarName,
-      webinarLink: data.webinarLink,
-      summary: data.description,
-      duration: data.duration,
-      speakers,
-      webinarDateTime: selectedDateTime.toDate(),
-      category: selectedCategory,
-      status: status
-    }
-    
-    await postWebinarMutation.mutateAsync(payload, {
-      onSuccess: async (response) => {
-        await handleFetchWebinars();
-        handleOpenNotification('success', response.message)
-        setOpenModal(false)
-        reset()
-        setSpeakers([{
-          speakerName: '',
-          occupation: '',
-          image: null
-        }]);
-        setSelectedCategory('')
-        setStatus('')
-      },
-      onError: (error: any) => {
-        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
-        handleOpenNotification('error', '', errorMessage)
+    if(isEdit) {
+      const payload = {
+        title: data.webinarName,
+        webinarLink: data.webinarLink,
+        summary: data.description,
+        duration: data.duration,
+        speakers,
+        webinarDateTime: selectedDateTime.toDate(),
+        category: selectedCategory,
+        webinarId
       }
-    })
+      
+      await updateWebinarMutation.mutateAsync(payload, {
+        onSuccess: async (response) => {
+          await handleFetchWebinars();
+          handleOpenNotification('success', response.message)
+          setOpenModal(false)
+          reset()
+          setSpeakers([{
+            speakerName: '',
+            occupation: '',
+            image: null
+          }]);
+          setSelectedCategory('')
+          setStatus('')
+          setWebinarId('')
+        },
+        onError: (error: any) => {
+          const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+          handleOpenNotification('error', '', errorMessage)
+        }
+      })
+    } else {
+      const payload = {
+        title: data.webinarName,
+        webinarLink: data.webinarLink,
+        summary: data.description,
+        duration: data.duration,
+        speakers,
+        webinarDateTime: selectedDateTime.toDate(),
+        category: selectedCategory,
+        status: status
+      }
+      
+      await postWebinarMutation.mutateAsync(payload, {
+        onSuccess: async (response) => {
+          await handleFetchWebinars();
+          handleOpenNotification('success', response.message)
+          setOpenModal(false)
+          reset()
+          setSpeakers([{
+            speakerName: '',
+            occupation: '',
+            image: null
+          }]);
+          setSelectedCategory('')
+          setStatus('')
+        },
+        onError: (error: any) => {
+          const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+          handleOpenNotification('error', '', errorMessage)
+        }
+      })
+    }
   };
 
   useEffect(() => {
@@ -240,6 +309,12 @@ export default function page() {
   useEffect(() => {
     handleFetch();
   },[]);
+
+  useEffect(() => {
+    if(webinarId) {
+      handleGetSingleWebinar()
+    }
+  },[webinarId])
 
   return (
     <Box
@@ -335,6 +410,7 @@ export default function page() {
             setIsEdit={setIsEdit}
             setOpenModal={setOpenModal}
             setWebinarId={setWebinarId}
+            setIsStatus={setIsStatus}
           />
         </Box>
       </Box>
@@ -413,343 +489,410 @@ export default function page() {
         width={sm ? '95%' : '60%'}
         showCloseIcon={false}
       >
-          <Box className="flex flex-col hide-scrollbar"
+        <Box className="flex flex-col hide-scrollbar"
+          sx={{
+            height: screenHeight/100 * 80,
+            bgcolor: theme.palette.secondary.lightest
+          }}
+        >
+          <Box
             sx={{
-              height: screenHeight/100 * 80,
-              bgcolor: theme.palette.secondary.lightest
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              height: '15%',
+              bgcolor: 'white',
+              borderBottom: `1px solid ${theme.palette.border.main}`,
+              alignItems: 'center',
+              px: 2
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-                height: '15%',
-                bgcolor: 'white',
-                borderBottom: `1px solid ${theme.palette.border.main}`,
-                alignItems: 'center',
-                px: 2
-              }}
-            >
-               {isEdit ? (
-                <Box display={'flex'}>
-                  <Typography variant='labellg'>
-                    Update webinar
-                  </Typography>
-                </Box>
-              ) : (
+              {isEdit ? (
+              <Box display={'flex'}>
                 <Typography variant='labellg'>
-                  Create webinar
+                  Update webinar
                 </Typography>
-              )}
-              <IconButton>
-                <Close 
-                  onClick={handleModalClose}
-                  sx={{
-                    fontSize: '20px',
-                    color: theme.palette.secondary.light
-                  }}
-                />
-              </IconButton>
-            </Box>
+              </Box>
+            ) : (
+              <Typography variant='labellg'>
+                Create webinar
+              </Typography>
+            )}
+            <IconButton>
+              <Close 
+                onClick={handleModalClose}
+                sx={{
+                  fontSize: '20px',
+                  color: theme.palette.secondary.light
+                }}
+              />
+            </IconButton>
+          </Box>
 
-            <Box
-              sx={{
-                flex: 1,
-                p: 4
-              }}
-            >
-              <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <Box
+            sx={{
+              flex: 1,
+              p: 4
+            }}
+          >
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
                 <Box
                   sx={{
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column'
+                      width: '100%',
+                      my: 2
                   }}
                 >
-                  <Box
-                    sx={{
-                        width: '100%',
-                        my: 2
-                    }}
-                  >
-                      <InputField
-                        label="Webinar Name"
-                        placeholder="Webinar name"
-                        isBorder={true}
-                        labelStyle={{
-                          fontSize: theme.typography.labelsm.fontSize,
-                          fontWeight: 500
-                        }}
-                        errorMessage={errors.webinarName?.message}
-                        error={!!errors.webinarName}
-                        register={register('webinarName')}
-                      />
-                  </Box>
-                  <Box
-                    sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                  >
-                      <Typography variant="labelxs"
-                          sx={{
-                              mb: 2
-                          }}
-                      >
-                          Webinar Category
-                      </Typography>
-                      <Select
-                          className="w-full h-10 font-light"
-                          options={webinarCategories}
-                          styles={customStyles}
-                          placeholder="Choose hospitals"
-                          name="rating"
-                          onChange={(item) => {
-                            setSelectedCategory(String(item?.value));
-                          }}
-                          value={{
-                              value: selectedCategory,
-                              label: capitalize.words(selectedCategory),
-                          }}
-                      />
-                      {session?.user.isAdmin && (<Typography 
-                          onClick={handleModalOpen}
-                          variant='labelxs' color={theme.palette.primary.main}
-                          sx={{cursor: 'pointer'}}
-                      >
-                          Add webinar category
-                      </Typography>)}
-                  </Box>
-                  <Box
-                    sx={{
-                        width: '100%',
-                        my: 2
-                    }}
-                  >
-                      <InputField
-                        label="Description"
-                        placeholder="description"
-                        isBorder={true}
-                        labelStyle={{
-                          fontSize: theme.typography.labelsm.fontSize,
-                          fontWeight: 500
-                        }}
-                        multiline={true}
-                        rows={4}
-                        errorMessage={errors.description?.message}
-                        error={!!errors.description}
-                        register={register('description')}
-                      />
-                  </Box>
-                  <Box
-                    sx={{
-                      width: '100%'
-                    }}
-                  >
-                      <InputField
-                        label="Webinar Link"
-                        placeholder="webinar link"
-                        isBorder={true}
-                        labelStyle={{
-                          fontSize: theme.typography.labelsm.fontSize,
-                          fontWeight: 500
-                        }}
-                        errorMessage={errors.webinarLink?.message}
-                        error={!!errors.webinarLink}
-                        register={register('webinarLink')}
-                      />
-                  </Box>
-
-                  <Box
-                    sx={{
+                    <InputField
+                      label="Webinar Name"
+                      placeholder="Webinar name"
+                      isBorder={true}
+                      labelStyle={{
+                        fontSize: theme.typography.labelsm.fontSize,
+                        fontWeight: 500
+                      }}
+                      errorMessage={errors.webinarName?.message}
+                      error={!!errors.webinarName}
+                      register={register('webinarName')}
+                    />
+                </Box>
+                <Box
+                  sx={{
                       width: '100%',
                       display: 'flex',
-                      flexDirection: sm ? 'column' : 'row',
-                      gap: sm ? 3 : 3
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: sm ? '100%' : '50%'
-                      }}
-                    >
-                      <Typography variant="labelxs">
-                        Date and Time
-                      </Typography>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DateTimePicker']} sx={{width: '100%'}}>
-                          <DateTimePicker
-                            value={selectedDateTime}
-                            onChange={(newValue: any) => setSelectedDateTime(newValue)}
-                            slots={{ textField: (params) => (
-                              <TextField
-                                {...params}
-                                variant="outlined"
-                                sx={{ height: 40, width: '100%' }}
-                                InputProps={{
-                                  ...params.InputProps,
-                                  style: { 
-                                    height: 40,
-                                    fontSize: '14px',
-                                    fontWeight: 400,
-                                    borderRadius: theme.borderRadius.sm,
-                                    backgroundColor: 'white'
-                                  }
-                                }}
-                              />
-                            )}}
-                          />
-                        </DemoContainer>
-                      </LocalizationProvider>
-                    </Box>
-                    <Box
-                      sx={{
-                        width: sm ? '100%' : '50%',
-                        mt: 1
-                      }}
-                    >
-                      <InputField
-                        label="Duration"
-                        placeholder="duration"
-                        isBorder={true}
-                        labelStyle={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: 500, mb: -1
-                        }}
-                        errorMessage={errors.duration?.message}
-                        error={!!errors.duration}
-                        register={register('duration')}
-                      />
-                    </Box>
-                  </Box>
-
-                  <Box
-                    display={'flex'}
-                    alignItems={'end'}
-                    justifyContent={'end'}
-                    gap={theme.spacing(0)}
-                    mr={2} mt={2}
-                  >
+                      flexDirection: 'column'
+                  }}
+                >
                     <Typography variant="labelxs"
-                      color={theme.palette.primary.main}
-                      onClick={handleAddSpeaker}
-                      sx={{
-                        cursor: 'pointer',
-                        '&:hover': {
-                          color: theme.palette.primary.darker
-                        }
-                      }}
-                    >
-                      Add speaker
-                    </Typography>
-                  </Box>
-                  {
-                    speakers.map((speaker, index) => (
-                      <Box
                         sx={{
-                          display: 'flex',
-                          gap: 3,
-                          width: '100%',
-                          alignItems: 'center'
+                            mb: 2
                         }}
-                      >
-                        <Box sx={{width: '33%'}}>
-                          <InputField
-                            label={index === 0 ? 'Speaker Name' : ''}
-                            type="text"
-                            placeholder="Speaker name"
-                            value={speaker.speakerName}
-                            isBorder={true}
-                            onChange={(e) => {
-                              const newSpeakers = [...speakers];
-                              newSpeakers[index].speakerName = e.target.value;
-                              setSpeakers(newSpeakers);
-                            }}
-                            labelStyle={{
-                              fontSize: theme.typography.labelsm.fontSize,
-                              fontWeight: 500
-                            }}
-                          />
-                        </Box>
-                        <Box sx={{width: '33%'}}>
-                          <InputField
-                            label={index === 0 ? 'Occupation' : ''}
-                            type="text"
-                            placeholder="occupation"
-                            value={speaker.occupation}
-                            isBorder={true}
-                            onChange={(e) => {
-                              const newSpeakers = [...speakers];
-                              newSpeakers[index].occupation = e.target.value;
-                              setSpeakers(newSpeakers);
-                            }}
-                            labelStyle={{
-                              fontSize: theme.typography.labelsm.fontSize,
-                              fontWeight: 500
-                            }}
-                          />
-                        </Box>
-                        <Box sx={{ width: '33%', mt: 2 }}>
-                          <input
-                            accept="image/jpeg, image/png"
-                            type="file"
-                            onChange={(e) => handleImageChange(e, index)}
-                          />
-                        </Box>
-                        <IconButton onClick={() => handleRemoveSpeaker(index)}
-                          disabled={index === 0}
-                        >
-                          <Close 
-                            sx={{
-                              fontSize: '16px',
-                              color: index === 0 ? theme.palette.border.main : theme.palette.state.error,
-                              mt: index === 0 ? 2 : 0
-                            }}
-                          />
-                        </IconButton>
-                      </Box>
-                    ))
-                  }
+                    >
+                        Webinar Category
+                    </Typography>
+                    <Select
+                        className="w-full h-10 font-light"
+                        options={webinarCategories}
+                        styles={customStyles}
+                        placeholder="Choose hospitals"
+                        name="rating"
+                        onChange={(item) => {
+                          setSelectedCategory(String(item?.value));
+                        }}
+                        value={{
+                            value: selectedCategory,
+                            label: capitalize.words(selectedCategory),
+                        }}
+                    />
+                    {session?.user.isAdmin && (<Typography 
+                        onClick={handleModalOpen}
+                        variant='labelxs' color={theme.palette.primary.main}
+                        sx={{cursor: 'pointer'}}
+                    >
+                        Add webinar category
+                    </Typography>)}
+                </Box>
+                <Box
+                  sx={{
+                      width: '100%',
+                      my: 2
+                  }}
+                >
+                    <InputField
+                      label="Description"
+                      placeholder="description"
+                      isBorder={true}
+                      labelStyle={{
+                        fontSize: theme.typography.labelsm.fontSize,
+                        fontWeight: 500
+                      }}
+                      multiline={true}
+                      rows={4}
+                      errorMessage={errors.description?.message}
+                      error={!!errors.description}
+                      register={register('description')}
+                    />
+                </Box>
+                <Box
+                  sx={{
+                    width: '100%'
+                  }}
+                >
+                    <InputField
+                      label="Webinar Link"
+                      placeholder="webinar link"
+                      isBorder={true}
+                      labelStyle={{
+                        fontSize: theme.typography.labelsm.fontSize,
+                        fontWeight: 500
+                      }}
+                      errorMessage={errors.webinarLink?.message}
+                      error={!!errors.webinarLink}
+                      register={register('webinarLink')}
+                    />
                 </Box>
 
                 <Box
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-end',
                     width: '100%',
-                    height: '15%',
-                    bgcolor: 'white',
-                    borderTop: `1px solid ${theme.palette.border.main}`,
-                    alignItems: 'center',
-                    gap: 2,
-                    px: 2, py: 2,
-                    mt: 2
+                    display: 'flex',
+                    flexDirection: sm ? 'column' : 'row',
+                    gap: sm ? 3 : 3
                   }}
                 >
+                  <Box
+                    sx={{
+                      width: sm ? '100%' : '50%'
+                    }}
+                  >
+                    <Typography variant="labelxs">
+                      Date and Time
+                    </Typography>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={['DateTimePicker']} sx={{width: '100%'}}>
+                        <DateTimePicker
+                          value={selectedDateTime}
+                          onChange={(newValue: any) => setSelectedDateTime(newValue)}
+                          slots={{ textField: (params) => (
+                            <TextField
+                              {...params}
+                              variant="outlined"
+                              sx={{ height: 40, width: '100%' }}
+                              InputProps={{
+                                ...params.InputProps,
+                                style: { 
+                                  height: 40,
+                                  fontSize: '14px',
+                                  fontWeight: 400,
+                                  borderRadius: theme.borderRadius.sm,
+                                  backgroundColor: 'white'
+                                }
+                              }}
+                            />
+                          )}}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </Box>
+                  <Box
+                    sx={{
+                      width: sm ? '100%' : '50%',
+                      mt: 1
+                    }}
+                  >
+                    <InputField
+                      label="Duration"
+                      placeholder="duration"
+                      isBorder={true}
+                      labelStyle={{
+                        fontSize: theme.typography.labelxs.fontSize,
+                        fontWeight: 500, mb: -1
+                      }}
+                      errorMessage={errors.duration?.message}
+                      error={!!errors.duration}
+                      register={register('duration')}
+                    />
+                  </Box>
+                </Box>
+
+                <Box
+                  display={'flex'}
+                  alignItems={'end'}
+                  justifyContent={'end'}
+                  gap={theme.spacing(0)}
+                  mr={2} mt={2}
+                >
+                  <Typography variant="labelxs"
+                    color={theme.palette.primary.main}
+                    onClick={handleAddSpeaker}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        color: theme.palette.primary.darker
+                      }
+                    }}
+                  >
+                    Add speaker
+                  </Typography>
+                </Box>
+                {
+                  speakers.map((speaker, index) => (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 3,
+                        width: '100%',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Box sx={{width: '33%'}}>
+                        <InputField
+                          label={index === 0 ? 'Speaker Name' : ''}
+                          type="text"
+                          placeholder="Speaker name"
+                          value={speaker.speakerName}
+                          isBorder={true}
+                          onChange={(e) => {
+                            const newSpeakers = [...speakers];
+                            newSpeakers[index].speakerName = e.target.value;
+                            setSpeakers(newSpeakers);
+                          }}
+                          labelStyle={{
+                            fontSize: theme.typography.labelsm.fontSize,
+                            fontWeight: 500
+                          }}
+                        />
+                      </Box>
+                      <Box sx={{width: '33%'}}>
+                        <InputField
+                          label={index === 0 ? 'Occupation' : ''}
+                          type="text"
+                          placeholder="occupation"
+                          value={speaker.occupation}
+                          isBorder={true}
+                          onChange={(e) => {
+                            const newSpeakers = [...speakers];
+                            newSpeakers[index].occupation = e.target.value;
+                            setSpeakers(newSpeakers);
+                          }}
+                          labelStyle={{
+                            fontSize: theme.typography.labelsm.fontSize,
+                            fontWeight: 500
+                          }}
+                        />
+                      </Box>
+                      <Box sx={{ width: '33%', mt: 2 }}>
+                        <input
+                          accept="image/jpeg, image/png"
+                          type="file"
+                          onChange={(e) => handleImageChange(e, index)}
+                        />
+                      </Box>
+                      <IconButton onClick={() => handleRemoveSpeaker(index)}
+                        disabled={index === 0}
+                      >
+                        <Close 
+                          sx={{
+                            fontSize: '16px',
+                            color: index === 0 ? theme.palette.border.main : theme.palette.state.error,
+                            mt: index === 0 ? 2 : 0
+                          }}
+                        />
+                      </IconButton>
+                    </Box>
+                  ))
+                }
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  width: '100%',
+                  height: '15%',
+                  bgcolor: 'white',
+                  borderTop: `1px solid ${theme.palette.border.main}`,
+                  alignItems: 'center',
+                  gap: 2,
+                  px: 2, py: 2,
+                  mt: 2
+                }}
+              >
+                {!isEdit && (<>
                   <NButton
+                    disabled={isEdit && status === 'completed' || isEdit && status === 'draft' || isEdit && status === 'published'}
                     type="submit"
                     bkgcolor={'white'}
                     textcolor="black"
                     bordercolor={theme.palette.border.main}
                     onMouseEnter={()=>setStatus('draft')}
                   >
-                    Save as draft
+                    {status === 'draft' && postWebinarMutation.isLoading 
+                      ? 'Saving...' 
+                      : 'Save as draft'}
                   </NButton>
                   <NButton
+                    disabled={isEdit && status === 'completed' || isEdit && status === 'on-going' || isEdit && status === 'published'}
                     type="submit"
                     bkgcolor={theme.palette.primary.main}
                     textcolor="white"
-                    onMouseEnter={()=>setStatus('publish')}
+                    onMouseEnter={()=>setStatus('published')}
                   >
-                    Publish
+                    {status === 'publish' && postWebinarMutation.isLoading ? 'Publishing...' : 'Publish'}
                   </NButton>
-                </Box>
-                
-              </form>
-            </Box>
+                </>)}
+                {isEdit && (<NButton
+                  bkgcolor={theme.palette.primary.main}
+                  textcolor="white"
+                  type="submit"
+                >
+                  {updateWebinarMutation.isLoading ? 'Saving...' : 'Save'}
+                </NButton>)}
+              </Box>
+            </form>
           </Box>
+        </Box>
+      </MModal>
+
+      <MModal
+        onClose={()=> {
+          setIsStatus(false)
+          setWebinarId('')
+        }}
+        open={isStatus}
+        width={sm ? '95%' : '30%'}
+        showCloseIcon={false}
+        height={'220px'}
+      >
+        <Box className="flex flex-col gap-2 p-3"
+          sx={{
+            height: screenHeight/100 * 80,
+            bgcolor: theme.palette.secondary.lightest,
+            overflow: 'scroll'
+          }}
+        >
+          <Typography variant="labellg" mb={3}>
+            Change Webinar Status
+          </Typography>
+          <NButton
+            bkgcolor={'white'}
+            textcolor="black"
+            bordercolor={theme.palette.border.main}
+            hoverbordercolor={theme.palette.border.main}
+            onMouseEnter={()=>setStatus("draft")}
+            disabled={activeStatus === 'completed' || activeStatus === 'draft' || activeStatus === 'on-going'}
+            onClick={handleChangeStatus}
+          >
+            Draft
+          </NButton>
+          <NButton
+            bkgcolor={activeStatus === 'completed' || activeStatus === 'published' || activeStatus === 'on-going' ? theme.palette.border.main : theme.palette.primary.main}
+            textcolor="white"
+            onMouseEnter={()=>setStatus("published")}
+            disabled={activeStatus === 'published' || activeStatus === 'completed' || activeStatus === 'on-going'}
+            onClick={handleChangeStatus}
+          >
+            Publish
+          </NButton>
+          <NButton
+            bkgcolor={activeStatus === 'completed' ? theme.palette.border.main : theme.palette.primary.darker}
+            hovercolor={theme.palette.primary.darker}
+            hoverbordercolor={theme.palette.primary.darker}
+            textcolor="white"
+            type="submit"
+            onMouseEnter={()=>setStatus("completed")}
+            disabled={activeStatus === 'completed'}
+            onClick={handleChangeStatus}
+          >
+            Completed
+          </NButton>
+        </Box>
       </MModal>
 
       <Toastify

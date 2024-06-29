@@ -254,6 +254,36 @@ export default class BlogController {
         return Promise.resolve(response);
     }
 
+    @TryCatch
+    public async changeWebinarStatus (req: Request) {
+        const webinarId = req.params.webinarId;
+        const loggedInUser = req.user._id;
+
+        const { error, value } = Joi.object<any>({
+            status: Joi.string().required().label('Status')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const [user, webinar] = await Promise.all([
+            datasources.userDAOService.findById(loggedInUser),
+            datasources.webinarDAOService.findById(webinarId)
+        ]);
+
+        if(!webinar) 
+            return Promise.reject(CustomAPIError.response("Webinar not found.", HttpStatus.NOT_FOUND.code));
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        await datasources.webinarDAOService.updateByAny({_id: webinar._id}, { status: value.status });
+
+        const response: HttpResponse<IWebinarModel> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated webinar status.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
     private async doCreateWebinar(req: Request): Promise<HttpResponse<IWebinarModel>> {
         return new Promise((resolve, reject) => {
             form.parse(req, async (err, fields, files) => {
@@ -277,7 +307,7 @@ export default class BlogController {
                     status: Joi.string().label('Status'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-                console.log(value.speakers, 'parse')
+
                 const [user, category] = await Promise.all([
                     datasources.userDAOService.findById(loggedInUser),
                     WebinarCategory.findOne({ name: value.category })
@@ -285,9 +315,9 @@ export default class BlogController {
 
                 const allowedUser = Generic.handleAllowedWebinarUser(user?.userType);
                 if(!allowedUser) 
-                    return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+                    return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
                 if(!category) 
-                    return Promise.reject(CustomAPIError.response("Selected category does not exist.", HttpStatus.UNAUTHORIZED.code));
+                    return reject(CustomAPIError.response("Selected category does not exist.", HttpStatus.UNAUTHORIZED.code));
                 
                 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
@@ -302,14 +332,21 @@ export default class BlogController {
                 const actualSpeakers = await Promise.all(speakersArray.map(async (speaker: any, index: number) => {
                     const image = files[`speakers[${index}][image]`];
                     let imagePath;
+                
                     if (image) {
-                        imagePath = await Generic.handleImage(image as File, basePath);
+                        const { result, error } = await Generic.handleImage(image as File, basePath);
+                        if (error) {
+                            return  reject(CustomAPIError.response(error, HttpStatus.BAD_REQUEST.code));
+                        }
+                        imagePath = result;
                     }
+                
                     return {
                         ...speaker,
                         image: imagePath,
                     };
                 }));
+                
 
                 const payload = {
                     ...value,
@@ -363,8 +400,7 @@ export default class BlogController {
                     speakers: Joi.string().label('Speakers'),
                     // hostedBy: Joi.string().label('Hosted By'),
                     duration: Joi.string().label('Duration'),
-                    webinarDateTime: Joi.date().label('Webinar date'),
-                    status: Joi.string().label('Status'),
+                    webinarDateTime: Joi.date().label('Webinar date')
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -376,31 +412,51 @@ export default class BlogController {
 
                 const allowedUser = Generic.handleAllowedWebinarUser(user?.userType);
                 if(!allowedUser) 
-                    return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+                    return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
                 if(!category) 
-                    return Promise.reject(CustomAPIError.response("Selected category does not exist.", HttpStatus.UNAUTHORIZED.code));
+                    return reject(CustomAPIError.response("Selected category does not exist.", HttpStatus.UNAUTHORIZED.code));
                 
         
                 if(!webinar) 
                     return reject(CustomAPIError.response("Webinar not found.", HttpStatus.NOT_FOUND.code));
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
                 
-                const [actualSpeakers] = await Promise.all([
-                    Generic.handleImages(value.speakers, basePath),
-                    // Generic.handleImages(value.hostedBy, basePath)
-                ]);
+                // const [actualSpeakers] = await Promise.all([
+                //     Generic.handleImages(value.speakers, basePath),
+                //     // Generic.handleImages(value.hostedBy, basePath)
+                // ]);
                 // const actualSpeakers = await Generic.handleImages(value.speakers, basePath);
+                const speakersArray = JSON.parse(value.speakers);
+                const actualSpeakers = await Promise.all(speakersArray.map(async (speaker: any, index: number) => {
+                    const image = files[`speakers[${index}][image]`];
+                    let imagePath;
+                
+                    if (image) {
+                        const { result, error } = await Generic.handleImage(image as File, basePath);
+                        if (error) {
+                            return  reject(CustomAPIError.response(error, HttpStatus.BAD_REQUEST.code));
+                        }
+                        imagePath = result;
+                    }
+                
+                    return {
+                        ...speaker,
+                        image: imagePath,
+                    };
+                }));
 
                 const payload = {
                     title: value.title ? value.title : webinar.title,
                     webinarLink: value.webinarLink ? value.webinarLink : webinar.webinarLink,
                     summary: value.summary ? value.summary : webinar.summary,
+                    duration: value.duration ? value.duration : webinar.duration,
+                    webinarDateTime: value.webinarDateTime ? value.webinarDateTime : webinar.webinarDateTime,
                     category: value.category ? value.category : webinar.category,
                     speakers: actualSpeakers.length > 0 ? actualSpeakers : webinar.speakers,
                     // hostedBy: actualHostedBy.length > 0 ? actualHostedBy : webinar.hostedBy
                 }
 
-                const updatedWebinar: any = await datasources.patientStoriesDAOService.updateByAny({_id: webinar._id}, {payload});
+                const updatedWebinar: any = await datasources.webinarDAOService.updateByAny({_id: webinar._id}, payload);
 
                 return resolve(updatedWebinar)
 

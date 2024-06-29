@@ -103,6 +103,36 @@ export default class PodcastController {
     }
 
     @TryCatch
+    public async changePodcastStatus (req: Request) {
+        const podcastId = req.params.podcastId;
+        const loggedInUser = req.user._id;
+
+        const { error, value } = Joi.object<any>({
+            status: Joi.string().required().label('Status')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const [user, podcast] = await Promise.all([
+            datasources.userDAOService.findById(loggedInUser),
+            datasources.podcastDAOService.findById(podcastId)
+        ]);
+
+        if(!podcast) 
+            return Promise.reject(CustomAPIError.response("Podcast not found.", HttpStatus.NOT_FOUND.code));
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        await datasources.podcastDAOService.updateByAny({_id: podcast._id}, { status: value.status });
+
+        const response: HttpResponse<IPodcastModel> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated podcast status.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
     public async createPodcast (req: Request) {
         const podcast = await this.doCreatePodcast(req);
 
@@ -189,10 +219,12 @@ export default class PodcastController {
                     title: Joi.string().required().label('Title'),
                     category: Joi.string().required().label('Category'),
                     summary: Joi.string().required().label('Summary'),
+                    duration: Joi.string().required().label('Duration'),
                     producedBy: Joi.string().required().label('Produced by'),
                     source: Joi.string().required().label('Podcast source'),
-                    link: Joi.string().required().label('Podcast link'),
                     image: Joi.any().label('Image'),
+                    status: Joi.string().label('Status'),
+                    releaseDate: Joi.any().label('Release date')
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -209,19 +241,32 @@ export default class PodcastController {
                     return reject(CustomAPIError.response("Category not found.", HttpStatus.NOT_FOUND.code));
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
-                
-                const [_image] = await Promise.all([
-                    Generic.handleImage(files.image as File, basePath)
-                ]);
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
 
-                const link = Generic.handlePodcastLink(value.source, value.link);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                let sources = []
+                if(value.source) {
+                    const _sources = JSON.parse(value.source);
+                    for (const src of _sources) {
+                        if (src.source === '' || src.link === '') {
+                          return reject(CustomAPIError.response("Link or source cannot be empty.", HttpStatus.FORBIDDEN.code));
+                        }
+                    
+                        const { result: link, error: linkError } = await Generic.handlePodcastLink(src.source, src.link);
+                        if (linkError) {
+                          return reject(CustomAPIError.response(linkError, HttpStatus.FORBIDDEN.code));
+                        }
+                    
+                        sources.push({ source: src.source, link: link });
+                      }
+                }
 
                 const payload = {
                     ...value,
-                    channels: {
-                        source: value.source,
-                        link: link
-                    },
+                    channels: sources,
                     category: category.name,
                     user: user?._id,
                     image: _image ? _image : ''
@@ -245,10 +290,12 @@ export default class PodcastController {
                     title: Joi.string().label('Title'),
                     category: Joi.string().label('Category'),
                     summary: Joi.string().label('Summary'),
+                    duration: Joi.string().label('Duration'),
                     producedBy: Joi.string().label('Produced by'),
                     source: Joi.string().label('Podcast source'),
-                    link: Joi.string().label('Podcast link'),
                     image: Joi.any().label('Image'),
+                    status: Joi.string().label('Status'),
+                    releaseDate: Joi.any().label('Release date')
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -269,23 +316,39 @@ export default class PodcastController {
                     return reject(CustomAPIError.response("Category not found.", HttpStatus.NOT_FOUND.code));
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
-                
-                const [_image] = await Promise.all([
-                    Generic.handleImage(files.image as File, basePath)
-                ]);
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
 
-                const link = Generic.handlePodcastLink(value.source, value.link)
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                let sources = []
+                if(value.source) {
+                    const _sources = JSON.parse(value.source);
+                    for (const src of _sources) {
+                        if (src.source === '' || src.link === '') {
+                          return reject(CustomAPIError.response("Link or source cannot be empty.", HttpStatus.FORBIDDEN.code));
+                        }
+                    
+                        const { result: link, error: linkError } = await Generic.handlePodcastLink(src.source, src.link);
+                        if (linkError) {
+                          return reject(CustomAPIError.response(linkError, HttpStatus.FORBIDDEN.code));
+                        }
+                    
+                        sources.push({ source: src.source, link: link });
+                      }
+                }
 
                 const payload = {
                     title: value.title ? value.title : podcast.title,
                     category: value.category ? category.name : podcast.category,
-                    channels: {
-                        source: value.source ? value.source : podcast.channels.source,
-                        link: value.link ? link : podcast.channels.link
-                    },
+                    channels: sources.length > 0 ? sources : podcast.channels,
                     producedBy: value.producedBy ? value.producedBy : podcast.producedBy,
                     image: _image ? _image : podcast.image,
-                    summary: value.summary ? value.summary : podcast.summary
+                    summary: value.summary ? value.summary : podcast.summary,
+                    duration: value.duration ? value.duration : podcast.duration,
+                    status: value.status ? value.status : podcast.status,
+                    releaseDate: value.releaseDate ? value.releaseDate : podcast.releaseDate
                 }
 
                 const updatedPodcast: any = await datasources.podcastDAOService.updateByAny({_id: podcast._id}, payload as unknown as IPodcastModel);

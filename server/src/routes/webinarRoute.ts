@@ -75,3 +75,9 @@ export const deleteWebinarWaitlistHandler = authenticateRouteWrapper(async (req:
 
     res.status(response.code).json(response);
 });
+
+export const changeWebinarStatusHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await webinarController.changeWebinarStatus(req);
+
+    res.status(response.code).json(response);
+});
