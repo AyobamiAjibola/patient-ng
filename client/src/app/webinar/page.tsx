@@ -303,7 +303,7 @@ export default function Webinars() {
                                                     fontWeight: theme.typography.labelxs.fontWeight,
                                                     cursor: 'pointer'
                                                 }}
-                                                onClick={()=>router.push(`/webinar/${index}`)}
+                                                onClick={()=>router.push(`/webinar/${webinar._id}`)}
                                             >
                                                 Open <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
                                             </Typography>

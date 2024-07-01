@@ -4,15 +4,10 @@ import Navbar from '@/app/components/Navbar'
 import PButton, { NButton, PButton2 } from '@/app/components/PButton';
 import { characterBreaker, formAmount, wordBreaker } from '@/lib/helper';
 import { ArrowForward, ArrowRight, DesktopWindows, LocationOn, Mic } from '@mui/icons-material';
-import { Box, Button, Grid, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from '@mui/material'
-import Search from 'antd/es/input/Search';
+import { Box, Button, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from '@mui/material'
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import MModal from '@/app/components/Modal';
 import { useEffect, useState } from 'react';
-import InputField from '@/app/components/InputField';
-import { useAtom } from 'jotai';
-import { setIsLoggedIn } from '@/lib/atoms';
 import { useSession } from 'next-auth/react';
 import Footer from './components/Footer';
 import { useGetCrowdfundings } from './admin/hooks/crowdFuncdingHook/useCrowdFunding';
@@ -20,109 +15,8 @@ import moment from 'moment';
 import { useGetBlogs } from './admin/hooks/blogHook/useBlog';
 import HtmlToText from './components/HtmlToText';
 import { useFetchStories } from './admin/hooks/patientStoriesHook/usePatientStories';
-
-const blogs = [
-  {
-    category: 'Pharmacy',
-    date: '25 Apr 2023 ',
-    image: '/cuisines.jpg',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    date: '25 Apr 2023 ',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    date: '25 Apr 2023 ',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    category: 'Pharmacy',
-    image: '/cuisines.jpg',
-    date: '25 Apr 2023 ',
-    title: 'Organize your assets with a new methodology.',
-    content: "In today's digital age, managing and organizing an ever-expanding array of digital assets can be a daunting task."
-  },
-  {
-    date: '22-10-2024',
-    title: 'Faster ways to reach your customers and their needs.',
-    content: 'In a rapidly evolving business landscape, the ability to connect with customers quickly and effectively is paramount.',
-    image: '/cuisines.jpg'
-  }
-];
-
-const podcasts = [
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'education',
-      source: 'youtube'
-  },
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'education',
-      source: 'youtube'
-  },
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'marketing',
-      source: 'apple'
-  },
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'marketing',
-      source: 'soundcloud'
-  },
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'development',
-      source: 'google'
-  },
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'web design',
-      source: 'spotify'
-  },
-  {
-      title: 'Ep 25: Method Practicing Playful Creation',
-      description: `Good news, Sleep Wavers! On November 9th, Jessica will launch a brand-new podcast called Sleep Magic! In order to be prepared for her debut brand-new episode.`,
-      date: 'October 27,2022',
-      duration: '1hr',
-      image: '/model.png',
-      category: 'development',
-      source: 'youtube'
-  }
-];
+import { useGetPodcasts } from './admin/hooks/podcastHook/usePodcast';
+import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
 
 const webinars = [
   {
@@ -157,53 +51,6 @@ const webinars = [
   }
 ];
 
-const stories = [
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  },
-  {
-    content: 'The rise of remote work has been nothing short of transformative, with technology advancements and changing workplace dynamics enabling individuals to',
-    name: 'Charlie Avila'
-  }
-]
-
 export default function HomePage() {
   const theme = useTheme();
   const router = useRouter();
@@ -213,8 +60,13 @@ export default function HomePage() {
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
   const [blogs, setBlogs] = useState<any>([]);
   const getBlogsMutation = useGetBlogs();
-  const fetchStoriesMutate = useFetchStories(); 
+  const fetchStoriesMutate = useFetchStories();
+  const podcastMutation = useGetPodcasts();
+  const webinarMutation = useGetWebinars();
   const [stories, setStories] = useState<any>([]);
+  const [podcasts, setPodcasts] = useState<any>([]);
+  const [webinar, setWebinar] = useState<any>([]);
+  const { status: authStatus } = useSession();
 
   const getHeight = () => {
     if (typeof window !== 'undefined') {
@@ -237,6 +89,24 @@ export default function HomePage() {
       backgroundColor: theme.palette.primary.main
     },
   }));
+
+  const fetchPodcasts = async () => {
+    await podcastMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        const podcasts = response.results.slice(0, 5)
+        setPodcasts(podcasts)
+      }
+    })
+  }
+
+  const fetchWebinar = async () => {
+    await webinarMutation.mutateAsync({}, {
+      onSuccess: (response: any) => {
+        const podcasts = response.results.slice(0, 5)
+        setWebinar(podcasts)
+      }
+    })
+  }
 
   const fetchCrowedfunding = async () => {
     await getCrowdfundingMutation.mutateAsync({}, {
@@ -266,6 +136,8 @@ export default function HomePage() {
     fetchCrowedfunding()
     fetchBlogs()
     fetchStories()
+    fetchPodcasts()
+    fetchWebinar()
   },[]);
 
   return (
@@ -906,8 +778,8 @@ export default function HomePage() {
           }}
         >
           {
-            podcasts.slice(0, 4).map((podcast, index) => (
-              <Box key={index}
+            podcasts.map((podcast: any, index: number) => (
+              <Box key={podcast._id}
                 sx={{
                   backgroundColor: 'white',
                   borderRadius: theme.borderRadius.sm,
@@ -925,7 +797,7 @@ export default function HomePage() {
                   }}
                 >
                   <img
-                    src={podcast.image}
+                    src={podcast.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${podcast.image}` : '/logo.png'}
                     alt='podcast image'
                     style={{
                       width: '100%',
@@ -954,17 +826,12 @@ export default function HomePage() {
                           src='/podcast-date.png'
                           alt='podcast date icon'
                           style={{
-                              width: '12px',
-                              height: '12px'
+                              width: '14px',
+                              height: '14px'
                           }}
                       />
-                      <Typography
-                          sx={{
-                              fontSize: theme.typography.labelxxs.fontSize,
-                              color: theme.palette.secondary.light
-                          }}
-                      >
-                          {podcast.date}
+                      <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
+                          {moment(podcast.releaseDate).format('MMMM DD, YYYY')}
                       </Typography>
                     </Box>
                     <Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
@@ -972,41 +839,43 @@ export default function HomePage() {
                           src='/podcast-timer.png'
                           alt='podcast timer icon'
                           style={{
-                              width: '12px',
-                              height: '12px'
+                              width: '14px',
+                              height: '14px'
                           }}
                       />
-                      <Typography
-                          sx={{
-                              fontSize: theme.typography.labelxxs.fontSize,
-                              color: theme.palette.secondary.light
-                          }}
-                      >
+                      <Typography variant='paragraphxs' color={theme.palette.secondary.light}>
                           {podcast.duration}
                       </Typography>
                     </Box>
                   </Box>
 
-                  <Typography
+                  <Typography variant='labellg'
                     sx={{
-                      fontSize: theme.typography.labellg.fontSize,
-                      fontWeight: theme.typography.labellg.fontWeight,
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    {podcast.title}
+                    {podcast.title.length > 25 ? `${characterBreaker(podcast.title, 25)}...` : podcast.title}
                   </Typography>
 
-                  <PButton transBg={false} bg={true} width='50%'>
+                  <NButton
+                    bkgcolor={theme.palette.primary.main} 
+                    textcolor='white'
+                    width='50%'
+                    onClick={()=>{
+                      authStatus === 'authenticated' 
+                        ? router.push(`/podcast/${podcast._id}`)
+                        : router.push('/signin')
+                    }}
+                  >
                     <ArrowRight/>
                     <Typography 
                       sx={{
                         fontSize: theme.typography.labelxs.fontSize
                       }}
                     >
-                      Play Episode
+                      {authStatus === 'authenticated' ? 'Play Episode' : 'Sign In'}
                     </Typography>
-                  </PButton>
+                  </NButton>
                 </Box> 
               </Box>
             ))
@@ -1068,11 +937,10 @@ export default function HomePage() {
           }}
         >
           {
-            webinars.slice(0, 4).map((webinar, index) => (
+            webinar.map((webinar: any, index: number) => (
               <Box key={index}
                 sx={{
                   borderRadius: theme.borderRadius.sm,
-                  // border: `1px solid #fff`,
                   display: 'flex',
                   minWidth: '400px',
                   height: '200px',
@@ -1106,7 +974,7 @@ export default function HomePage() {
                       whiteSpace: 'pre-wrap'
                     }}
                   >
-                    {webinar.title}
+                    {webinar.title.length > 50 ? `${characterBreaker(webinar.title, 50)}...` : webinar.title}
                   </Typography>
                 </Box>
 
@@ -1131,10 +999,10 @@ export default function HomePage() {
                         whiteSpace: 'pre-wrap'
                     }}
                   >
-                    {`${characterBreaker(webinar.description, 100)}...`}
+                    {webinar.summary.length ? `${characterBreaker(webinar.summary, 100)}...` : webinar.description}
                   </Typography>
 
-                  {!isLoggedIn ? 
+                  {authStatus === 'unauthenticated' ? 
                     (<Typography
                       sx={{
                           color: theme.palette.primary.main,
@@ -1153,6 +1021,7 @@ export default function HomePage() {
                           fontWeight: theme.typography.labelxs.fontWeight,
                           cursor: 'pointer'
                         }}
+                        onClick={()=>router.push(`/webinar/${webinar._id}`)}
                       >
                         Open <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
                       </Typography>

@@ -2,16 +2,17 @@
 
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
-import PButton from "../components/PButton";
+import PButton, { NButton } from "../components/PButton";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { wordBreaker } from "@/lib/helper";
-import { PlayArrow } from "@mui/icons-material";
+import { ArrowRight, PlayArrow } from "@mui/icons-material";
 import Pagination from "../components/Pagination";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
 import { useGetPodcastCategories, useGetPodcasts } from "../admin/hooks/podcastHook/usePodcast";
 import moment from "moment";
+import { useSession } from "next-auth/react";
 
 const channels = [
     '/apple-pod.png',
@@ -39,6 +40,7 @@ export default function Podcasts() {
     const fetchPodcastsMutation = useGetPodcasts(); 
     const [podcasts, setPodcasts] = useState<any>([]);
     const [podcastCategories, setPodcastCategories] = useState<any>([]);
+    const {status: authStatus} = useSession();
 
     const filteredData = podcasts.filter((item: any) => {
         if(value === 'All') {
@@ -374,15 +376,25 @@ export default function Podcasts() {
                                                     flexDirection: isMobile ? 'column' : 'row'
                                                 }}
                                             >
-                                                <PButton transBg={false} bg={true} onClick={() => router.push(`/podcast/${podcast._id}`)}>
+                                                <NButton
+                                                    bkgcolor={theme.palette.primary.main} 
+                                                    textcolor='white'
+                                                    width='20%'
+                                                    onClick={()=>{
+                                                    authStatus === 'authenticated' 
+                                                        ? router.push(`/podcast/${podcast._id}`)
+                                                        : router.push('/signin')
+                                                    }}
+                                                >
+                                                    <ArrowRight/>
                                                     <Typography 
-                                                        sx={{
-                                                            fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize
-                                                        }}
+                                                    sx={{
+                                                        fontSize: theme.typography.labelxs.fontSize
+                                                    }}
                                                     >
-                                                    <PlayArrow sx={{mb: 1}}/> Play Episode
+                                                    {authStatus === 'authenticated' ? 'Play Episode' : 'Sign In'}
                                                     </Typography>
-                                                </PButton>
+                                                </NButton>
 
                                                 <Box sx={{display: 'flex', gap: 4, mt: isMobile ? 3 : 0}}>
                                                 {

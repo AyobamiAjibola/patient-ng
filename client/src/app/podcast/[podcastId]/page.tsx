@@ -4,9 +4,10 @@ import Navbar from '@/app/components/Navbar'
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import PodcastEmbed from '@/app/components/PodcastEmbed'
-import { wordBreaker } from '@/lib/helper';
 import { useGetSinglePodcast } from '@/app/admin/hooks/podcastHook/usePodcast';
-import PButton, { NButton } from '@/app/components/PButton';
+import { NButton } from '@/app/components/PButton';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const sources = [
   "Youtube",
@@ -23,6 +24,8 @@ export default function page({params}: any) {
   const [producedBy, setProducedBy] = useState<string>('');
   const [value, setValue] = useState<string>('');
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const { status: authStatus } = useSession();
+  const router = useRouter();
 
   const handlegetSinglePodcast = async () => {
     await getSinglePodcastMutation.mutateAsync(params.podcastId, {
@@ -43,6 +46,12 @@ export default function page({params}: any) {
       setValue(links[0].link)
     }
   },[links]);
+
+  useEffect(() => {
+    if(authStatus === 'unauthenticated') {
+      router.push('/podcast')
+    }
+  },[authStatus]);
 
   return (
     <>

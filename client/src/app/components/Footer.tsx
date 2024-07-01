@@ -8,8 +8,17 @@ import { useRouter } from "next/navigation";
 const links = [
     {name: "Advocacy", link: '/advocacy'},
     {name: "Crowdfunding", link: '/crowdfunding'},
-    {name: "Insights", link: '/insights'},
-    {name: "Resources", link: '/blog'}
+    // {name: "Insights", link: '/insights'},
+    // {name: "Resources", link: ''}
+]
+
+const resources = [
+    {name: "Blog", link: '/blog'},
+    {name: "Patient Stories", link: '/patient-stories'},
+    {name: "Webinar", link: 'webinar'},
+    {name: "Podcast", link: 'podcast'},
+    {name: "Award", link: 'award'},
+    {name: "Insights", link: '/insights'}
 ]
 
 export default function Footer() {
@@ -44,30 +53,67 @@ export default function Footer() {
                 height={100}
                 width={100}
             />
-            <Box
-                sx={{
-                    display: 'flex',
-                    gap: 3
-                }}
-            >
-                {
-                    links.map((link, index: number) => (
-                        <Typography key={index}
-                            onClick={() => router.push(`${link.link}`)}
-                            sx={{
-                                color: theme.palette.primary.darker,
-                                fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize,
-                                fontWeight: theme.typography.labelsm.fontWeight,
-                                cursor: 'pointer',
-                                '&:hover': {
-                                    color: theme.palette.primary.main
-                                }
-                            }}
-                        >
-                            { link.name }
-                        </Typography>
-                    ))
-                }
+            <Box display={'flex'} gap={3}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        gap: 3
+                    }}
+                >
+                    {
+                        links.slice(0, 4).map((link, index: number) => (
+                            <Typography key={index}
+                                onClick={() => {
+                                    if(link.name === 'Resources') return null;
+                                    router.push(`${link.link}`)}}
+                                sx={{
+                                    color: theme.palette.primary.darker,
+                                    fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize,
+                                    fontWeight: theme.typography.labelsm.fontWeight,
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        color: theme.palette.primary.main
+                                    }
+                                }}
+                            >
+                                { link.name }
+                            </Typography>
+                        ))
+                    }
+                </Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2
+                    }}
+                >
+                    <Typography
+                        variant={isMobile ? 'labelxs' : 'labelsm'}
+                        color={theme.palette.primary.darker}
+                    >
+                        Resources
+                    </Typography>
+                    {
+                        resources.map((link, index: number) => (
+                            <Typography key={index}
+                                onClick={() => {
+                                    if(link.name === 'Resources') return null;
+                                    router.push(`${link.link}`)}}
+                                sx={{
+                                    color: theme.palette.primary.darker,
+                                    fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelxs.fontSize,
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        color: theme.palette.primary.main
+                                    }
+                                }}
+                            >
+                                { link.name }
+                            </Typography>
+                        ))
+                    }
+                </Box>
             </Box>
             <Box
                 sx={{
@@ -135,6 +181,24 @@ export default function Footer() {
                     }}
                 >
                     Privacy policy
+                </Typography>
+                <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
+                <Typography
+                    sx={{
+                        fontSize: theme.typography.labelxs.fontSize,
+                        color: theme.palette.primary.main
+                    }}
+                >
+                    About us
+                </Typography>
+                <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
+                <Typography
+                    sx={{
+                        fontSize: theme.typography.labelxs.fontSize,
+                        color: theme.palette.primary.main
+                    }}
+                >
+                    Contact us
                 </Typography>
             </Box>
         </Box>

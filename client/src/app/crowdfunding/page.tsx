@@ -53,19 +53,23 @@ const stories = [
 const crowdFundingWork = [
   {
     title: 'Choose a Campaign',
-    content: `Explore diverse health initiatives and select the campaign you're passionate about supporting.`
+    content: `Explore diverse crowdfunding campaigns on patient.ng to select one
+    that resonates deeply with you.`
   },
   {
-    title: 'Make a Donation',
-    content: `Support the cause with a donation of any amount and help us reach our fundraising goal.`
+    title: 'Support a Campaign',
+    content: `Make a financial donation or Give a heart to help the fundraiser
+    reach their goal.`
   },
   {
-    title: 'Track Progress',
-    content: `Monitor the impact of your donation in real-time and see how it's making a difference.`
+    title: 'Track Campaign Progress',
+    content: `Follow the campaign in real-time and see how it’s making a
+    difference.`
   },
   {
-    title: 'See Impact',
-    content: `Discover the tangible results of your support and the transformative changes it's bringing about.`
+    title: 'Share your impact',
+    content: `Discover the positive results of your contributions and see how they
+    have made a difference through our impact stories.`
   }
 ]
 
@@ -135,7 +139,7 @@ export default function CrowdFundings() {
                 lineHeight: theme.typography.h3.lineHeight
               }}
             >
-              Uniting Hearts, Healing Lives: Together, We Make Miracles Happen
+              Uniting Hearts, Saving Lives: Together, We Make Miracles Happen
             </Typography>
             <Typography
               sx={{
@@ -144,27 +148,20 @@ export default function CrowdFundings() {
                 color: theme.palette.secondary.light
               }}
             >
-              Empower healing across Nigeria with a single click. Your support turns challenges into triumphs, making quality healthcare a reality for all.
+              Empower patients across Nigeria with a single click. Your support turns challenges into triumphs, making access to quality healthcare a
+                reality for everyone.
             </Typography>
             <Box
               sx={{
                 display: 'flex',
-                gap: 3, alignItems: 'center'
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+                width: '100%'
               }}
             >
               <PButton bg={true} transBg={false} width='200px' onClick={() => router.push('/crowdfunding/new-campaign')}>
-                Start a Crowdfunding
+                Start a Fundraiser
               </PButton>
-              <Typography onClick={() => router.push('/crowdfunding/campaigns')}
-                sx={{
-                  fontSize: theme.typography.labelxs.fontSize,
-                  fontWeight: theme.typography.labelxs.fontWeight,
-                  color: theme.palette.primary.main,
-                  cursor: 'pointer'
-                }}
-              >
-                See Campaigns
-              </Typography>
             </Box>
           </Box>
           {!isMobile && (<Image
@@ -541,7 +538,7 @@ export default function CrowdFundings() {
               mb: 2
             }}
           >
-            Learn seehow crowdfunding helps fund critical health initiatives.
+            Learn how crowdfunding helps support patients critical health issues
           </Typography>
 
           <Box

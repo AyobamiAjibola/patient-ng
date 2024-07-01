@@ -115,34 +115,14 @@ export default class Generic {
     return newPath;
   }
 
-  // public static async handlePodcastLink(source: string, link: string) {
-  //   let result = '';
-
-  //   switch (source) {
-  //     case 'youtube':
-  //       result = `https://www.youtube.com/${link.split('https://youtube/')[1]}`;
-  //       break;
-  //     case 'apple':
-  //       result = `https://embed.podcasts.apple.com/us/podcast/${link.split('https://podcasts.apple.com/us/')[1]}&amp;itsct=podcast_box_player&amp;itscg=30200&amp;ls=1&amp;theme=auto`;
-  //       break;
-  //     case 'spotify':
-  //       result = `https://open.spotify.com/embed/episode/${link.split('https://open.spotify.com/episode/')[1]}?utm_source=generator`;
-  //       break;
-  //     default:
-  //       // Handle unknown sources
-  //       break;
-  //   }
-
-  //   return result;
-  // }
   public static async handlePodcastLink(source: string, link: string): Promise<{ result?: string, error?: string }> {
     let result = '';
 
     try {
         switch (source) {
             case 'youtube':
-                if (link.startsWith('https://www.youtube.com/watch?=') || link.startsWith('https://www.youtube.com/embed')) {
-                    result = `https://www.youtube.com/embed${link.split('https://www.youtube.com/watch?v=')[1] || link.split('https://www.youtube.com/embed')[1]}`;
+                if (link.startsWith('https://www.youtube.com/watch?v=') || link.startsWith('https://www.youtube.com/embed')) {
+                    result = `https://www.youtube.com/embed/${link.split('https://www.youtube.com/watch?v=')[1] || link.split('https://www.youtube.com/embed/')[1]}`;
                 } else {
                   throw new Error('Invalid YouTube link format');
                 }

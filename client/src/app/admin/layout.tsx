@@ -104,7 +104,8 @@ export default function page({children}: any) {
                 setSessionErrorModalOpen(false)
                 setOpenModal(true)
                 signOut({
-                  redirect: false
+                  redirect: true,
+                  callbackUrl: '/signin'
                 })
               }}
             >

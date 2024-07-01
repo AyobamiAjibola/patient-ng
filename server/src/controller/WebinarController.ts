@@ -211,7 +211,7 @@ export default class BlogController {
         const userPhone = await WatchOnDemand.findOne({ phone: value.phone });
 
         if (userPhone) {
-            return Promise.reject(CustomAPIError.response("User with phone numbercalready exists.", HttpStatus.BAD_REQUEST.code));
+            return Promise.reject(CustomAPIError.response("User with phone number already exists.", HttpStatus.BAD_REQUEST.code));
         };
 
         if (userEmail) {
@@ -347,13 +347,18 @@ export default class BlogController {
                     };
                 }));
                 
+                const { result: link, error: linkError } = await Generic.handlePodcastLink("youtube", value.webinarLink);
+                if (linkError) {
+                    return reject(CustomAPIError.response(linkError, HttpStatus.FORBIDDEN.code));
+                }
 
                 const payload = {
                     ...value,
                     categories: value.category,
                     speakers: actualSpeakers,
                     // hostedBy: actualHostedBy,
-                    user: user?._id
+                    user: user?._id,
+                    webinarLink: link
                 }
 
                 const webinar: any = await datasources.webinarDAOService.create(payload as unknown as IWebinarModel);
@@ -445,9 +450,14 @@ export default class BlogController {
                     };
                 }));
 
+                const { result: link, error: linkError } = await Generic.handlePodcastLink("youtube", value.webinarLink);
+                if (linkError) {
+                    return reject(CustomAPIError.response(linkError, HttpStatus.FORBIDDEN.code));
+                }
+
                 const payload = {
                     title: value.title ? value.title : webinar.title,
-                    webinarLink: value.webinarLink ? value.webinarLink : webinar.webinarLink,
+                    webinarLink: link ? link : webinar.webinarLink,
                     summary: value.summary ? value.summary : webinar.summary,
                     duration: value.duration ? value.duration : webinar.duration,
                     webinarDateTime: value.webinarDateTime ? value.webinarDateTime : webinar.webinarDateTime,
