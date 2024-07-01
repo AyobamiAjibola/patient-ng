@@ -13,6 +13,7 @@ import { modalReg } from "@/lib/atoms";
 import { useSession } from "next-auth/react";
 import { useCreateComplain } from "../admin/hooks/advocacyHook/useAdvocacy";
 import Toastify from "../components/ToastifySnack";
+import { useRouter } from "next/navigation";
 
 const advocacy = [
   "Informal Complaint (Stage 1)",
@@ -36,6 +37,7 @@ export default function page() {
   const { data: session } = useSession();
   const createComplainMutation = useCreateComplain();
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const router = useRouter();
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -136,7 +138,7 @@ export default function page() {
               bkgcolor={theme.palette.primary.main}
               onClick={handleClick}
             >
-              How to make complaints <ArrowDownward sx={{fontSize: '16px'}}/>
+              Make a complaints <ArrowDownward sx={{fontSize: '16px'}}/>
             </NButton>
             {session?.user
               ? (
@@ -149,7 +151,7 @@ export default function page() {
                   bkgcolor="white"
                   hoverbordercolor={theme.palette.primary.main}
                 >
-                  Sign up as an advocate
+                  Become an advocate
                 </NButton>
               )}
           </Box>
@@ -201,7 +203,8 @@ export default function page() {
                   alignSelf: 'center'
                 }}
               >
-                iPatient's advocacy helped me get the right diagnosis and treatment, and I feel empowered!
+                Patient.ng advocacy service helped me get a second opinion
+                  with the right diagnosis and treatment, and I felt supported.
               </Typography>
               <Typography
                 sx={{
@@ -468,21 +471,31 @@ export default function page() {
             </Typography>
             <Typography variant="paragraphsm">
               {currentStep === 1
-                ? `If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.`
+                ? `If you are unhappy with the patient care received in a healthcare institution, you can raise issue by making a verbal complaint
+                with any member of staff at the reception. This issue might be resolved without needing to make a formal, written complaint.`
                 : currentStep === 2
-                  ? `If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.`
+                  ? ` If you are unhappy with the response you received after raising the issue with the reception at the healthcare institution, you can
+                        make a written complaint to the healthcare institution through patient.ng. You can do this by writing an email or filling out the complaints form on the
+                        patient.ng website here.`
                   : currentStep === 3
-                    ? `If you are unhappy with the response you receive after raising the issue, you can make a written complaint. You can do this by  filling out the online complaints form on the  website here.`
+                    ? `Your name, phone number, email address, name of the hospital, name of the section in the hospital, who was
+                    involved, dates and times of the experience, an accurate description of what happened.
+                    Your complaint should also outline what you have done to resolve the issue to date, and what you want to happen now to resolve your issue.
+                    You can also attach any documentation to your complaint that you feel is relevant, through the online form or email.
+                    In your written complaint, you should grant permission to patient.ng to access your personal confidential information.
+                    If you don’t grant patient.ng permission to access your personal confidential information, we may not be able to effectively process your complaint.`
                     : currentStep === 4
-                      ? `In your written complaint, include the following information:`
-                      : `If you are unhappy with the response you receive, you can consider asking iPatient to review the complaint (this is Stage 3 of Your Service, Your Say). 
-                      If you want iPatient to review your complaint, you should reply to iPatient within 30 working days to the initial response they gave to your complaint. Your response should include the following request;`
+                      ? `Submit your complaint online or email to advocacy@patient.ng`
+                      : ` If you are unhappy with the response you receive from a healthcare institution after Step 3, you can consider asking our advocates at patient.ng to
+                      review your complaint even further.
+                      To proceed, you should reply to patient.ng within 30 days of the initial response. Your email response should begin with`
 
               }
             </Typography>
             {currentStep === 5 && (
               <Typography variant="paragraphsm" fontStyle={'italic'}>
-                “I am unhappy with the response I have received to my complaint/unhappy with how my complaint has been handled and request that iPatient undertake a review of the complaint under Stage 3 of Your Service, Your Say.”
+                {`I am unhappy with the response I have received to my complaint/unhappy with how my complaint has been handled by the healthcare institution and
+                      request that a patient.ng advocate undertakes an independent case review of the complaint.`}
               </Typography>
             )}
             {currentStep === 2 && (<Box display={'flex'} flexDirection={'column'}>
@@ -496,7 +509,7 @@ export default function page() {
                 <CheckCircle sx={{color: theme.palette.primary.main}}/> receive response to the complaint within 30 working days
               </Typography>
             </Box>)}
-            {currentStep === 3 && (<Box display={'flex'} flexDirection={'column'}>
+            {/* {currentStep === 3 && (<Box display={'flex'} flexDirection={'column'}>
               <Typography variant="paragraphsm">
                 <CheckCircle sx={{color: theme.palette.primary.main}}/> Name and address of the hospital
               </Typography>
@@ -512,8 +525,8 @@ export default function page() {
               <Typography variant="paragraphsm">
                 If you don’t grant iPatient permission to access your personal confidential information, they may not be able to effectively process your complaint.
               </Typography>
-            </Box>)}
-            {currentStep === 4 && (<Box display={'flex'} flexDirection={'column'}>
+            </Box>)} */}
+            {/* {currentStep === 4 && (<Box display={'flex'} flexDirection={'column'}>
               <Typography variant="paragraphsm">
                 <CheckCircle sx={{color: theme.palette.primary.main}}/> Your name, phone number, email address, name of the hospital, name of the section in the hospital, who was involved, dates and times of the experience, an accurate description of what happened.
               </Typography>
@@ -526,16 +539,16 @@ export default function page() {
               <Typography variant="paragraphsm">
                 If you don’t grant the HSE permission to access your personal confidential information, they may not be able to effectively process your complaint.
               </Typography>
-            </Box>)}
+            </Box>)} */}
             {currentStep === 5 && (<Box display={'flex'} flexDirection={'column'}>
               <Typography variant="labelsm" mb={2}>
                 Timeframe
               </Typography>
               <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Respond to the HSE within 30 working days of the iPatient initial response
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Respond to patient.ng within 30 working days of the initial response
               </Typography>
               <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> iPAtient will then have 20 working days to review the complaint
+                <CheckCircle sx={{color: theme.palette.primary.main}}/> Patient.ng will then have 20 working days to review the complaint in case you are eligible for compensation.
               </Typography>
             </Box>)}
           </Box>
@@ -548,7 +561,7 @@ export default function page() {
           flexDirection: 'column',
           height: 'auto',
           px: isMobile ? '20px' : '90px', py: 8,
-          backgroundColor: '#FFF7D9'
+          backgroundColor: theme.palette.primary.lightest//'#FFF7D9'
         }}
       >
         {!isMobile && (<img
@@ -556,15 +569,15 @@ export default function page() {
           alt="advocacy image"
           style={{
             width: '100%',
-            height: '550px',
+            height: '40em',
             borderRadius: theme.borderRadius.lg
           }}
         />)}
         <Box
           sx={{
             backgroundColor: 'white',
-            height: '500px',
-            width: isMobile? '100%' : '30%',
+            height: 'auto',
+            width: isMobile? '100%' : '45%',
             mx: isMobile ? 0 : 4,
             mt: isMobile ? 0 : 4,
             borderRadius: theme.borderRadius.sm,
@@ -627,7 +640,7 @@ export default function page() {
               error={!!errors.complaints}
               register={register('complaints')}
               multiline={true}
-              rows={6}
+              rows={10}
             />
             <PButton transBg={false} bg={true} width="100%" type="submit">
               {createComplainMutation.isLoading ? 'Sending...' : 'Send your complaints'}
@@ -638,7 +651,7 @@ export default function page() {
 
       <Box
         sx={{
-          backgroundColor: '#FFF7D9',
+          backgroundColor: theme.palette.primary.lightest,
           pb: '4em'
         }}
       >
@@ -664,7 +677,7 @@ export default function page() {
             bkgcolor={theme.palette.primary.main}
             textcolor="white"
             width='200px'
-            onClick={() => session?.user ? null : setOpenModalReg(true)}
+            onClick={() => session?.user ? null : router.push('/signup')}
           >
             {session?.user ? 'Continue' : 'Sign up'}
           </NButton>

@@ -26,8 +26,10 @@ export default function MenuDropDown2({ anchorEl, setAnchorEl, open, handleClick
   };
 
   const handleLogout = async () => {
-    await signOut();
-    router.push(`/`);
+    await signOut({
+      redirect: true,
+      callbackUrl: '/signin'
+    });
   };
 
   return (

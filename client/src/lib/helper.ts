@@ -71,3 +71,7 @@ export function characterBreaker(sentence: string, maxWords: number): string {
 
     return formattedAmount;
   };
+
+  export function getFirstLetters (char: string): string {
+    return char.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
+  }

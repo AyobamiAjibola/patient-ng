@@ -1,10 +1,19 @@
 'use client';
 
+import { useCreateWebinarWaitlist } from "@/app/admin/hooks/webinarHook/useWebinar";
+import { useGetSingleWebinar } from "@/app/admin/hooks/webinarHook/useWebinar";
 import InputField from "@/app/components/InputField";
+import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
-import PButton from "@/app/components/PButton";
-import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import PButton, { NButton } from "@/app/components/PButton";
+import PodcastEmbed from "@/app/components/PodcastEmbed";
+import Toastify from "@/app/components/ToastifySnack";
+import { getFirstLetters } from "@/lib/helper";
+import { Close } from "@mui/icons-material";
+import { Avatar, Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import capitalize from 'capitalize'
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const speakers = [
   {
@@ -20,7 +29,74 @@ const speakers = [
 export default function Webinar({ params }: any) {
   const isMobile = useMediaQuery('(max-width: 959px)');
   const theme = useTheme();
-  const isLoggedIn = true;
+  const {status: authStatus, data: session} = useSession();
+  const getWebinarMutation = useGetSingleWebinar();
+  const [webinar, setWebinar] = useState<any>({});
+  const waitlistMutation = useCreateWebinarWaitlist();
+  const [phone, setPhone] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [open, setOpen] = useState<boolean>(false);
+
+  const [message, setMessage] = useState<string>('');
+  const [isError, setIsError] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setSnackbarOpen(true);
+  };
+
+
+  const getWebinar = async () => {
+    await getWebinarMutation.mutateAsync(params.webinarId, {
+      onSuccess: (response: any) => {
+        setWebinar(response.result)
+      }
+    })
+  }
+
+  const handleWaitlist = async () => {
+    const regex = /^\d+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if(!regex.test(phone)) {
+      handleOpenNotification('error', '', 'Phone number should only contain numbers.')
+      return;
+    }
+    if(!emailRegex.test(email)) {
+      handleOpenNotification('error', '', 'Invalid email address.')
+      return;
+    }
+    const payload = {
+      firstName,
+      lastName,
+      phone,
+      email
+    }
+
+    await waitlistMutation.mutateAsync(payload, {
+      onSuccess: async () => {
+        await getWebinar()
+        setLastName('')
+        setFirstName('')
+        setEmail('')
+        setPhone('')
+        handleOpenNotification('success', 'Successfully added to the waitlist.')
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+        handleOpenNotification('error', '', errorMessage)
+      }
+    })
+  }
+
+  useEffect(() => {
+    getWebinar()
+  },[session, params]);
 
   return (
     <>
@@ -59,7 +135,7 @@ export default function Webinar({ params }: any) {
               lineHeight: theme.typography.h3.lineHeight
             }}
           >
-            {`I was suddenly thrust into a world of uncertainty and fear. But amidst the pain.`}
+            {webinar.title}
           </Typography>
           <Typography
             sx={{
@@ -68,8 +144,7 @@ export default function Webinar({ params }: any) {
               mt: 7
             }}
           >
-            {`My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.
-              For years, I battled flare-ups, hospitalizations, and setbacks that tested my resolve. Each day felt like a marathon, with no finish line in sight. But through it all, I refused to let my illness define me. With the unwavering support of my family, friends, and medical team, I learned to embrace every hurdle as an opportunity for growth.`}
+            {webinar.summary}
           </Typography>
           <Box
             sx={{
@@ -93,17 +168,16 @@ export default function Webinar({ params }: any) {
               Featured speakers
             </Typography>
             {
-              speakers.map((speaker: any, index: number) => (
+              webinar.speakers?.map((speaker: any, index: number) => (
                 <Box key={index}
                   sx={{
                     display: 'flex',
                     gap: 1
                   }}
                 >
-                  <Avatar
-                    src='/model.png'
-                    alt='speaker'
-                  />
+                  <Avatar>
+                    {getFirstLetters(speaker.speakerName)}
+                  </Avatar>
                   <Box
                     sx={{
                       display: 'flex',
@@ -116,7 +190,7 @@ export default function Webinar({ params }: any) {
                         fontWeight: theme.typography.labelxs.fontWeight
                       }}
                     >
-                      {capitalize.words(speaker.name)}
+                      {capitalize.words(speaker.speakerName)}
                     </Typography>
                     <Typography
                       sx={{
@@ -124,20 +198,33 @@ export default function Webinar({ params }: any) {
                         color: theme.palette.secondary.light
                       }}
                     >
-                      {capitalize.words(speaker.designation)}
+                      {capitalize.words(speaker.occupation)}
                     </Typography>
                   </Box>
                 </Box>
               ))
             }
           </Box>
-          {isLoggedIn ? (
-            <PButton transBg={true} bg={false} width="200px">
+          {authStatus === 'authenticated' ? (
+            <NButton 
+              width="200px"
+              bkgcolor="transparent"
+              bordercolor={theme.palette.primary.main}
+              hoverbordercolor={theme.palette.primary.main}
+              textcolor={theme.palette.primary.main}
+              onClick={()=>setOpen(true)}
+            >
               Click to watch webinar
-            </PButton>
-            ) : (<PButton transBg={true} bg={false} width="200px">
+            </NButton>
+            ) : (<NButton 
+                    width="200px"
+                    bkgcolor="transparent"
+                    bordercolor={theme.palette.primary.main}
+                    hoverbordercolor={theme.palette.primary.main}
+                    textcolor={theme.palette.primary.main}
+                  >
                   Signup for free
-                </PButton>
+                </NButton>
               )
           }
         </Box>
@@ -161,7 +248,7 @@ export default function Webinar({ params }: any) {
           > 
             Watch On-Demand
           </Typography>
-          <form style={{width: '100%'}}>
+          <Box style={{width: '100%'}}>
             <Box
               sx={{
                 display: 'flex',
@@ -173,29 +260,86 @@ export default function Webinar({ params }: any) {
                 <InputField
                   label="First name"
                   isBorder={true}
+                  onChange={(e)=>setFirstName(e.target.value)}
+                  value={firstName}
                 />
               </Box>
               <Box sx={{width: '50%'}}>
                 <InputField
                   label="Last name"
                   isBorder={true}
+                  onChange={(e)=>setLastName(e.target.value)}
+                  value={lastName}
                 />
               </Box>
             </Box>
             <InputField
               label="Email"
               isBorder={true}
+              onChange={(e)=>setEmail(e.target.value)}
+              value={email}
             />
             <InputField
               label="Phone number"
               isBorder={true}
+              onChange={(e)=>setPhone(e.target.value)}
+              value={phone}
             />
-            <PButton transBg={false} bg={true} width='100%'>
-              Submit
-            </PButton>
-          </form>
+            <NButton
+              bkgcolor={theme.palette.primary.main}
+              textcolor="white"
+              width='100%'
+              onClick={handleWaitlist}
+            >
+              {waitlistMutation.isLoading ? 'Loading...' : 'Submit'}
+            </NButton>
+          </Box>
         </Box>
       </Box>
+
+      <MModal
+        onClose={()=>setOpen(false)}
+        open={open}
+        width={isMobile ? '95%' : '60%'}
+        showCloseIcon={false}
+        onClickOut={false}
+        height='auto'
+      >
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'scroll',
+            position: 'relative'
+          }}
+        >
+          <PodcastEmbed
+            link={webinar.webinarLink}
+            height='60vh'
+          />
+          <IconButton
+            onClick={()=>setOpen(false)}
+            sx={{
+              position: 'absolute',
+              top: 2,
+              left: '50%',
+              bgcolor: 'red',
+              '&:hover': {
+                bgcolor: 'red',
+              }
+            }}
+          >
+            <Close sx={{color: 'white'}}/>
+          </IconButton>
+        </Box>
+      </MModal>
+
+      <Toastify
+        open={snackbarOpen}
+        onClose={() => setSnackbarOpen(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
     </>
   )
 }

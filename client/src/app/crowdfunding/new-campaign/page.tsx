@@ -332,7 +332,7 @@ export default function page() {
                                 color: isErrorMsg ? "red" : theme.palette.primary.main
                             }}
                         >
-                            {isErrorMsg ? 'Error!' : 'Congratulations!'}
+                            {isErrorMsg ? 'Error!' : 'Welcome!'}
                         </Typography>
                         <Typography
                             sx={{
@@ -340,7 +340,7 @@ export default function page() {
                                 color: theme.palette.secondary.light
                             }}
                         >
-                            {isErrorMsg ? 'Please address the error in your application.' : 'Fundraising journey starts now.'}
+                            {isErrorMsg ? 'Please address the error in your application.' : 'Your fundraising journey starts now.'}
                         </Typography>
                     </Box>)}
                     

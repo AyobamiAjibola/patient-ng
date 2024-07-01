@@ -143,12 +143,12 @@ export default function StepperVertical({ activeStep, setActiveStep }: any) {
                             fontWeight: theme.typography.labelsm.fontWeight
                         }}
                     >{label.header}</Typography>
-                    <Typography
+                    {/* <Typography
                         sx={{
                             fontSize: theme.typography.labelsm.fontSize,
                             color: theme.palette.secondary.light
                         }}
-                    >{label.subHeader}</Typography>
+                    >{label.subHeader}</Typography> */}
                 </StepLabel>
             </Step>
           );

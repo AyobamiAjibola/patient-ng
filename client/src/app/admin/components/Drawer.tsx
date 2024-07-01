@@ -116,9 +116,8 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
   const handleLogout = async () => {
     await signOut({
       redirect: true,
-      callbackUrl: '/'
+      callbackUrl: '/signin'
     });
-    router.push(`/`);
   };
 
   const fetchSingleUser = async (id: any) => {

@@ -1,22 +1,23 @@
 
-const PodcastEmbed = ({ link }: { link: string }) => {
+const PodcastEmbed = ({ link, height = '176px' }: any) => {
 
   return (
     <iframe 
         id="embedPlayer"
         src={link}
-        height="176px" 
+        // height={height}
         frameBorder="0" 
         sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation allow-presentation" 
         allow="autoplay *; encrypted-media *; clipboard-write; accelerometer; gyroscope; picture-in-picture; web-share" 
         referrerPolicy="strict-origin-when-cross-origin"
         allowFullScreen
         style={{
-            width: '100%',
-            overflow: 'hidden',
-            borderRadius: '10px',
-            transform: 'translateZ(0px)',
-            animation: '2s ease 0s 6 normal none running loading-indicator'
+          width: '100%',
+          height: height,
+          overflow: 'hidden',
+          borderRadius: '10px',
+          transform: 'translateZ(0px)',
+          animation: '2s ease 0s 6 normal none running loading-indicator'
         }}
     >
     </iframe>
