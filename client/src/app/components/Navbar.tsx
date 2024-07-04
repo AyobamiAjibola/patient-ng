@@ -26,8 +26,9 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import MenuDropDown2 from './MenuDropDown2';
 import MModal from './Modal';
 import { signOut, useSession } from 'next-auth/react';
-import { useFetchSingleUser } from '../admin/hooks/userHook/useUser';
+import { useFetchSingleUser, useSiteVisit } from '../admin/hooks/userHook/useUser';
 import capitalize from 'capitalize';
+import useUpdate from '../hooks/useUpdate';
 
 interface PagesProps {
   id?: number;
@@ -100,6 +101,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   const [sessionErrorModalOpen, setSessionErrorModalOpen] = useAtom(sessionErrorModal);
   const getUserMutation = useFetchSingleUser();
   const [image, setImage] = useState<string>('');
+  const siteVisitMutation = useSiteVisit();
 
   const fetchSingleUser = async (id: any) => {
     await getUserMutation.mutateAsync(id, {
@@ -157,6 +159,26 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       setSessionErrorModalOpen(true)
     }
   },[sessionError]);
+
+  useUpdate(() => {
+    const logVisit = async () => {
+      const lastVisit: any = localStorage.getItem('lastVisit');
+      const now: any = new Date().getTime();
+
+      const threshold = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+      if (!lastVisit || now - lastVisit > threshold) {
+        try {
+          await siteVisitMutation.mutateAsync({});
+          localStorage.setItem('lastVisit', now);
+        } catch (error) {
+          console.error('Failed to log visit:', error);
+        }
+      }
+    };
+
+    logVisit();
+  }, []);
 
   return (
     <Box 

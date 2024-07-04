@@ -2,8 +2,11 @@
 
 import { Copyright, FacebookRounded, FiberManualRecord, Instagram, LinkedIn } from "@mui/icons-material";
 import { Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Button, Dropdown } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import type { MenuProps } from 'antd';
+import Link from "next/link";
 
 const links = [
     {name: "Advocacy", link: '/advocacy'},
@@ -26,182 +29,218 @@ export default function Footer() {
     const isMobile = useMediaQuery('(max-width: 900px)');
     const router = useRouter();
 
-  return (
-    <Box
-        sx={{
-            width: '100%',
-            backgroundColor: theme.palette.secondary.lightest,
-            px: isMobile ? '20px' : '90px',
-            py: isMobile ? 4 : 5,
-            borderTop: `1px solid ${theme.palette.secondary.lighter}`,
-            display: 'flex',
-            flexDirection: 'column'
-        }}
-    >
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row',
-                justifyContent: isMobile ? 'flex-start' : 'space-between',
-                alignItems: isMobile ? 'flex-start' : 'center',
-                gap: isMobile ? 2 : 0
-            }}
-        >
-            <Image
-                src='/ipatient-logo.png'
-                alt='logo'
-                height={100}
-                width={100}
-            />
-            <Box display={'flex'} gap={3}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        gap: 3
-                    }}
-                >
-                    {
-                        links.slice(0, 4).map((link, index: number) => (
-                            <Typography key={index}
-                                onClick={() => {
-                                    if(link.name === 'Resources') return null;
-                                    router.push(`${link.link}`)}}
-                                sx={{
-                                    color: theme.palette.primary.darker,
-                                    fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize,
-                                    fontWeight: theme.typography.labelsm.fontWeight,
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                        color: theme.palette.primary.main
-                                    }
-                                }}
-                            >
-                                { link.name }
-                            </Typography>
-                        ))
-                    }
-                </Box>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2
-                    }}
-                >
-                    <Typography
-                        variant={isMobile ? 'labelxs' : 'labelsm'}
-                        color={theme.palette.primary.darker}
-                    >
-                        Resources
-                    </Typography>
-                    {
-                        resources.map((link, index: number) => (
-                            <Typography key={index}
-                                onClick={() => {
-                                    if(link.name === 'Resources') return null;
-                                    router.push(`${link.link}`)}}
-                                sx={{
-                                    color: theme.palette.primary.darker,
-                                    fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelxs.fontSize,
-                                    cursor: 'pointer',
-                                    '&:hover': {
-                                        color: theme.palette.primary.main
-                                    }
-                                }}
-                            >
-                                { link.name }
-                            </Typography>
-                        ))
-                    }
-                </Box>
-            </Box>
-            <Box
-                sx={{
-                    display: 'flex',
-                    ml: isMobile ? -2 : 0
-                }}
-            >
-                <IconButton>
-                    <FacebookRounded/>
-                </IconButton>
-                <IconButton>
-                    <LinkedIn/>
-                </IconButton>
-                <IconButton>
-                    <Instagram/>
-                </IconButton>
-            </Box>
-        </Box>
+    const items: MenuProps['items'] = [
+        {
+          key: '1',
+          label: (
+            <Link href={'blog'}>
+                Blog
+            </Link>
+          ),
+        },
+        {
+          key: '2',
+          label: (
+            <Link href={'patient-stories'}>
+                Patient Stories
+            </Link>
+          ),
+        },
+        {
+          key: '3',
+          label: (
+            <Link href={'webinar'}>
+                Webinar
+            </Link>
+          ),
+        },
+        {
+            key: '4',
+            label: (
+              <Link href={'podast'}>
+                  Podcast
+              </Link>
+            ),
+        },
+        {
+            key: '5',
+            label: (
+              <Link href={'award'}>
+                  Award
+              </Link>
+            ),
+        },
+        {
+            key: '6',
+            label: (
+              <Link href={'insight'}>
+                  Insights
+              </Link>
+            ),
+        },
+    ];
+      
 
+    return (
         <Box
             sx={{
                 width: '100%',
-                height: '1px',
-                backgroundColor: theme.palette.secondary.lighter,
-                my: 4
-            }}
-        />
-
-        <Box
-            sx={{
+                backgroundColor: theme.palette.secondary.lightest,
+                px: isMobile ? '20px' : '90px',
+                py: isMobile ? 4 : 5,
+                borderTop: `1px solid ${theme.palette.secondary.lighter}`,
                 display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row',
-                justifyContent: isMobile ? 'flex-start' : 'space-between',
-                alignItems: isMobile ? 'flex-start' : 'center',
-                gap: isMobile ? 2 : 0
+                flexDirection: 'column'
             }}
         >
-            <Typography
-                sx={{
-                    fontSize: theme.typography.labelxs.fontSize,
-                    color: theme.palette.secondary.light
-                }}
-            >
-                <Copyright sx={{fontSize: '12px', mb: '2px'}}/> {new Date().getFullYear()} Patient.ng. All rights reserved.
-            </Typography>
             <Box
                 sx={{
                     display: 'flex',
-                    alignItems: 'center', gap: 2
+                    flexDirection: isMobile ? 'column' : 'row',
+                    justifyContent: isMobile ? 'flex-start' : 'space-between',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    gap: isMobile ? 2 : 0
+                }}
+            >
+                <Image
+                    src='/ipatient-logo.png'
+                    alt='logo'
+                    height={100}
+                    width={100}
+                />
+                <Box display={'flex'} gap={3}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 3
+                        }}
+                    >
+                        {
+                            links.slice(0, 4).map((link, index: number) => (
+                                <Typography key={index}
+                                    onClick={() => {
+                                        if(link.name === 'Resources') return null;
+                                        router.push(`${link.link}`)}}
+                                    sx={{
+                                        color: theme.palette.primary.darker,
+                                        fontSize: isMobile ? theme.typography.labelxs.fontSize : theme.typography.labelsm.fontSize,
+                                        fontWeight: theme.typography.labelsm.fontWeight,
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            color: theme.palette.primary.main
+                                        }
+                                    }}
+                                >
+                                    { link.name }
+                                </Typography>
+                            ))
+                        }
+                    </Box>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2
+                        }}
+                    >
+                        <Dropdown menu={{ items }} placement="bottomRight" arrow={{ pointAtCenter: true }} trigger={['click']}>
+                            <Typography sx={{cursor: 'pointer'}}
+                                onClick={(e) => e.preventDefault()}
+                                variant={isMobile ? 'labelxs' : 'labelsm'}
+                                color={theme.palette.primary.darker}
+                            >
+                                Resources
+                            </Typography>
+                        </Dropdown>
+                    </Box>
+                </Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        ml: isMobile ? -2 : 0
+                    }}
+                >
+                    <IconButton>
+                        <FacebookRounded/>
+                    </IconButton>
+                    <IconButton>
+                        <LinkedIn/>
+                    </IconButton>
+                    <IconButton>
+                        <Instagram/>
+                    </IconButton>
+                </Box>
+            </Box>
+
+            <Box
+                sx={{
+                    width: '100%',
+                    height: '1px',
+                    backgroundColor: theme.palette.secondary.lighter,
+                    my: 4
+                }}
+            />
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    justifyContent: isMobile ? 'flex-start' : 'space-between',
+                    alignItems: isMobile ? 'flex-start' : 'center',
+                    gap: isMobile ? 2 : 0
                 }}
             >
                 <Typography
                     sx={{
                         fontSize: theme.typography.labelxs.fontSize,
-                        color: theme.palette.primary.main
+                        color: theme.palette.secondary.light
                     }}
                 >
-                    Terms & Conditions
+                    <Copyright sx={{fontSize: '12px', mb: '2px'}}/> {new Date().getFullYear()} Patient.ng. All rights reserved.
                 </Typography>
-                <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
-                <Typography
+                <Box
                     sx={{
-                        fontSize: theme.typography.labelxs.fontSize,
-                        color: theme.palette.primary.main
+                        display: 'flex',
+                        alignItems: 'center', gap: 2
                     }}
                 >
-                    Privacy policy
-                </Typography>
-                <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
-                <Typography
-                    sx={{
-                        fontSize: theme.typography.labelxs.fontSize,
-                        color: theme.palette.primary.main
-                    }}
-                >
-                    About us
-                </Typography>
-                <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
-                <Typography
-                    sx={{
-                        fontSize: theme.typography.labelxs.fontSize,
-                        color: theme.palette.primary.main
-                    }}
-                >
-                    Contact us
-                </Typography>
+                    <Typography
+                        sx={{
+                            fontSize: theme.typography.labelxs.fontSize,
+                            color: theme.palette.primary.main
+                        }}
+                    >
+                        Terms & Conditions
+                    </Typography>
+                    <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
+                    <Typography
+                        sx={{
+                            fontSize: theme.typography.labelxs.fontSize,
+                            color: theme.palette.primary.main
+                        }}
+                    >
+                        Privacy policy
+                    </Typography>
+                    <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
+                    <Typography
+                        sx={{
+                            fontSize: theme.typography.labelxs.fontSize,
+                            color: theme.palette.primary.main
+                        }}
+                    >
+                        About us
+                    </Typography>
+                    <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
+                    <Typography
+                        sx={{
+                            fontSize: theme.typography.labelxs.fontSize,
+                            color: theme.palette.primary.main
+                        }}
+                    >
+                        Contact us
+                    </Typography>
+                </Box>
             </Box>
         </Box>
-    </Box>
-  )
+    )
 }

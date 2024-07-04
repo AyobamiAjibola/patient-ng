@@ -6,7 +6,7 @@ import PButton, { NButton } from "../components/PButton";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { wordBreaker } from "@/lib/helper";
-import { ArrowRight, PlayArrow } from "@mui/icons-material";
+import { ArrowRight } from "@mui/icons-material";
 import Pagination from "../components/Pagination";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";

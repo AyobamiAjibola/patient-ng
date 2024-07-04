@@ -3,7 +3,7 @@
 import { Box, Divider, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import Image from "next/image";
-import { ArrowDownward, ArrowForward, ChatBubbleOutline } from "@mui/icons-material";
+import { ArrowDownward, ArrowForward, ChatBubbleOutline, HourglassEmpty } from "@mui/icons-material";
 import { NButton } from "../components/PButton";
 import { characterBreaker } from "@/lib/helper";
 import { useRouter } from "next/navigation";
@@ -246,46 +246,54 @@ export default function PatientStories() {
                         alignItems: 'center'
                     }}
                 >
-                    {
-                        currentData.map((story: any, index: number) => (
-                            <Box 
-                                sx={{
-                                    display: 'flex', 
-                                    flexDirection: 'column',
-                                    border: `1px solid ${theme.palette.secondary.lighter}`,
-                                    bgcolor: theme.palette.secondary.lightest,
-                                    borderRadius: theme.borderRadius.sm,
-                                    width: '30%',
-                                    height: isMobile ? 450 : 400
-                                }} key={index}
-                            >
-                                <img
-                                    src={story.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${story.image}` : '/p_patient.png'}
-                                    alt='story'
-                                    style={{
-                                        width: '100%',
-                                        height: '80%',
-                                        borderTopRightRadius: theme.borderRadius.sm
-                                    }}
-                                    crossOrigin="anonymous"
-                                />
-                                <Typography variant={isMobile ? 'labelsm' : 'labelxs'} px={2} py={2}>
-                                    {story.title.length > 45 ? `${characterBreaker(story.title, 45)}...` : story.title}
-                                </Typography>
-                                <Typography variant={isMobile ? 'labelxs' : 'labelxxs'} className="capitalize" px={2} color={theme.palette.secondary.light}>
-                                    by {story.user.firstName} {story.user.lastName}
-                                </Typography>
-                                <Typography onClick={() => router.push(`/patient-stories/${story._id}`)} px={2}
-                                    variant="paragraphxxs"
+                    {   currentData.length > 0 
+                        ?   (currentData.map((story: any, index: number) => (
+                                <Box 
                                     sx={{
-                                        mb: 1, cursor: 'pointer',
-                                        color: theme.palette.primary.main
-                                    }}
+                                        display: 'flex', 
+                                        flexDirection: 'column',
+                                        border: `1px solid ${theme.palette.secondary.lighter}`,
+                                        bgcolor: theme.palette.secondary.lightest,
+                                        borderRadius: theme.borderRadius.sm,
+                                        width: '30%',
+                                        height: isMobile ? 450 : 400
+                                    }} key={index}
                                 >
-                                    Read story <ArrowForward sx={{fontSize: theme.typography.labelxs.fontSize}}/>
+                                    <img
+                                        src={story.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${story.image}` : '/p_patient.png'}
+                                        alt='story'
+                                        style={{
+                                            width: '100%',
+                                            height: '80%',
+                                            borderTopRightRadius: theme.borderRadius.sm
+                                        }}
+                                        crossOrigin="anonymous"
+                                    />
+                                    <Typography variant={isMobile ? 'labelsm' : 'labelxs'} px={2} py={2}>
+                                        {story.title.length > 45 ? `${characterBreaker(story.title, 45)}...` : story.title}
+                                    </Typography>
+                                    <Typography variant={isMobile ? 'labelxs' : 'labelxxs'} className="capitalize" px={2} color={theme.palette.secondary.light}>
+                                        by {story.user.firstName} {story.user.lastName}
+                                    </Typography>
+                                    <Typography onClick={() => router.push(`/patient-stories/${story._id}`)} px={2}
+                                        variant="paragraphxxs"
+                                        sx={{
+                                            mb: 1, cursor: 'pointer',
+                                            color: theme.palette.primary.main
+                                        }}
+                                    >
+                                        Read story <ArrowForward sx={{fontSize: theme.typography.labelxs.fontSize}}/>
+                                    </Typography>
+                                </Box>
+                            ))
+                        ) : (
+                            <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+                                <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+                                <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                                    No Data
                                 </Typography>
                             </Box>
-                        ))
+                        )
                     }
                 </Box>
 

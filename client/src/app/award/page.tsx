@@ -8,66 +8,7 @@ import Pagination from "../components/Pagination";
 import { useEffect, useState } from "react";
 import MModal from "../components/Modal";
 import { useGetAwards } from "../admin/hooks/userHook/useUser";
-
-const awards = [
-    {
-        awardName: 'Best health care',
-        facilityName: 'Xyz Hospital',
-        address: 'abc street abuja nigeria',
-        nominees: [
-        ],
-        category: 'facility',
-        year: '2023'
-    },
-    {
-        awardName: 'Best health care',
-        facilityName: 'Xyz Hospital',
-        address: 'abc street abuja nigeria',
-        nominees: [
-            'x facility',
-            'y facility',
-            'a facility'
-        ],
-        category: 'health',
-        year: '2023'
-    },
-    {
-        awardName: 'Best health care',
-        facilityName: 'Xyz Hospital',
-        address: 'abc street abuja nigeria',
-        nominees: [
-            'x facility',
-            'y facility',
-            'a facility'
-        ],
-        category: 'health',
-        year: '2024'
-    },
-    {
-        awardName: 'Best health care',
-        facilityName: 'Xyz Hospital',
-        address: 'abc street abuja nigeria',
-        nominees: [
-            'x facility',
-            'y facility',
-            'a facility'
-        ],
-        category: 'hospitals',
-        year: '2020'
-    },
-    {
-        awardName: 'Best health care',
-        facilityName: 'Xyz Hospital',
-        address: 'abc street abuja nigeria',
-        nominees: [
-            'x facility',
-            'y facility',
-            'a facility'
-        ],
-        category: 'hospitals',
-        year: '2020'
-    }
-]
+import { HourglassEmpty } from "@mui/icons-material";
 
 const awardCategories = [
     "Hospital",
@@ -323,72 +264,80 @@ export default function Award() {
                         width: isMobile ? '100%' : '70%', gap: 4
                     }}
                 >
-                    {
-                        currentData.map((award: any, index) => (
-                            <Box key={award._id}
-                                sx={{
-                                    display: 'flex',
-                                    width: isMobile ? '100%' : '45%',
-                                    minHeight: '200px',
-                                    border: `1px solid ${theme.palette.secondary.lighter}`,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    flexDirection: 'column',
-                                    borderRadius: theme.borderRadius.sm
-                                }}
-                            >
-                                <img
-                                    src='/award-icon.png'
-                                    alt='award logo'
-                                    style={{
-                                        height: '60%',
-                                        width: '50%'
-                                    }}
-                                />
-                                <Typography className="capitalize"
-                                    sx={{
-                                        fontSize: theme.typography.labelsm.fontSize,
-                                        fontWeight: theme.typography.labelsm.fontWeight,
-                                        color: theme.palette.primary.darker
-                                    }}
-                                >
-                                    {award.awardName}
-                                </Typography>
-                                <Typography variant="labelsm" className="capitalize">
-                                    {award.recipient}
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: theme.typography.labelxs.fontSize,
-                                        color: theme.palette.secondary.light
-                                    }}
-                                >
-                                    {award.address}
-                                </Typography>
-                                <Box
-                                    sx={{
-                                        width: '100%',
-                                        height: '1px',
-                                        backgroundColor: theme.palette.secondary.lighter,
-                                        my: 2
-                                    }}
-                                />
-                                <Typography onClick={() => {
-                                    setModalOpen(true), 
-                                    setNominees(award.nominees ? award.nominees : [])}}
-                                    sx={{
-                                        fontSize: theme.typography.labelxxs.fontSize,
-                                        color: theme.palette.secondary.light,
-                                        cursor: 'pointer',
-                                        '&:hover': {
-                                            color: theme.palette.primary.main
-                                        }
-                                    }}
-                                >
-                                   See Nominees
-                                </Typography>
-                            </Box>
-                        ))
+                    {   currentData.length > 0
+                            ?   (currentData.map((award: any, index) => (
+                                    <Box key={award._id}
+                                        sx={{
+                                            display: 'flex',
+                                            width: isMobile ? '100%' : '45%',
+                                            minHeight: '200px',
+                                            border: `1px solid ${theme.palette.secondary.lighter}`,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            flexDirection: 'column',
+                                            borderRadius: theme.borderRadius.sm
+                                        }}
+                                    >
+                                        <img
+                                            src='/award-icon.png'
+                                            alt='award logo'
+                                            style={{
+                                                height: '60%',
+                                                width: '50%'
+                                            }}
+                                        />
+                                        <Typography className="capitalize"
+                                            sx={{
+                                                fontSize: theme.typography.labelsm.fontSize,
+                                                fontWeight: theme.typography.labelsm.fontWeight,
+                                                color: theme.palette.primary.darker
+                                            }}
+                                        >
+                                            {award.awardName}
+                                        </Typography>
+                                        <Typography variant="labelsm" className="capitalize">
+                                            {award.recipient}
+                                        </Typography>
+                                        <Typography
+                                            sx={{
+                                                fontSize: theme.typography.labelxs.fontSize,
+                                                color: theme.palette.secondary.light
+                                            }}
+                                        >
+                                            {award.address}
+                                        </Typography>
+                                        <Box
+                                            sx={{
+                                                width: '100%',
+                                                height: '1px',
+                                                backgroundColor: theme.palette.secondary.lighter,
+                                                my: 2
+                                            }}
+                                        />
+                                        <Typography onClick={() => {
+                                            setModalOpen(true), 
+                                            setNominees(award.nominees ? award.nominees : [])}}
+                                            sx={{
+                                                fontSize: theme.typography.labelxxs.fontSize,
+                                                color: theme.palette.secondary.light,
+                                                cursor: 'pointer',
+                                                '&:hover': {
+                                                    color: theme.palette.primary.main
+                                                }
+                                            }}
+                                        >
+                                        See Nominees
+                                        </Typography>
+                                    </Box>
+                                ))
+                            ) : (
+                                <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+                                    <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+                                    <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                                        No Data
+                                    </Typography>
+                                </Box>
+                            )
                     }
                 </Box>
             </Box>

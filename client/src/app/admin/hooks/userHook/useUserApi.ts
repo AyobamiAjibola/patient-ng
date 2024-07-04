@@ -195,8 +195,33 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const siteVisit = async (): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      (`/site-visit-count`);
+    return response.data;
+  };
+
+  const dashData = async (): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/dashboard-data`);
+    return response.data;
+  };
+
+  const dashDataGraph = async (data: any): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      (`/dashboard-data-graph`, data);
+    return response.data;
+  };
+
   return {
     deleteAward,
+    dashData,
+    dashDataGraph,
+    siteVisit,
     getSingleAward,
     fetchAwards,
     updateAward,

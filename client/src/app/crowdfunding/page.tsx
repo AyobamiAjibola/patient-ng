@@ -568,10 +568,10 @@ export default function CrowdFundings() {
                           display: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          width: isMobile ? '60px' : '60px', height: isMobile ? '30px' : '50px',
+                          minWidth: '50px', maxHeight: '50px',
                           backgroundColor: theme.palette.secondary.lightest,
                           border: `1px solid ${theme.palette.secondary.lighter}`,
-                          borderRadius: '50%'
+                          borderRadius: theme.borderRadius.full
                         }}
                       >
                         <Typography

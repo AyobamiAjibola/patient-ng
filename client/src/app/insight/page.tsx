@@ -3,7 +3,7 @@
 import Footer from "@/app/components/Footer";
 import Navbar from "../components/Navbar";
 import { Box, Divider, IconButton, Rating, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { Close, Language, LocalPhone, MailOutline, Star, ToggleOff, ToggleOn } from "@mui/icons-material";
+import { Close, HourglassEmpty, Language, LocalPhone, MailOutline, Star, ToggleOff, ToggleOn } from "@mui/icons-material";
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
 import { stateLga } from "@/constant/state";
@@ -29,92 +29,12 @@ const rates = [
     "4.5"
 ]
 
-const reviews = [
-    {
-        name: 'ABC Hospital',
-        rating: '4',
-        state: 'lagos',
-        isVerified: true,
-        writtenBy: "Lisa James",
-        insight: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-        reviews: [
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '2 hours ago',
-                rating: '3'
-            },
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '2 hours ago',
-                rating: '2'
-            },
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '2 hours ago',
-                rating: '1'
-            }
-        ]
-    },
-    {
-        name: 'X Hospital',
-        rating: '5',
-        state: 'lagos',
-        isVerified: true,
-        writtenBy: "Lisa James",
-        insight: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-        reviews: [
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '2 hours ago',
-                rating: '3'
-            },
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '2 hours ago',
-                rating: '8'
-            },
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '2 hours ago',
-                rating: '2'
-            }
-        ]
-    },
-    {
-        name: 'XYZ Hospital',
-        rating: '3',
-        state: 'lagos',
-        isVerified: true,
-        writtenBy: "Lisa James",
-        insight: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-        reviews: [
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '3 hours ago',
-                rating: '4'
-            },
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '1 hours ago',
-                rating: '4'
-            },
-            {
-                title: 'review title',
-                comment: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum ducimus eaque architecto totam quibusdam, error vero praesentium aspernatur debitis recusandae. Est veniam beatae iusto iste recusandae voluptates rem eveniet dolorem!',
-                dateCreated: '4 hours ago',
-                rating: '4'
-            }
-        ]
-    }
-];
+const hospitalNames = [
+    'ABC Hospital',
+    'X Hospital',
+    'XYZ Hospital',
+    'XYZ Hospital',
+]   
 
 export default function Insight() {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -212,10 +132,10 @@ export default function Insight() {
     useEffect(() => {
         let array: any = [];
     
-        reviews.map((item, index) => {
+        hospitalNames.map((item, index) => {
           array.push({
-            value: item.name,
-            label: capitalize.words(item.name),
+            value: item,
+            label: capitalize.words(item),
           });
         });
         setHospitals(array);
@@ -403,158 +323,167 @@ export default function Insight() {
                         />
                     </Box>
                     {
-                        currentData.map((review: any, index: number) => (
-                            <Box key={index}
-                                sx={{
-                                    border: `1px solid ${theme.palette.secondary.lighter}`,
-                                    p: 2,
-                                    borderRadius: theme.borderRadius.sm,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    height: '220px',
-                                    width: '100%'
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        gap: 4,
-                                        height: '80%',
-                                        borderBottom: `1px solid ${theme.palette.secondary.lighter}`
-                                    }}
-                                >
-                                    {!isMobile && (<Box
+                        currentData.length > 0
+                            ?   (currentData.map((review: any, index: number) => (
+                                    <Box key={index}
                                         sx={{
-                                            width: '25%',
-                                            height: '90%',
-                                            pl: 2
-                                        }}
-                                    >
-                                        <img
-                                            src={review.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.image}` : "/logo.png"}
-                                            alt="insights image"
-                                            crossOrigin="anonymous"
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                borderRadius: theme.borderRadius.sm
-                                            }}
-                                        />
-                                    </Box>)}
-                                    <Box
-                                        sx={{
+                                            border: `1px solid ${theme.palette.secondary.lighter}`,
+                                            p: 2,
+                                            borderRadius: theme.borderRadius.sm,
                                             display: 'flex',
                                             flexDirection: 'column',
-                                            justifyContent: 'space-between',
-                                            gap: 1,
-                                            width: isMobile ? '100%' : '75%'
+                                            height: '220px',
+                                            width: '100%'
                                         }}
                                     >
                                         <Box
                                             sx={{
                                                 display: 'flex',
-                                                flexDirection: 'column'
+                                                gap: 4,
+                                                height: '80%',
+                                                borderBottom: `1px solid ${theme.palette.secondary.lighter}`
                                             }}
                                         >
-                                            <Typography variant="labelxl">
-                                                {review.hospitalName}
-                                            </Typography>
+                                            {!isMobile && (<Box
+                                                sx={{
+                                                    width: '25%',
+                                                    height: '90%',
+                                                    pl: 2
+                                                }}
+                                            >
+                                                <img
+                                                    src={review.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.image}` : "/logo.png"}
+                                                    alt="insights image"
+                                                    crossOrigin="anonymous"
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        borderRadius: theme.borderRadius.sm
+                                                    }}
+                                                />
+                                            </Box>)}
                                             <Box
                                                 sx={{
                                                     display: 'flex',
-                                                    gap: 2
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'space-between',
+                                                    gap: 1,
+                                                    width: isMobile ? '100%' : '75%'
                                                 }}
                                             >
-                                                <Rating
-                                                    name="half-rating-read"
-                                                    size={'small'}
-                                                    value={+review.rating}
-                                                    precision={0.5}
-                                                    readOnly
-                                                    sx={{ color: '#FFCB00' }}
-                                                />
-                                                <Typography
+                                                <Box
                                                     sx={{
-                                                        fontSize: theme.typography.labelsm.fontSize
+                                                        display: 'flex',
+                                                        flexDirection: 'column'
                                                     }}
                                                 >
-                                                    {review.rating}
+                                                    <Typography variant="labelxl">
+                                                        {review.hospitalName}
+                                                    </Typography>
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            gap: 2
+                                                        }}
+                                                    >
+                                                        <Rating
+                                                            name="half-rating-read"
+                                                            size={'small'}
+                                                            value={+review.rating}
+                                                            precision={0.5}
+                                                            readOnly
+                                                            sx={{ color: '#FFCB00' }}
+                                                        />
+                                                        <Typography
+                                                            sx={{
+                                                                fontSize: theme.typography.labelsm.fontSize
+                                                            }}
+                                                        >
+                                                            {review.rating}
+                                                        </Typography>
+                                                        <Divider orientation="vertical"/>
+                                                        <Typography
+                                                            sx={{
+                                                                fontSize: theme.typography.labelsm.fontSize,
+                                                                color: theme.palette.secondary.light
+                                                            }}
+                                                        >
+                                                            {review.reviews.length} Reviews
+                                                        </Typography>
+                                                        
+                                                    </Box>
+                                                </Box>
+                                                <Typography variant="paragraphxs" color={theme.palette.secondary.light} mt={-1}>
+                                                    {capitalize.words('lagos')} state
                                                 </Typography>
-                                                <Divider orientation="vertical"/>
-                                                <Typography
-                                                    sx={{
-                                                        fontSize: theme.typography.labelsm.fontSize,
-                                                        color: theme.palette.secondary.light
-                                                    }}
-                                                >
-                                                    {review.reviews.length} Reviews
+                                                <Typography variant="paragraphxs" color={theme.palette.secondary.light}>
+                                                    {wordBreaker(review.comment, isMobile ? 10 : 20)}{review.comment.length > 30 ? '...' : ''}
                                                 </Typography>
-                                                
+                                                <Typography variant="labelxxs" color={theme.palette.secondary.light} mb={isMobile ? 1 : 3}>
+                                                    Written by {`${capitalize.words(review.user.firstName)} ${capitalize.words(review.user.lastName)}`}
+                                                </Typography>
                                             </Box>
                                         </Box>
-                                        <Typography variant="paragraphxs" color={theme.palette.secondary.light} mt={-1}>
-                                            {capitalize.words('lagos')} state
-                                        </Typography>
-                                        <Typography variant="paragraphxs" color={theme.palette.secondary.light}>
-                                            {wordBreaker(review.comment, isMobile ? 10 : 20)}{review.comment.length > 30 ? '...' : ''}
-                                        </Typography>
-                                        <Typography variant="labelxxs" color={theme.palette.secondary.light} mb={isMobile ? 1 : 3}>
-                                            Written by {`${capitalize.words(review.user.firstName)} ${capitalize.words(review.user.lastName)}`}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                                <Box
-                                    sx={{
-                                        flex: 1,
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        flexDirection: 'row',
-                                        width: '100%', display: 'flex'
-                                    }}
-                                >
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            gap: 1, mt: 1
-                                        }}
-                                    >
-                                        <IconButton>
-                                            <Language 
+                                        <Box
+                                            sx={{
+                                                flex: 1,
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                                width: '100%', display: 'flex'
+                                            }}
+                                        >
+                                            <Box
                                                 sx={{
-                                                    color: theme.palette.primary.main
+                                                    display: 'flex',
+                                                    gap: 1, mt: 1
                                                 }}
-                                            />
-                                        </IconButton>
-                                        <IconButton>
-                                            <MailOutline
-                                                sx={{
-                                                    color: theme.palette.primary.main
-                                                }}
-                                            />
-                                        </IconButton>
-                                        <IconButton>
-                                            <LocalPhone
-                                                sx={{
-                                                    color: theme.palette.primary.main
-                                                }}
-                                            />
-                                        </IconButton>
-                                    </Box>
+                                            >
+                                                <IconButton>
+                                                    <Language 
+                                                        sx={{
+                                                            color: theme.palette.primary.main
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                                <IconButton>
+                                                    <MailOutline
+                                                        sx={{
+                                                            color: theme.palette.primary.main
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                                <IconButton>
+                                                    <LocalPhone
+                                                        sx={{
+                                                            color: theme.palette.primary.main
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Box>
 
-                                    <Typography variant="labelsm"
-                                        onClick={() => router.push(`/insight/${index}`)}
-                                        sx={{
-                                            mr: 2, mt: 1,
-                                            color: theme.palette.primary.main,
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        See review
+                                            <Typography variant="labelsm"
+                                                onClick={() => router.push(`/insight/${index}`)}
+                                                sx={{
+                                                    mr: 2, mt: 1,
+                                                    color: theme.palette.primary.main,
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                See review
+                                            </Typography>
+
+                                        </Box>
+                                    </Box>
+                                ))
+                            ) : (
+                                <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+                                    <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+                                    <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                                        No Data
                                     </Typography>
-
                                 </Box>
-                            </Box>
-                        ))
+                            )
                     }
                 </Box>
             </Box>

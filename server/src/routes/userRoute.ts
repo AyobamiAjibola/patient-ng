@@ -151,3 +151,21 @@ export const reviewOnInsightHandler = authenticateRouteWrapper(async (req, res) 
 
     res.status(response.code).json(response);
 });
+
+export const siteVisitCountHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.siteVisitCount(req);
+
+    res.status(response.code).json(response);
+};
+
+export const dashboardDataUsersGraphHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.dashboardDataUsersGraph(req);
+
+    res.status(response.code).json(response);
+});
+
+export const dashboardDataHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.dashboardData(req);
+
+    res.status(response.code).json(response);
+});

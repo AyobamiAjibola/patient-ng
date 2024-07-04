@@ -378,3 +378,66 @@ export const useDeleteAward = () => {
     },
   });
 };
+
+export const useSiteVisit = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: () => {
+      return api.siteVisit();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['site-visit'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useDashData = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: () => {
+      return api.dashData();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-dash-data'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useDashDataGraph = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.dashDataGraph(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-dash-data-graph'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
