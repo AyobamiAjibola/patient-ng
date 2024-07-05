@@ -271,7 +271,8 @@ export default class BlogController {
 
         if(!webinar) 
             return Promise.reject(CustomAPIError.response("Webinar not found.", HttpStatus.NOT_FOUND.code));
-        if(user && !user.isAdmin)
+        const allowedUser = await Generic.handleAllowedWebinarUser(user?.userType);
+        if(!allowedUser) 
             return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
         await datasources.webinarDAOService.updateByAny({_id: webinar._id}, { status: value.status });
@@ -313,7 +314,7 @@ export default class BlogController {
                     WebinarCategory.findOne({ name: value.category })
                 ]);
 
-                const allowedUser = Generic.handleAllowedWebinarUser(user?.userType);
+                const allowedUser = await Generic.handleAllowedWebinarUser(user?.userType);
                 if(!allowedUser) 
                     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
                 if(!category) 
@@ -415,7 +416,7 @@ export default class BlogController {
                     WebinarCategory.findOne({ name: value.category })
                 ]);
 
-                const allowedUser = Generic.handleAllowedWebinarUser(user?.userType);
+                const allowedUser = await Generic.handleAllowedWebinarUser(user?.userType);
                 if(!allowedUser) 
                     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
                 if(!category) 

@@ -34,6 +34,7 @@ export default function page() {
   const handleSignIn = async () => {
     if(authStatus === 'authenticated') {
       router.push('/')
+      return;
     }
     setIsLoading(true);
     const response = await signIn('credentials', {

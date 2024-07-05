@@ -335,9 +335,9 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Podcast
         </Typography>
-        <NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => setOpenModal(true)}>
+        {session?.user.userType.includes('podcast') && (<NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => setOpenModal(true)}>
           <Add/> New podcast
-        </NButton>
+        </NButton>)}
       </Box>
 
       <Box

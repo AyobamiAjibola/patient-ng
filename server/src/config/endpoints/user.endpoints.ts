@@ -4,6 +4,8 @@ import {
     createAdvocacyHandler,
     createAwardHandler,
     createInsightHandler,
+    dashboardDataHandler,
+    dashboardDataUsersGraphHandler,
     deactivateUserHandler, 
     deleteAdvocacyHandler, 
     deleteAwardHandler, 
@@ -19,6 +21,7 @@ import {
     getUserAdvocaciesHandler, 
     getUserInsightsHandler, 
     reviewOnInsightHandler, 
+    siteVisitCountHandler, 
     updateAdvocacyHandler, 
     updateAdvocacyStatusHandler, 
     updateAwardHandler, 
@@ -174,6 +177,24 @@ const userEndpoints: RouteEndpoint  = [
         method: 'delete',
         path: '/delete-award/:awardId',
         handler: deleteAwardHandler
+    },
+    {
+        name: 'site visit count',
+        method: 'put',
+        path: '/site-visit-count',
+        handler: siteVisitCountHandler
+    },
+    {
+        name: 'dashboard data',
+        method: 'get',
+        path: '/dashboard-data',
+        handler: dashboardDataHandler
+    },
+    {
+        name: 'dashboard data graph',
+        method: 'post',
+        path: '/dashboard-data-graph',
+        handler: dashboardDataUsersGraphHandler
     }
 ]
 

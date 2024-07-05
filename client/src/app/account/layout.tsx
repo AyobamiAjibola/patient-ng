@@ -8,7 +8,7 @@ import { setMenuIndex } from "@/lib/atoms";
 import { useFetchSingleUser } from "../admin/hooks/userHook/useUser";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 
 export default function layout({ children }: any) {
     const theme = useTheme();
@@ -18,9 +18,14 @@ export default function layout({ children }: any) {
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [image, setImage] = useState<string>('');
-    const {data: session} = useSession();
     const pathname = usePathname();
     const router = useRouter();
+    const { data: session } = useSession({
+        required: true,
+        onUnauthenticated() {
+          redirect('/');
+        },
+      });
 
     const menu = [
         'Account Information',
@@ -44,6 +49,7 @@ export default function layout({ children }: any) {
             redirect: true,
             callbackUrl: '/signin'
         });
+        // redirect('/signin')
     };
 
     useEffect(() => {

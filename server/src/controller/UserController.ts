@@ -12,11 +12,123 @@ import { UPLOAD_BASE_PATH } from "../config/constants";
 import Generic from "../utils/Generic";
 import { IInsightModel } from "../models/Insight";
 import { IAwardModel } from "../models/Award";
+import SiteVisitCount, { ISiteVisitCountModel } from "../models/SiteVisitCount";
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 form.setMaxListeners(15);
 
 export default class UserController {
+
+    @TryCatch
+    public async dashboardData(req: Request) {
+        const users = await datasources.userDAOService.findAll({
+            isAdmin: false
+        });
+
+        const adminUsers = await datasources.userDAOService.findAll({
+            isAdmin: true,
+            // email: { $ne: "ipatient@ipatient.com" }
+        });
+
+        const siteVisit = await SiteVisitCount.findOne({});
+        const totalSiteVisits = siteVisit?.viewCount;
+
+        const insights = await datasources.insightDAOService.findAll({});
+
+        const crowedFunding = await datasources.crowdFundingDAOService.findAll({});
+        
+        let crowdFundingSum = 0;
+        crowedFunding.map((crowd) => (
+            crowdFundingSum += +crowd.amountRaised
+        ))
+
+        const result = {
+            allUsers: users.length,
+            adminUsers: adminUsers.length,
+            siteVisits: totalSiteVisits,
+            insights: insights.length,
+            crowdFundingSum
+        }
+          
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful',
+            result
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async dashboardDataUsersGraph(req: Request) {
+        const year = req.body.year;
+
+        const users = await datasources.userDAOService.findAll({
+            isAdmin: false
+        });
+
+        const filtered = users.filter(user => new Date(user.createdAt).getFullYear() === +year);
+
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        const totalNumUsers: { [key: string]: any } = monthNames.reduce((acc, month) => {
+        acc[month] = 0;
+        return acc;
+        }, {} as { [key: string]: any });
+    
+        filtered.forEach(user => {
+            const userDate = new Date(user.createdAt);
+            const month = userDate.getMonth();
+            totalNumUsers[monthNames[month]] ++;
+        });
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: "Successful.",
+            result: totalNumUsers
+        };
+    
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async siteVisitCount(req: Request) {
+
+        const visitCount = await SiteVisitCount.findOne({});
+      
+        if (!visitCount) {
+            await SiteVisitCount.create({
+                viewCount: 1,
+                viewCounts: [
+                    {
+                        count: 1,
+                        dateTime: new Date(),
+                    },
+                ]
+            } as unknown as ISiteVisitCountModel);
+        }
+    
+        await SiteVisitCount.findOneAndUpdate(
+        { _id: visitCount?._id },
+        {
+            $inc: { viewCount: 1 },
+            $push: {
+                viewCounts: {
+                    count: 1,
+                    dateTime: new Date(),
+                },
+            },
+        },
+        { new: true }
+        );
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated'
+        };
+      
+        return Promise.resolve(response);
+    }
 
     @TryCatch
     public async getAllUsers (req: Request) {

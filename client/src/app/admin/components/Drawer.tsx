@@ -1,13 +1,13 @@
 'use client';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import { Avatar, Box, IconButton, Typography, useMediaQuery } from '@mui/material/';
+import { Box, IconButton, Typography, useMediaQuery } from '@mui/material/';
 import MuiDrawer from '@mui/material/Drawer';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight, LogoutOutlined } from '@mui/icons-material';
-import items from './AdminDrawerItems';
+import items, { items2 } from './AdminDrawerItems';
 import MButtonIcon from './MButtonIcon';
 import { createElement, useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
@@ -196,95 +196,188 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
           position: 'relative',
         }}
       >
-        {Object.entries(items).map(([category, items]) => (
-          <Box key={category}>
-            <Box marginTop={theme.spacing(2)} mb={theme.spacing(2)}>
-              <Typography
-                variant="labelxxs"
-                color={theme.palette.secondary.dark}
-                textAlign={'left'}
-              >
-                {category === 'RESOURCES' && isDrawerClosed ? 'RESOU...' : category}
-              </Typography>
-            </Box>
-            <ul
-              style={{
-                listStyleType: 'none',
-                textDecoration: 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: isDrawerClosed ? 'center' : 'start',
-              }}
-            >
-              {items.map(({ link, title, iconName }) => (
-                <li
-                  key={title}
+        {session?.user.userType.includes('admin')
+          ? ( Object.entries(items).map(([category, items]) => (
+                <Box key={category}>
+                  <Box marginTop={theme.spacing(2)} mb={theme.spacing(2)}>
+                    <Typography
+                      variant="labelxxs"
+                      color={theme.palette.secondary.dark}
+                      textAlign={'left'}
+                    >
+                      {category === 'RESOURCES' && isDrawerClosed ? 'RESOU...' : category}
+                    </Typography>
+                  </Box>
+                  <ul
+                    style={{
+                      listStyleType: 'none',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: isDrawerClosed ? 'center' : 'start',
+                    }}
+                  >
+                    {items.map(({ link, title, iconName }) => (
+                      <li
+                        key={title}
+                        style={{
+                          width: '100%',
+                          marginBottom: theme.spacing(2),
+                          textAlign: isDrawerClosed ? 'center' : 'left'
+                        }}
+                      >
+                        <Link href={link}>
+                          <Box
+                            onClick={() => setActiveLink(link)}
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              p: theme.spacing(2),
+                              pr: isDrawerClosed
+                                ? theme.spacing(4)
+                                : theme.spacing(3),
+                              pl: isDrawerClosed ? 2 : theme.spacing(3),
+                              mr: isDrawerClosed ? 2 : 0,
+                              borderRadius: theme.borderRadius.sm,
+                              '&:hover': {
+                                  bgcolor: theme.palette.primary.lightest
+                              },
+                            }}
+                          >
+                            <Box
+                              display={'flex'}
+                              alignItems={'center'}
+                              gap={theme.spacing(2)}
+                              width={'100%'}
+                            >
+                              <Box
+                                height={'20px'}
+                                display={'flex'}
+                                alignItems={'center'}
+                                justifyContent={'center'}
+                              >
+                                {createElement(iconName, {
+                                  style: {
+                                      fontSize: '14px',
+                                      color: activeLink.includes(link)
+                                          ? theme.palette.primary.main
+                                          : theme.palette.secondary.light
+                                  }
+                                })}
+                              </Box>
+                              <Typography
+                                variant={link === activeLink ? "labelxs" : "paragraphxs"}
+                                sx={{
+                                  display: isDrawerClosed ? 'none' : 'initial',
+                                  color:
+                                  activeLink.includes(link)
+                                    ? theme.palette.primary.main
+                                    : theme.palette.primary.darker
+                                }}
+                              >
+                                {title}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </Box>
+              ))
+          ) : (
+            Object.entries(items2).map(([category, items]) => (
+              <Box key={category}>
+                <Box marginTop={theme.spacing(2)} mb={theme.spacing(2)}>
+                  <Typography
+                    variant="labelxxs"
+                    color={theme.palette.secondary.dark}
+                    textAlign={'left'}
+                  >
+                    {category === 'RESOURCES' && isDrawerClosed ? 'RESOU...' : category}
+                  </Typography>
+                </Box>
+                <ul
                   style={{
-                    width: '100%',
-                    marginBottom: theme.spacing(2),
-                    textAlign: isDrawerClosed ? 'center' : 'left',
+                    listStyleType: 'none',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: isDrawerClosed ? 'center' : 'start',
                   }}
                 >
-                  <Link href={link}>
-                    <Box
-                      onClick={() => setActiveLink(link)}
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: theme.spacing(2),
-                        pr: isDrawerClosed
-                          ? theme.spacing(4)
-                          : theme.spacing(3),
-                        pl: isDrawerClosed ? 2 : theme.spacing(3),
-                        mr: isDrawerClosed ? 2 : 0,
-                        borderRadius: theme.borderRadius.sm,
-                        '&:hover': {
-                            bgcolor: theme.palette.primary.lightest
-                        },
+                  {items.map(({ link, title, iconName }) => (
+                    <li
+                      key={title}
+                      style={{
+                        width: '100%',
+                        marginBottom: theme.spacing(2),
+                        textAlign: isDrawerClosed ? 'center' : 'left'
                       }}
                     >
-                      <Box
-                        display={'flex'}
-                        alignItems={'center'}
-                        gap={theme.spacing(2)}
-                        width={'100%'}
-                      >
+                      <Link href={link}>
                         <Box
-                          height={'20px'}
-                          display={'flex'}
-                          alignItems={'center'}
-                          justifyContent={'center'}
-                        >
-                          {createElement(iconName, {
-                            style: {
-                                fontSize: '14px',
-                                color: activeLink.includes(link)
-                                    ? theme.palette.primary.main
-                                    : theme.palette.secondary.light
-                            }
-                          })}
-                        </Box>
-                        <Typography
-                          variant={link === activeLink ? "labelxs" : "paragraphxs"}
+                          onClick={() => setActiveLink(link)}
                           sx={{
-                            display: isDrawerClosed ? 'none' : 'initial',
-                            color:
-                            activeLink.includes(link)
-                              ? theme.palette.primary.main
-                              : theme.palette.primary.darker
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            p: theme.spacing(2),
+                            pr: isDrawerClosed
+                              ? theme.spacing(4)
+                              : theme.spacing(3),
+                            pl: isDrawerClosed ? 2 : theme.spacing(3),
+                            mr: isDrawerClosed ? 2 : 0,
+                            borderRadius: theme.borderRadius.sm,
+                            '&:hover': {
+                                bgcolor: theme.palette.primary.lightest
+                            },
                           }}
                         >
-                          {title}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Box>
-        ))}
+                          <Box
+                            display={'flex'}
+                            alignItems={'center'}
+                            gap={theme.spacing(2)}
+                            width={'100%'}
+                          >
+                            <Box
+                              height={'20px'}
+                              display={'flex'}
+                              alignItems={'center'}
+                              justifyContent={'center'}
+                            >
+                              {createElement(iconName, {
+                                style: {
+                                    fontSize: '14px',
+                                    color: activeLink.includes(link)
+                                        ? theme.palette.primary.main
+                                        : theme.palette.secondary.light
+                                }
+                              })}
+                            </Box>
+                            <Typography
+                              variant={link === activeLink ? "labelxs" : "paragraphxs"}
+                              sx={{
+                                display: isDrawerClosed ? 'none' : 'initial',
+                                color:
+                                activeLink.includes(link)
+                                  ? theme.palette.primary.main
+                                  : theme.palette.primary.darker
+                              }}
+                            >
+                              {title}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Box>
+            ))
+          )
+        }
         <Box
           sx={{
             my: theme.spacing(2),

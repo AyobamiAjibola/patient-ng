@@ -7,10 +7,12 @@ import { useRouter } from 'next/navigation';
 import { ChatBubbleOutlineRounded, FavoriteBorderOutlined, RemoveRedEyeOutlined } from '@mui/icons-material';
 import capitalize from 'capitalize';
 import moment from 'moment';
+import { useSession } from 'next-auth/react';
 
 const BlogAdminTable: React.FC = ({data}: any) => {
   const router = useRouter();
   const theme = useTheme();
+  const {data: session} = useSession();
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -107,7 +109,11 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       key: 'action',
       render: (_, record) => {
         const handleUser = () => {
-          router.push(`/admin/blog${record.urlSlug}`)
+          if(!session?.user.userType.includes('blogger')) {
+            return;
+          } else {
+            router.push(`/admin/blog${record.urlSlug}`)
+          }
         }
         return (
           <Box
@@ -119,9 +125,10 @@ const BlogAdminTable: React.FC = ({data}: any) => {
             <Typography variant='labelxs'
               onClick={handleUser}
               sx={{
-                cursor: 'pointer',
+                cursor: !session?.user.userType.includes('blogger') ? 'default' : 'pointer',
+                color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : 'black',
                 '&:hover': {
-                  color: theme.palette.primary.main
+                  color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : theme.palette.primary.main
                 }
               }}
             >

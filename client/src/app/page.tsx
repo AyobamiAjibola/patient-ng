@@ -3,7 +3,7 @@
 import Navbar from '@/app/components/Navbar'
 import PButton, { NButton, PButton2 } from '@/app/components/PButton';
 import { characterBreaker, formAmount, wordBreaker } from '@/lib/helper';
-import { ArrowForward, ArrowRight, DesktopWindows, LocationOn, Mic } from '@mui/icons-material';
+import { ArrowForward, ArrowRight, DesktopWindows, HourglassEmpty, LocationOn, Mic } from '@mui/icons-material';
 import { Box, Button, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from '@mui/material'
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -17,39 +17,6 @@ import HtmlToText from './components/HtmlToText';
 import { useFetchStories } from './admin/hooks/patientStoriesHook/usePatientStories';
 import { useGetPodcasts } from './admin/hooks/podcastHook/usePodcast';
 import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
-
-const webinars = [
-  {
-      categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-      title: "Healthy Eating Habits for Busy Lifestyles.",
-      description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-  },
-  {
-      categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-      title: "Healthy Eating Habits for Busy Lifestyles.",
-      description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-  },
-  {
-      categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-      title: "Healthy Eating Habits for Busy Lifestyles.",
-      description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-  },
-  {
-      categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-      title: "Healthy Eating Habits for Busy Lifestyles.",
-      description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-  },
-  {
-      categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-      title: "Healthy Eating Habits for Busy Lifestyles.",
-      description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-  },
-  {
-      categories: ["Nutrition and Diet", "Physical Fitness and Exercise"],
-      title: "Healthy Eating Habits for Busy Lifestyles.",
-      description: `My name is Slau, and I've faced more challenges in my health journey than I ever thought possible. Diagnosed with a rare autoimmune disease at the age of 25, I was suddenly thrust into a world of uncertainty and fear. But amidst the pain and confusion, I found something unexpected: strength.`
-  }
-];
 
 export default function HomePage() {
   const theme = useTheme();
@@ -285,7 +252,9 @@ export default function HomePage() {
           }}
         >
           { crowdCampaign.slice(0, 3).map((fundraiser: any, index: number) => {
-              const percent = (+fundraiser.amountRaised/+fundraiser.amountNeeded) * 100;
+              const percent = fundraiser.amountRaised 
+                                ? (+fundraiser.amountRaised/+fundraiser.amountNeeded) * 100
+                                : (0/+fundraiser.amountNeeded) * 100;
 
               return ( 
                 <Box key={fundraiser}
@@ -359,29 +328,48 @@ export default function HomePage() {
                     </Typography>
                   
                     <Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          gap: 1, mt: 3
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            color: theme.palette.secondary.light,
-                            fontSize: theme.typography.labelxs.fontSize
-                          }}
+                      {fundraiser.donations.length > 0
+                        ? (<Box
+                            sx={{
+                                display: 'flex',
+                                gap: 1, mt: 3
+                            }}
                         >
-                          Last donation
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: theme.typography.labelxs.fontSize,
-                            fontWeight: theme.typography.labelxs.fontWeight
-                          }}
-                        >
-                          { moment(fundraiser.donations[0].date).fromNow() }
-                        </Typography>
-                      </Box>
+                            <Typography
+                                sx={{
+                                    color: theme.palette.secondary.light,
+                                    fontSize: theme.typography.labelxs.fontSize
+                                }}
+                            >
+                                Last donation
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: theme.typography.labelxs.fontSize,
+                                    fontWeight: theme.typography.labelxs.fontWeight
+                                }}
+                            >
+                                { moment(fundraiser.donations[0].date).fromNow() }
+                            </Typography>
+                        </Box>
+                        ) : (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 1, mt: 3
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        color: theme.palette.secondary.light,
+                                        fontSize: theme.typography.labelxs.fontSize
+                                    }}
+                                >
+                                    No donations yet.
+                                </Typography>
+                            </Box>
+                        )
+                      }
                       <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
                       <Box
                         sx={{
@@ -500,188 +488,197 @@ export default function HomePage() {
           Here’s a quick glance over our latest blog posts and media articles written by our team members, staff and guest writers.
         </Typography>
 
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 4,
-            justifyContent: 'center',
-            width: '100%'
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: isMobile ? '100%' : '30%'
-            }}
-          >
-            {
-              blogs.slice(0, 2).map((blog: any) => (
-                <Box key={blog._id}
+        {blogs.length > 0
+          ? (<Box
+              sx={{
+                display: 'flex',
+                gap: 4,
+                justifyContent: 'center',
+                width: '100%'
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: isMobile ? '100%' : '30%'
+                }}
+              >
+                {
+                  blogs.length > 0 && blogs.slice(0, 2).map((blog: any) => (
+                    <Box key={blog._id}
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        height: '20rem'
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          height: '60%'
+                        }}
+                      >
+                        <img
+                          src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
+                          alt='blog image'
+                          crossOrigin='anonymous'
+                          style={{
+                            width: '100%',
+                            height: '100%'
+                          }}
+                        />
+                      </Box>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelxxs.fontSize,
+                          color: theme.palette.secondary.light
+                        }}
+                      >
+                        {moment(blog.createdAt).format('DD MMM YY')}
+                      </Typography>
+                      <Typography className='capitalize'
+                        sx={{
+                          fontSize: theme.typography.labellg.fontSize,
+                          fontWeight: theme.typography.labelxl.fontWeight
+                        }}
+                      >
+                        {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          color: theme.palette.primary.main
+                        }}
+                        onClick={() => router.push(`/blog${blog.urlSlug }`)}
+                      >
+                        Learn more <ArrowForward sx={{fontSize: '16px'}}/>
+                      </Typography>
+                    </Box>
+                  ))
+                }
+              </Box>
+
+              {!isMobile && blogs.length > 2 && (<Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1, maxHeight: '40rem', height: 'auto',
+                  width: '40%'
+                }}
+              >
+                <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1,
-                    height: '20rem'
+                    height: '70%'
                   }}
                 >
-                  <Box
-                    sx={{
-                      height: '60%'
+                  <img
+                    src={blogs[2]?.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blogs[2]?.titleImage}` : '/logo.png'}
+                    alt='blog image'
+                    crossOrigin='anonymous'
+                    style={{
+                      width: '100%',
+                      height: '100%'
                     }}
-                  >
-                    <img
-                      src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
-                      alt='blog image'
-                      crossOrigin='anonymous'
-                      style={{
-                        width: '100%',
-                        height: '100%'
-                      }}
-                    />
-                  </Box>
+                  />
+                </Box>
                   <Typography
                     sx={{
-                      fontSize: theme.typography.labelxxs.fontSize,
+                      fontSize: theme.typography.labelxs.fontSize,
                       color: theme.palette.secondary.light
                     }}
                   >
-                    {moment(blog.createdAt).format('DD MMM YY')}
+                    {moment(blogs[2]?.createdAt).format('DD MMM YY')}
                   </Typography>
-                  <Typography className='capitalize'
-                    sx={{
-                      fontSize: theme.typography.labellg.fontSize,
-                      fontWeight: theme.typography.labelxl.fontWeight
-                    }}
-                  >
-                    {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
+                  <Typography variant='labellg' className='capitalize'>
+                    {blogs[2]?.title.length > 7 ? `${wordBreaker(blogs[2]?.title, 7)}...` : blogs[2]?.title}
                   </Typography>
+                  <HtmlToText
+                    mx={isMobile ? 2 : 3}
+                    htmlString={isMobile ? wordBreaker(blogs[2]?.content, 20) : wordBreaker(blogs[2]?.content, 40)}
+                  />
                   <Typography
                     sx={{
                       fontSize: theme.typography.labelxs.fontSize,
                       color: theme.palette.primary.main
                     }}
-                    onClick={() => router.push(`/blog${blog.urlSlug }`)}
+                    onClick={() => router.push(`/blog${blogs[2].urlSlug }`)}
                   >
                     Learn more <ArrowForward sx={{fontSize: '16px'}}/>
                   </Typography>
-                </Box>
-              ))
-            }
-          </Box>
+              </Box>)}
 
-          {!isMobile && (<Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1, maxHeight: '40rem', height: 'auto',
-              width: '40%'
-            }}
-          >
-            <Box
-              sx={{
-                height: '70%'
-              }}
-            >
-              <img
-                src={blogs[2]?.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blogs[2]?.titleImage}` : '/logo.png'}
-                alt='blog image'
-                crossOrigin='anonymous'
-                style={{
-                  width: '100%',
-                  height: '100%'
+              {!isMobile && (<Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2, width: '30%'
                 }}
-              />
+              >
+                {
+                  blogs.length > 3 &&
+                    blogs.slice(3, 5).map((blog: any) => (
+                        <Box key={blog._id}
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: '20rem', gap: 1
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              height: '60%'
+                            }}
+                          >
+                            <img
+                              src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
+                              alt='blog image'
+                              crossOrigin='anonymous'
+                              style={{
+                                width: '100%',
+                                height: '100%'
+                              }}
+                            />
+                          </Box>
+                          
+                          <Typography
+                            sx={{
+                              fontSize: theme.typography.labelxxs.fontSize,
+                              color: theme.palette.secondary.light
+                            }}
+                          >
+                            {moment(blog.createdAt).format('DD MMM YY')}
+                          </Typography>
+                          <Typography className='capitalize'
+                            sx={{
+                              fontSize: theme.typography.labellg.fontSize,
+                              fontWeight: theme.typography.labelxl.fontWeight
+                            }}
+                          >
+                            {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: theme.typography.labelxs.fontSize,
+                              color: theme.palette.primary.main
+                            }}
+                            onClick={() => router.push(`/blog${blog.urlSlug }`)}
+                          >
+                            Learn more <ArrowForward/>
+                          </Typography>
+                        </Box>
+                      ))
+                  }
+              </Box>)}
+            </Box>)
+          : (
+            <Box my={6} width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+              <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+              <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                  No Blog Found
+              </Typography>
             </Box>
-              <Typography
-                sx={{
-                  fontSize: theme.typography.labelxs.fontSize,
-                  color: theme.palette.secondary.light
-                }}
-              >
-                {moment(blogs[2]?.createdAt).format('DD MMM YY')}
-              </Typography>
-              <Typography variant='labellg' className='capitalize'>
-                {blogs[2]?.title.length > 7 ? `${wordBreaker(blogs[2]?.title, 7)}...` : blogs[2]?.title}
-              </Typography>
-              <HtmlToText
-                mx={isMobile ? 2 : 3}
-                htmlString={isMobile ? wordBreaker(blogs[2]?.content, 20) : wordBreaker(blogs[2]?.content, 40)}
-              />
-              <Typography
-                sx={{
-                  fontSize: theme.typography.labelxs.fontSize,
-                  color: theme.palette.primary.main
-                }}
-                onClick={() => router.push(`/blog${blogs[2].urlSlug }`)}
-              >
-                Learn more <ArrowForward sx={{fontSize: '16px'}}/>
-              </Typography>
-          </Box>)}
-
-          {!isMobile && (<Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2, width: '30%'
-            }}
-          >
-            {
-              blogs.slice(3, 5).map((blog: any) => (
-                <Box key={blog._id}
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '20rem', gap: 1
-                  }}
-                >
-                  <Box
-                    sx={{
-                      height: '60%'
-                    }}
-                  >
-                    <img
-                      src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
-                      alt='blog image'
-                      crossOrigin='anonymous'
-                      style={{
-                        width: '100%',
-                        height: '100%'
-                      }}
-                    />
-                  </Box>
-                  
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxxs.fontSize,
-                      color: theme.palette.secondary.light
-                    }}
-                  >
-                    {moment(blog.createdAt).format('DD MMM YY')}
-                  </Typography>
-                  <Typography className='capitalize'
-                    sx={{
-                      fontSize: theme.typography.labellg.fontSize,
-                      fontWeight: theme.typography.labelxl.fontWeight
-                    }}
-                  >
-                    {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      color: theme.palette.primary.main
-                    }}
-                    onClick={() => router.push(`/blog${blog.urlSlug }`)}
-                  >
-                    Learn more <ArrowForward/>
-                  </Typography>
-                </Box>
-              ))
-            }
-          </Box>)}
-        </Box>
-
+          )}
         <Box 
           sx={{
             display: 'flex', justifyContent: 'center',
@@ -1081,179 +1078,181 @@ export default function HomePage() {
             Read inspiring stories from fellow patients or share your own to inspire others
           </Typography>
 
-          {stories.length && (<Box
-            sx={{
-              display: 'flex',
-              gap: 4, mt: 4,
-              overflowX: 'scroll',
-              whiteSpace: 'nowrap',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
-              scrollbarWidth: 'none',
-            }}
-          >
-            {
-              stories.slice(0, 3).map((story: any) => (
-                <Box key={story._id}
-                  sx={{
-                    minWidth: isMobile ? '70%' : '32%',
-                    minHeight: '150px',
-                    height: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    justifyContent: 'space-evenly'
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      color: theme.palette.secondary.light,
-                      whiteSpace: 'pre-wrap'
-                    }}
-                  >
-                    {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
-                  </Typography>
-                  <Typography className='capitalize'
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      whiteSpace: 'pre-wrap'
-                    }}
-                  >
-                    -{story.user.firstName} {story.user.lastName}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      color: theme.palette.primary.main
-                    }}
-                    onClick={() => router.push(`/patient-stories/${story._id}`)}
-                  >
-                    Read full story <ArrowForward sx={{fontSize: '13px'}}/>
-                  </Typography>
-                </Box> 
-              ))
-            }
-          </Box>)}
+            {stories.length > 0 && (<>
+              {stories.length && (<Box
+                sx={{
+                  display: 'flex',
+                  gap: 4, mt: 4,
+                  overflowX: 'scroll',
+                  whiteSpace: 'nowrap',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
+                }}
+              >
+                {
+                  stories.slice(0, 3).map((story: any) => (
+                    <Box key={story._id}
+                      sx={{
+                        minWidth: isMobile ? '70%' : '32%',
+                        minHeight: '150px',
+                        height: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        justifyContent: 'space-evenly'
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelsm.fontSize,
+                          color: theme.palette.secondary.light,
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
+                      </Typography>
+                      <Typography className='capitalize'
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight,
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        -{story.user.firstName} {story.user.lastName}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight,
+                          color: theme.palette.primary.main
+                        }}
+                        onClick={() => router.push(`/patient-stories/${story._id}`)}
+                      >
+                        Read full story <ArrowForward sx={{fontSize: '13px'}}/>
+                      </Typography>
+                    </Box> 
+                  ))
+                }
+              </Box>)}
 
-          {(!isMobile && stories.length > 7) &&(<Box
-            sx={{
-              display: 'flex',
-              gap: 4, mt: 4,
-              overflowX: 'scroll',
-              whiteSpace: 'nowrap',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
-              scrollbarWidth: 'none',
-            }}
-          >
-            {
-              stories.slice(4, 7).map((story: any) => (
-                <Box key={story._id}
-                  sx={{
-                    minWidth: '32%',
-                    minHeight: '150px',
-                    height: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    justifyContent: 'space-evenly'
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      color: theme.palette.secondary.light,
-                      whiteSpace: 'pre-wrap'
-                    }}
-                  >
-                    {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
-                  </Typography>
-                  <Typography className='capitalize'
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      whiteSpace: 'pre-wrap'
-                    }}
-                  >
-                    -{story.user.firstName} {story.user.lastName}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      color: theme.palette.primary.main
-                    }}
-                    onClick={() => router.push(`/patient-stories/${story._id}`)}
-                  >
-                    Read full story <ArrowForward sx={{fontSize: '13px'}}/>
-                  </Typography>
-                </Box> 
-              ))
-            }
-          </Box>)}
+              {(!isMobile && stories.length > 7) && (<Box
+                sx={{
+                  display: 'flex',
+                  gap: 4, mt: 4,
+                  overflowX: 'scroll',
+                  whiteSpace: 'nowrap',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
+                }}
+              >
+                {
+                  stories.slice(4, 7).map((story: any) => (
+                    <Box key={story._id}
+                      sx={{
+                        minWidth: '32%',
+                        minHeight: '150px',
+                        height: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        justifyContent: 'space-evenly'
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelsm.fontSize,
+                          color: theme.palette.secondary.light,
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
+                      </Typography>
+                      <Typography className='capitalize'
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight,
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        -{story.user.firstName} {story.user.lastName}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight,
+                          color: theme.palette.primary.main
+                        }}
+                        onClick={() => router.push(`/patient-stories/${story._id}`)}
+                      >
+                        Read full story <ArrowForward sx={{fontSize: '13px'}}/>
+                      </Typography>
+                    </Box> 
+                  ))
+                }
+              </Box>)}
 
-          {(!isMobile && stories.length > 10) && (<Box
-            sx={{
-              display: 'flex',
-              gap: 4, mt: 4,
-              overflowX: 'scroll',
-              whiteSpace: 'nowrap',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
-              scrollbarWidth: 'none',
-            }}
-          >
-            {
-              stories.slice(7, 10).map((story: any) => (
-                <Box key={story._id}
-                  sx={{
-                    minWidth: '32%',
-                    minHeight: '150px',
-                    height: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    justifyContent: 'space-evenly'
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelsm.fontSize,
-                      color: theme.palette.secondary.light,
-                      whiteSpace: 'pre-wrap'
-                    }}
-                  >
-                    {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
-                  </Typography>
-                  <Typography className='capitalize'
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      whiteSpace: 'pre-wrap'
-                    }}
-                  >
-                    -{story.user.firstName} {story.user.lastName}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      fontWeight: theme.typography.labelsm.fontWeight,
-                      color: theme.palette.primary.main
-                    }}
-                    onClick={() => router.push(`/patient-stories/${story._id}`)}
-                  >
-                    Read full story <ArrowForward sx={{fontSize: '13px'}}/>
-                  </Typography>
-                </Box>  
-              ))
-            }
-          </Box>)}
+              {(!isMobile && stories.length > 10) && (<Box
+                sx={{
+                  display: 'flex',
+                  gap: 4, mt: 4,
+                  overflowX: 'scroll',
+                  whiteSpace: 'nowrap',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
+                }}
+              >
+                {
+                  stories.slice(7, 10).map((story: any) => (
+                    <Box key={story._id}
+                      sx={{
+                        minWidth: '32%',
+                        minHeight: '150px',
+                        height: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        justifyContent: 'space-evenly'
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelsm.fontSize,
+                          color: theme.palette.secondary.light,
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
+                      </Typography>
+                      <Typography className='capitalize'
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight,
+                          whiteSpace: 'pre-wrap'
+                        }}
+                      >
+                        -{story.user.firstName} {story.user.lastName}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: theme.typography.labelxs.fontSize,
+                          fontWeight: theme.typography.labelsm.fontWeight,
+                          color: theme.palette.primary.main
+                        }}
+                        onClick={() => router.push(`/patient-stories/${story._id}`)}
+                      >
+                        Read full story <ArrowForward sx={{fontSize: '13px'}}/>
+                      </Typography>
+                    </Box>  
+                  ))
+                }
+              </Box>)}
+            </>)}
         </Box>
       </Box>
 

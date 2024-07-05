@@ -23,7 +23,8 @@ interface IUser {
     userType: string[],
     isPasswordDefault: boolean,
     state: string,
-    lga: string
+    lga: string,
+    createdAt?: any
 }
 
 const userSchema = new Schema<IUser>({

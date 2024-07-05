@@ -342,11 +342,16 @@ export default class BlogController {
     @TryCatch
     public async changeBlogStatusToDraft (req: Request) {
  
+        const userType = req.user.userType;
         const blogId = req.params.blogId;
 
         const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+        
+        const allowedUser = await Generic.handleAllowedBlogUser(userType);
+        if(!allowedUser) 
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
         await datasources.blogDAOService.updateByAny(
             {_id: blog._id},
@@ -366,12 +371,17 @@ export default class BlogController {
     @TryCatch
     public async changeBlogStatusToPublish (req: Request) {
  
+        const userType = req.user.userType;
         const blogId = req.params.blogId;
 
         const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
 
+        const allowedUser = await Generic.handleAllowedBlogUser(userType);
+        if(!allowedUser) 
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+    
         await datasources.blogDAOService.updateByAny(
             {_id: blog._id},
             {
@@ -390,11 +400,17 @@ export default class BlogController {
     @TryCatch
     public async changeBlogStatusToArchive (req: Request) {
  
+        const userType = req.user.userType;
         const blogId = req.params.blogId;
 
         const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+
+        const allowedUser = await Generic.handleAllowedBlogUser(userType);
+        if(!allowedUser) 
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
 
         await datasources.blogDAOService.updateByAny(
             {_id: blog._id},
@@ -457,7 +473,7 @@ export default class BlogController {
                     BlogCategory.findOne({ name: value.category })
                 ]);
 
-                const allowedUser = Generic.handleAllowedBlogUser(user?.userType);
+                const allowedUser = await Generic.handleAllowedBlogUser(user?.userType);
                 if(!allowedUser) 
                     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
         
@@ -470,14 +486,17 @@ export default class BlogController {
                 const basePathBodyImage = `${UPLOAD_BASE_PATH}/blogbodyimg`;
                 const basePathTitleImage = `${UPLOAD_BASE_PATH}/blogtitleimg`;
 
-                const { result: _titleImage, error: imageError } = await Generic.handleImage(files.image as File, basePathTitleImage);
+                const [{ result: _titleImage, error: imageError }, { result: _bodyImage, error: imageBodyError }] = await Promise.all([
+                    Generic.handleImage(files.titleImage as File, basePathTitleImage),
+                    Generic.handleImage(files.bodyImage as File, basePathBodyImage)
+                ]);
+            
                 if (imageError) {
-                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
-                };
+                    return reject(CustomAPIError.response(imageError as string, HttpStatus.BAD_REQUEST.code));
+                }
 
-                const { result: _bodyImage, error: imageBodyError } = await Generic.handleImage(files.image as File, basePathBodyImage);
                 if (imageBodyError) {
-                    return reject(CustomAPIError.response(imageBodyError, HttpStatus.BAD_REQUEST.code));
+                    return reject(CustomAPIError.response(imageBodyError as string, HttpStatus.BAD_REQUEST.code));
                 }
 
                 // const [_titleImage, _bodyImage] = await Promise.all([
@@ -529,7 +548,7 @@ export default class BlogController {
                     datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`})
                 ]);
 
-                const allowedUser = Generic.handleAllowedBlogUser(user?.userType);
+                const allowedUser = await Generic.handleAllowedBlogUser(user?.userType);
                 if(!allowedUser) 
                     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
@@ -553,19 +572,22 @@ export default class BlogController {
                 const basePathBodyImage = `${UPLOAD_BASE_PATH}/blogbodyimg`;
                 const basePathTitleImage = `${UPLOAD_BASE_PATH}/blogtitleimg`;
 
-                const { result: _titleImage, error: imageError } = await Generic.handleImage(files.image as File, basePathTitleImage);
+                const [{ result: _titleImage, error: imageError }, { result: _bodyImage, error: imageBodyError }] = await Promise.all([
+                    Generic.handleImage(files.titleImage as File, basePathTitleImage),
+                    Generic.handleImage(files.bodyImage as File, basePathBodyImage)
+                ]);
+            
                 if (imageError) {
-                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
-                };
+                    return reject(CustomAPIError.response(imageError as string, HttpStatus.BAD_REQUEST.code));
+                }
 
-                const { result: _bodyImage, error: imageBodyError } = await Generic.handleImage(files.image as File, basePathBodyImage);
                 if (imageBodyError) {
-                    return reject(CustomAPIError.response(imageBodyError, HttpStatus.BAD_REQUEST.code));
+                    return reject(CustomAPIError.response(imageBodyError as string, HttpStatus.BAD_REQUEST.code));
                 }
 
                 // const [_titleImage, _bodyImage] = await Promise.all([
-                //     Generic.handleImage(files.titleImage as File, basePathTitleImage),
-                //     Generic.handleImage(files.bodyImage as File, basePathBodyImage)
+                //     Generic.handleImagex(files.titleImage as File, basePathTitleImage),
+                //     Generic.handleImagex(files.bodyImage as File, basePathBodyImage)
                 // ]);
 
                 const imagePathtitle = 'blogtitleimg/'
@@ -577,14 +599,14 @@ export default class BlogController {
                 if (_bodyImage && blog.bodyImage) {
                     Generic.deleteExistingImage(blog.bodyImage, basePathBodyImage, imagePathbody);
                 }
-        
+                console.log(_bodyImage, _titleImage, 'imgs')
                 const payload: Partial<IBlogModel> = {
                     title: value.title ? value.title : blog.title,
                     content: value.content ? value.content : blog.content,
                     publisher: value.publisher ? value.publisher : blog.publisher,
                     category: value.category ? category?._id : blog.category,
-                    titleImage: _titleImage ? _titleImage : blog.titleImage,
-                    bodyImage: _bodyImage ? _bodyImage : blog.bodyImage,
+                    titleImage: _titleImage ? _titleImage as string : blog.titleImage,
+                    bodyImage: _bodyImage ? _bodyImage as string : blog.bodyImage,
                     // hot: value.hot ? value.hot : blog.hot,
                     urlSlug: value.urlSlug ? value.urlSlug : blog.urlSlug
                 }

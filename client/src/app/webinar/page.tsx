@@ -8,7 +8,7 @@ import MyCheckbox from "../components/CheckBox";
 import { ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { characterBreaker } from "@/lib/helper";
-import { ArrowForward } from "@mui/icons-material";
+import { ArrowForward, HourglassEmpty } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Footer from "@/app/components/Footer";
 import { useGetWebinarCategories, useGetWebinars } from "../admin/hooks/webinarHook/useWebinar";
@@ -234,84 +234,92 @@ export default function Webinars() {
                             width: '100%'
                         }}
                     >
-                        {
-                            currentData.map((webinar: any, index: number) => (
-                                <Box key={webinar._id}
-                                    sx={{
-                                        width: md ? '100%' : '280px',
-                                        height: '400px',
-                                        borderRadius: theme.borderRadius.sm,
-                                        border: `1px solid ${theme.palette.secondary.lighter}`
-                                    }}
-                                >
-                                    <Box onClick={() => router.push(`/webinar/${webinar._id}`)}
+                        {   currentData.length > 0 
+                            ?   (currentData.map((webinar: any, index: number) => (
+                                    <Box key={webinar._id}
                                         sx={{
-                                            width: '100%',
-                                            height: '60%',
-                                            backgroundColor: index % 2 === 0 ? '#005158' : '#FFCB00',
-                                            display: 'flex', flexDirection: 'column',
-                                            borderTopLeftRadius: theme.borderRadius.sm,
-                                            borderTopRightRadius: theme.borderRadius.sm,
-                                            p: 3, justifyContent: 'space-between', cursor: 'pointer'
+                                            width: md ? '100%' : '280px',
+                                            height: '400px',
+                                            borderRadius: theme.borderRadius.sm,
+                                            border: `1px solid ${theme.palette.secondary.lighter}`
                                         }}
                                     >
-                                        <Image
-                                            src={index % 2 === 0 ? '/ipatient-logo2.png' : '/ipatient-logo.png'}
-                                            alt='logo'
-                                            height={100}
-                                            width={100}
-                                        />
-                                        <Typography variant='labelsm' className="capitalize"
+                                        <Box onClick={() => router.push(`/webinar/${webinar._id}`)}
                                             sx={{
-                                                color: index % 2 === 0 ? 'white' : theme.palette.secondary.main
+                                                width: '100%',
+                                                height: '60%',
+                                                backgroundColor: index % 2 === 0 ? '#005158' : '#FFCB00',
+                                                display: 'flex', flexDirection: 'column',
+                                                borderTopLeftRadius: theme.borderRadius.sm,
+                                                borderTopRightRadius: theme.borderRadius.sm,
+                                                p: 3, justifyContent: 'space-between', cursor: 'pointer'
                                             }}
                                         >
-                                            {webinar.title}
-                                        </Typography>
-                                    </Box> 
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            p: 3,
-                                            justifyContent: 'space-between',
-                                            height: '40%'
-                                        }}
-                                    >
-                                        <Typography variant='paragraphsm'
+                                            <Image
+                                                src={index % 2 === 0 ? '/ipatient-logo2.png' : '/ipatient-logo.png'}
+                                                alt='logo'
+                                                height={100}
+                                                width={100}
+                                            />
+                                            <Typography variant='labelsm' className="capitalize"
+                                                sx={{
+                                                    color: index % 2 === 0 ? 'white' : theme.palette.secondary.main
+                                                }}
+                                            >
+                                                {webinar.title}
+                                            </Typography>
+                                        </Box> 
+                                        <Box
                                             sx={{
-                                                color: theme.palette.secondary.light
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                p: 3,
+                                                justifyContent: 'space-between',
+                                                height: '40%'
                                             }}
                                         >
-                                            {webinar.summary.length > 40 ? `${characterBreaker(webinar.summary, 160)}...` : webinar.summary}
-                                        </Typography>
+                                            <Typography variant='paragraphsm'
+                                                sx={{
+                                                    color: theme.palette.secondary.light
+                                                }}
+                                            >
+                                                {webinar.summary.length > 40 ? `${characterBreaker(webinar.summary, 160)}...` : webinar.summary}
+                                            </Typography>
 
-                                        {!session?.user ? 
-                                            (<Typography variant='labelxs'
-                                                sx={{
-                                                    color: theme.palette.primary.main,
-                                                    cursor: 'pointer', mt: 2
-                                                }}
-                                            >
-                                                Signin <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
-                                            </Typography>
-                                            ) : (
-                                            <Typography
-                                                sx={{
-                                                    color: theme.palette.primary.main,
-                                                    fontSize: theme.typography.labelxs.fontSize,
-                                                    fontWeight: theme.typography.labelxs.fontWeight,
-                                                    cursor: 'pointer'
-                                                }}
-                                                onClick={()=>router.push(`/webinar/${webinar._id}`)}
-                                            >
-                                                Open <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
-                                            </Typography>
-                                            )
-                                        }
+                                            {!session?.user ? 
+                                                (<Typography variant='labelxs'
+                                                    sx={{
+                                                        color: theme.palette.primary.main,
+                                                        cursor: 'pointer', mt: 2
+                                                    }}
+                                                >
+                                                    Signin <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
+                                                </Typography>
+                                                ) : (
+                                                <Typography
+                                                    sx={{
+                                                        color: theme.palette.primary.main,
+                                                        fontSize: theme.typography.labelxs.fontSize,
+                                                        fontWeight: theme.typography.labelxs.fontWeight,
+                                                        cursor: 'pointer'
+                                                    }}
+                                                    onClick={()=>router.push(`/webinar/${webinar._id}`)}
+                                                >
+                                                    Open <ArrowForward sx={{fontSize: theme.typography.labelsm.fontSize}}/>
+                                                </Typography>
+                                                )
+                                            }
+                                        </Box>
                                     </Box>
+                                ))
+                            ) : (
+                                <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+                                    <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+                                    <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                                        No Data
+                                    </Typography>
                                 </Box>
-                            ))
+                            )
                         }
                     </Box>
                     <Box

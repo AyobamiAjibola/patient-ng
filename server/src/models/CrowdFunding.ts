@@ -50,7 +50,7 @@ const crowdFundingSchema = new Schema<ICrowdFunding>({
     }],
     amountNeeded: { type: String },
     amountWithdrawn: { type: Number, default: 0 },
-    amountRaised: { type: String },
+    amountRaised: { type: String, default: '0' },
     fundraisingFor: { type: String },
     account: {
         accountName: { type: String },

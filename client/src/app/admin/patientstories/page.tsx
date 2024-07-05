@@ -1,6 +1,5 @@
 'use client';
 
-import { NButton } from "@/app/components/PButton";
 import PatientStoriesAdminTable from "@/app/components/PatientStoriesAdminTable";
 import { Add, SearchOutlined } from "@mui/icons-material";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";

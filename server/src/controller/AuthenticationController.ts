@@ -302,7 +302,6 @@ export default class AuthenticationController {
     @TryCatch
     public async resetUserPassword(req: Request) {
         const loggedInUser = req.user._id;
-        console.log(req.user._id, 'user')
         const { error, value } = Joi.object({
             email: Joi.string().required().label('Email'),
           }).validate(req.body);
@@ -461,7 +460,7 @@ export default class AuthenticationController {
 
         //SEND OTP TO USER EMAIL
         const mail = mail_template({
-            message: `Your reset password link is: ${resetPasswordLink}`
+            message: `Your reset password otp is: ${resetPasswordLink}`
           });
 
         await sendMailService.sendMail({

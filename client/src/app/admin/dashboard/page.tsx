@@ -2,7 +2,7 @@
 
 import { formAmount, formatNumberWithCommas } from "@/lib/helper";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { DatePicker, Tag } from 'antd';
+import { Select, Tag } from 'antd';
 import CustomLineChart from "../../components/CustomChart";
 import { useEffect, useState } from "react";
 import CrowdAdminTable from "../../components/CrowdAdminTable";
@@ -10,94 +10,36 @@ import { FiberManualRecord } from "@mui/icons-material";
 import Pagination from "../../components/Pagination";
 import { useGetCrowdfundings } from "../hooks/crowdFuncdingHook/useCrowdFunding";
 import { useSession } from "next-auth/react";
+import { useDashData, useDashDataGraph } from "../hooks/userHook/useUser";
+import { useGetAdvocacies } from "../hooks/advocacyHook/useAdvocacy";
 
 const item = [
   "Crowdfunding",
   "Advocacy"
 ]
 
-const advocacy = [
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ABC Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  },
-  {
-    hospitalName: "ZYX Hospital",
-    address: "Chrismas street abuja",
-    status: 'pending',
-    complaints: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, molestias. Consequuntur, quam veritatis quod obcaecati magni repudiandae deleniti expedita mollitia consectetur voluptatum animi ex, eos earum, ab qui! Libero, similique.`,
-    refNumber: '#1234543'
-  }
-]
-
 export default function Dashboard() {
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.down('md'));
-  const { RangePicker } = DatePicker;
   const [currentItem, setCurrentItem] = useState<string>('Crowdfunding');
   const [currentPage, setCurrentPage] = useState(1);
   const crowdfundingMutation = useGetCrowdfundings();
   const {data: session} = useSession();
   const [data, setData] = useState<any>([]);
+  const dashDataMutation = useDashData();
+  const [dashData, setDashData] = useState<any>({
+    allUsers: 0,
+    adminUsers: 0,
+    siteVisits: 0,
+    insights: 0,
+    crowdFundingSum: 0
+  });
+  const dashDataGraphMutation = useDashDataGraph();
+  const [graphData, setGraphData] = useState<any>({});
+  const advocacyMutation = useGetAdvocacies();
+  const [advocacy, setAdvocacy] = useState<any>([]);
+  const [year, setYear] = useState('2024');
+  const [years, setYears] = useState<any>([]);
 
   const itemsPerPage = advocacy.length ? 10 : advocacy.length;
 
@@ -111,6 +53,35 @@ export default function Dashboard() {
     setCurrentPage(newPage);
   };
 
+  const startYear = 2022;
+  const currentYear = new Date().getFullYear();
+  const yrs = Array.from({ length: currentYear - startYear + 1 }, (_, index) => startYear + index);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await advocacyMutation.mutateAsync({}, {
+        onSuccess: (response: any) => {
+          const filteredData = response.results.filter((data: any) => data.status === "pending")
+          setAdvocacy(filteredData)
+        }
+      });
+    }
+
+    fetchData();
+  },[session]);
+
+  useEffect(() => {
+    let yearArray: any = [];
+
+    yrs.map((y, index) => {
+      yearArray.push({
+        value: y,
+        label: y,
+      });
+    });
+    setYears(yearArray);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       await crowdfundingMutation.mutateAsync({}, {
@@ -123,6 +94,30 @@ export default function Dashboard() {
 
     fetchData();
   },[session]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await dashDataMutation.mutateAsync({}, {
+        onSuccess: (response: any) => {
+          setDashData(response.result)
+        }
+      });
+    }
+
+    fetchData();
+  },[session]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await dashDataGraphMutation.mutateAsync({year: year}, {
+        onSuccess: (response: any) => {
+          setGraphData(response.result)
+        }
+      });
+    }
+
+    fetchData();
+  },[session, year]);
 
   return (
     <Box
@@ -165,7 +160,7 @@ export default function Dashboard() {
             All users
           </Typography>
           <Typography variant="labellg">
-            {formatNumberWithCommas(21250)}
+            {formatNumberWithCommas(dashData.allUsers || 0)}
           </Typography>
         </Box>
         <Box
@@ -182,7 +177,7 @@ export default function Dashboard() {
             Admin users
           </Typography>
           <Typography variant="labellg">
-            {formatNumberWithCommas(10)}
+            {formatNumberWithCommas(dashData.adminUsers || 0)}
           </Typography>
         </Box>
         <Box
@@ -199,7 +194,7 @@ export default function Dashboard() {
             Site visits
           </Typography>
           <Typography variant="labellg">
-            {formatNumberWithCommas(21250)}
+            {formatNumberWithCommas(dashData.siteVisits || 0)}
           </Typography>
         </Box>
         <Box
@@ -216,7 +211,7 @@ export default function Dashboard() {
             Insights
           </Typography>
           <Typography variant="labellg">
-            {formatNumberWithCommas(21250)}
+            {formatNumberWithCommas(dashData.insights || 0)}
           </Typography>
         </Box>
         <Box
@@ -233,7 +228,7 @@ export default function Dashboard() {
             Crowdfunding - Total raised
           </Typography>
           <Typography variant="labellg">
-            {formAmount(1234645)}
+            {formAmount(dashData.crowdFundingSum || 0)}
           </Typography>
         </Box>
       </Box>
@@ -245,7 +240,12 @@ export default function Dashboard() {
           mt: 5
         }}
       >
-        <RangePicker />
+        <Select
+          defaultValue="Filter"
+          style={{ width: 120 }}
+          onChange={(value)=>setYear(value)}
+          options={years}
+        />
       </Box>
 
       <Box
@@ -274,7 +274,10 @@ export default function Dashboard() {
         </Box>
 
         <Box sx={{p: 3, width: '100%', overflowX: 'scroll'}}>
-          <CustomLineChart/>
+          <CustomLineChart
+            graphData={graphData}
+            isLoading={dashDataGraphMutation.isLoading}
+          />
         </Box>
       </Box>
       
@@ -344,7 +347,7 @@ export default function Dashboard() {
               }}
             >
               {
-                currentData.map((item, index) => (
+                currentData.map((item: any, index: number) => (
                   <Box key={index}
                     sx={{
                       display: 'flex',
@@ -375,11 +378,11 @@ export default function Dashboard() {
                         </Tag>
                       </Box> 
                       <Typography variant="paragraphxs">
-                        {item.refNumber}
+                        {item.reference}
                       </Typography>
                     </Box>
                     <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
-                      {item.address}
+                      {item.setAdvocacy}
                     </Typography>
                     <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
                       {item.complaints}

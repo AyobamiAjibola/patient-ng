@@ -7,7 +7,6 @@ import WebinarAdminTable from "@/app/components/WebinarAdminTable";
 import { Add, Close, SearchOutlined } from "@mui/icons-material";
 import { Box, IconButton, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Input } from "antd";
-import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -336,9 +335,9 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Webinars
         </Typography>
-        <NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => setOpenModal(true)}>
+        {session?.user.userType.includes('webinar') && (<NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => setOpenModal(true)}>
           <Add/> New webinar
-        </NButton>
+        </NButton>)}
       </Box>
 
       <Box

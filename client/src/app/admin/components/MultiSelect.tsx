@@ -18,7 +18,7 @@ const options: OptionType[] = [
     { label: 'Webinar', value: 'webinar' },
     { label: 'Blog', value: 'blogger' },
     { label: 'Podcast', value: 'podcast' },
-    { label: 'Advocate', value: 'advocacy' },
+    // { label: 'Advocate', value: 'advocacy' },
 ];
 
 interface IProps {
