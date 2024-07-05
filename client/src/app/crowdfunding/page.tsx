@@ -104,7 +104,7 @@ export default function CrowdFundings() {
 
     handleFetchData();
   },[session]);
-  console.log(crowdCampaign, 'campain')
+
   return (
     <>
       <Navbar/>
@@ -242,7 +242,9 @@ export default function CrowdFundings() {
             }}
           >
             { crowdCampaign.slice(0, 3).map((fundraiser: any, index: number) => {
-              const percent = (+fundraiser.amountRaised/+fundraiser.amountNeeded) * 100;
+              const percent = fundraiser.amountRaised 
+                                ? (+fundraiser.amountRaised/+fundraiser.amountNeeded) * 100
+                                : (0/+fundraiser.amountNeeded) * 100;
 
               return ( 
                 <Box key={fundraiser}
@@ -316,29 +318,48 @@ export default function CrowdFundings() {
                     </Typography>
                   
                     <Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          gap: 1, mt: 3
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            color: theme.palette.secondary.light,
-                            fontSize: theme.typography.labelxs.fontSize
-                          }}
-                        >
-                          Last donation
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: theme.typography.labelxs.fontSize,
-                            fontWeight: theme.typography.labelxs.fontWeight
-                          }}
-                        >
-                          { moment(fundraiser.donations[0].date).fromNow() }
-                        </Typography>
-                      </Box>
+                      {fundraiser.donations.length > 0
+                        ? (<Box
+                            sx={{
+                              display: 'flex',
+                              gap: 1, mt: 3
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                color: theme.palette.secondary.light,
+                                fontSize: theme.typography.labelxs.fontSize
+                              }}
+                            >
+                              Last donation
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: theme.typography.labelxs.fontSize,
+                                fontWeight: theme.typography.labelxs.fontWeight
+                              }}
+                            >
+                              { moment(fundraiser.donations[0].date).fromNow() }
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              gap: 1, mt: 3
+                            }}
+                          >
+                            <Typography
+                              sx={{
+                                color: theme.palette.secondary.light,
+                                fontSize: theme.typography.labelxs.fontSize
+                              }}
+                            >
+                              No donations yet.
+                            </Typography>
+                          </Box>
+                        )
+                      }
                       <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
                       <Box
                         sx={{

@@ -41,7 +41,6 @@ export default function page({params}: any) {
     const [image, setImage] = useState('');
     const [image2, setImage2] = useState('');
     const [blogData, setBlogData] = useState<any>({});
-    const editor = useRef(null);
     const draftBlogMutation = useChangeToDraft();
     const publishBlogMutation = useChangeToPublish();
     const archiveBlogMutation = useChangeToArchive();
@@ -88,7 +87,7 @@ export default function page({params}: any) {
             publisher: author,
             blogId: params.id
         }
-        
+
         await upateBlogMutation.mutateAsync(payload, {
             onSuccess: async (response) => {
                 await fetchBlog()

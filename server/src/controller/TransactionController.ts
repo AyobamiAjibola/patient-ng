@@ -216,6 +216,7 @@ export default class TransactionController {
         })
 
         const amountPaid = +crowedFunding.amountRaised + transaction.amount
+        console.log(amountPaid, )
 
         await datasources.crowdFundingDAOService.updateByAny(
             { _id: crowedFunding._id },

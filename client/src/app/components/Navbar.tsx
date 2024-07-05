@@ -148,12 +148,6 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
     }
   },[pathname]);
 
-  // useEffect(() => {
-  //   if(session?.user?.level === 1) {
-  //     setOpenModalReg2(true)
-  //   }
-  // },[session]);
-
   useEffect(() => {
     if(sessionError !== '') {
       setSessionErrorModalOpen(true)

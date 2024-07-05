@@ -89,7 +89,11 @@ export default function page() {
                 }}
             >
                 { filteredData.map((fundraiser: any, index: number) => {
-                    const percent = (+fundraiser.raised/+fundraiser.amountNeeded) * 100;
+                    // const percent = (+fundraiser.raised/+fundraiser.amountNeeded) * 100;
+                    console.log(fundraiser, 'fundraiser')
+                    const percent = fundraiser.raised 
+                                ? (+fundraiser.raised/+fundraiser.amountNeeded) * 100
+                                : (0/+fundraiser.amountNeeded) * 100;
 
                     return ( 
                         <Box key={fundraiser}
@@ -152,40 +156,59 @@ export default function page() {
                                 </Box>
 
                                 <Typography
-                                sx={{
-                                    fontSize: theme.typography.labelxs.fontSize,
-                                    lineHeight: theme.typography.labelxs.lineHeight,
-                                    color: theme.palette.secondary.light,
-                                    whiteSpace: 'pre-wrap'
-                                }}
+                                    sx={{
+                                        fontSize: theme.typography.labelxs.fontSize,
+                                        lineHeight: theme.typography.labelxs.lineHeight,
+                                        color: theme.palette.secondary.light,
+                                        whiteSpace: 'pre-wrap'
+                                    }}
                                 >
-                                { wordBreaker(fundraiser.description, 10) }...
+                                    { wordBreaker(fundraiser.description, 10) }...
                                 </Typography>
                             
                                 <Box>
-                                <Box
-                                    sx={{
-                                    display: 'flex',
-                                    gap: 1, mt: 3
-                                    }}
-                                >
-                                    <Typography
-                                    sx={{
-                                        color: theme.palette.secondary.light,
-                                        fontSize: theme.typography.labelxs.fontSize
-                                    }}
-                                    >
-                                    Last donation
-                                    </Typography>
-                                    <Typography
-                                    sx={{
-                                        fontSize: theme.typography.labelxs.fontSize,
-                                        fontWeight: theme.typography.labelxs.fontWeight
-                                    }}
-                                    >
-                                    { moment(fundraiser.donations[0].date).fromNow() }
-                                    </Typography>
-                                </Box>
+                                    {fundraiser.donations.length > 0
+                                        ? (<Box
+                                            sx={{
+                                                display: 'flex',
+                                                gap: 1, mt: 3
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    color: theme.palette.secondary.light,
+                                                    fontSize: theme.typography.labelxs.fontSize
+                                                }}
+                                            >
+                                                Last donation
+                                            </Typography>
+                                            <Typography
+                                                sx={{
+                                                    fontSize: theme.typography.labelxs.fontSize,
+                                                    fontWeight: theme.typography.labelxs.fontWeight
+                                                }}
+                                            >
+                                                { moment(fundraiser.donations[0].date).fromNow() }
+                                            </Typography>
+                                        </Box>
+                                        ) : (
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 1, mt: 3
+                                                }}
+                                            >
+                                                <Typography
+                                                    sx={{
+                                                        color: theme.palette.secondary.light,
+                                                        fontSize: theme.typography.labelxs.fontSize
+                                                    }}
+                                                >
+                                                    No donations yet.
+                                                </Typography>
+                                            </Box>
+                                        )
+                                    }
                                 <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
                                 <Box
                                     sx={{

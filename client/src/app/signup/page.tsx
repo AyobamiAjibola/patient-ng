@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useSendSignUpOtp, useSignUp, useUpdateUserOnboarding, useValidateSignUpOtp } from "../admin/hooks/userHook/useUser";
 import Toastify from "../components/ToastifySnack";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import MModal from "../components/Modal";
 import OtpInputField from "../components/OtpInputField";
 import { signIn, useSession } from "next-auth/react";
@@ -27,7 +27,7 @@ export default function page() {
     const [password, setPassword] = useState<string>('');
     const [checked, setChecked] = useState<boolean>(false);
     const sendSignUpTokenMutation = useSendSignUpOtp();
-    const [userDetails, setUserDetails] = useLocalStorage('userInfo', {});
+    // const [userDetails, setUserDetails] = useLocalStorage('userInfo', {});
     const [openAccountVerifyModal, setOpenAccountVerifyModal] = useState<boolean>(false);
     const router = useRouter();
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -108,6 +108,8 @@ export default function page() {
     }
 
     const handleValidateSignUpOtp = async() => {
+        const info = localStorage.getItem('userInfo');
+        const userDetails = info && JSON.parse(info)
         const payload = {
           //@ts-ignore
           email: userDetails.email,
@@ -116,7 +118,7 @@ export default function page() {
     
         await validateSignUpTokenMutation.mutateAsync(payload, {
           onSuccess: async () => {
-            await signUpMutation.mutateAsync(userDetails, {
+            await signUpMutation.mutateAsync({}, {
               onSuccess: async () => {
                 await signIn('credentials', {
                   email,
@@ -134,7 +136,8 @@ export default function page() {
     
                 setOpenAccountVerifyModal(false)
                 setOpenModalReg2(true);
-                setUserDetails({});
+                // setUserDetails({});
+                localStorage.removeItem('userInfo')
               },
               onError: (error: any) => {
                 const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
@@ -181,7 +184,8 @@ export default function page() {
     
         await sendSignUpTokenMutation.mutateAsync( email, {
           onSuccess: () => {
-            setUserDetails(payload)
+            // setUserDetails(payload)
+            localStorage.setItem('userInfo', JSON.stringify(payload))
             setOpenAccountVerifyModal(true)
             // setOpenModalReg(false)
           },

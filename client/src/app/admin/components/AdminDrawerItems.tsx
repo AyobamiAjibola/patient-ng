@@ -68,4 +68,31 @@ const items = {
     ]
 }
 
+export const items2 = {
+    '': [
+        {
+            title: 'Dashboard',
+            link: '/admin/dashboard',
+            iconName: DesktopWindowsOutlined
+        },
+    ],
+    RESOURCES: [
+        {
+            title: 'Blog',
+            link: '/admin/blog',
+            iconName: EventNoteOutlined
+        },
+        {
+            title: 'Webinar',
+            link: '/admin/webinar',
+            iconName: DynamicFeedOutlined
+        },
+        {
+            title: 'Podcast',
+            link: '/admin/podcast',
+            iconName: KeyboardVoiceOutlined
+        }
+    ]
+}
+
 export default items

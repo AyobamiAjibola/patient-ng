@@ -28,7 +28,6 @@ export default function page() {
   const router = useRouter();
   const getBlogsMutation = useGetBlogs();
   const {data: session} = useSession();
-  const [blogData, setBlogData] = useState<any>([]);
 
   const filteredData =
     blogs &&
@@ -45,31 +44,27 @@ export default function page() {
   };
 
   useEffect(() => {
-    if(currentItem === "All") {
-      setBlogs(blogData)
-    } else if(currentItem === "Published") {
-      const filteredData = blogData.filter((blogs: any) => blogs.status === "publish");
-      setBlogs(filteredData)
-    } else if(currentItem === "Draft") {
-      const filteredData = blogData.filter((blog: any) => blog.status === "draft");
-      setBlogs(filteredData)
-    }else if(currentItem === "Archived") {
-      const filteredData = blogData.filter((blog: any) => blog.status === "archived");
-      setBlogs(filteredData)
-    }
-  },[currentItem]);
-
-  useEffect(() => {
     const fetchBlogs = async () => {
       await getBlogsMutation.mutateAsync({}, {
         onSuccess: (response) => {
-          setBlogData(response.results)
+          if(currentItem === "All") {
+            setBlogs(response.results)
+          } else if(currentItem === "Published") {
+            const filteredData = response.results?.filter((blogs: any) => blogs.status === "publish");
+            setBlogs(filteredData)
+          } else if(currentItem === "Draft") {
+            const filteredData = response.results?.filter((blog: any) => blog.status === "draft");
+            setBlogs(filteredData)
+          }else if(currentItem === "Archived") {
+            const filteredData = response.results?.filter((blog: any) => blog.status === "archived");
+            setBlogs(filteredData)
+          }
         }
       });
     }
 
     fetchBlogs();
-  },[session]);
+  },[session, currentItem]);
 
   return (
     <Box
@@ -90,13 +85,13 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Blog
         </Typography>
-        <NButton 
+        {session?.user.userType.includes('blogger') && (<NButton 
           textcolor="white" 
           bkgcolor={theme.palette.primary.main} 
           onClick={() => router.push('/admin/blog/new-blog')}
         >
           <Add/> New blog post
-        </NButton>
+        </NButton>)}
       </Box>
 
       <Box

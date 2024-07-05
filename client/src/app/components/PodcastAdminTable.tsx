@@ -6,9 +6,11 @@ import { Box, Typography, useTheme } from '@mui/material';
 import capitalize from 'capitalize';
 import OnlineBadge from './OnlineBadge';
 import moment from 'moment';
+import { useSession } from 'next-auth/react';
 
 const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setPodcastId, setIsStatus}: any) => {
   const theme = useTheme();
+  const {data: session} = useSession();
 
   const handleWebinarEdit = (id: string) => {
     setIsEdit(true)
@@ -99,9 +101,10 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setPodcastI
             <Typography variant='labelxs'
               onClick={()=>handleWebinarEdit(record._id)}
               sx={{
-                cursor: 'pointer',
+                cursor: !session?.user.userType.includes('podcast') ? 'default' : 'pointer',
+                color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.darker,
                 '&:hover': {
-                  color: theme.palette.primary.main
+                  color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.darker
                 }
               }}
             >
@@ -111,9 +114,10 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setPodcastI
               color={theme.palette.primary.main}
               onClick={()=>handleChangeStatus(record._id)}
               sx={{
-                cursor: 'pointer',
+                cursor: !session?.user.userType.includes('podcast') ? 'default' : 'pointer',
+                color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.main,
                 '&:hover': {
-                  color: theme.palette.primary.darker
+                  color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.main
                 }
               }}
             >

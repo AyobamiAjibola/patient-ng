@@ -32,7 +32,7 @@ export default function page({children}: any) {
 
   useEffect(() => {
     if(session?.user.isAdmin === false) {
-      router.push('/')
+      redirect('/');
     }
   },[session]);
 

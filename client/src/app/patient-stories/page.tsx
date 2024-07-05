@@ -87,12 +87,11 @@ export default function PatientStories() {
 
         await postStoryMutation.mutateAsync(payload, {
             onSuccess: async () => {
-                await fetchStories()
+                handleOpenNotification('success', 'Thanks for sharing. Your story will display after admin confirms.')
                 setOpenModal(false)
                 setTitle('')
                 setStory('')
                 setCampaignImg([])
-                // handleOpenNotification('success', response.message)
             },
             onError: (error: any) => {
                 const errorMessage = error.response?.data?.message || 'An unexpected error occurred';

@@ -9,16 +9,19 @@ import { ArrowBackRounded, DescriptionOutlined, RemoveRedEyeOutlined, SendOutlin
 import { Box, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Select from "react-select";
 import { useCreateBlog, useCreateBlogCategory, useGetBlogCategories } from '../../hooks/blogHook/useBlog';
 import { customStyles } from '@/constant/customStyles';
-import { useSession } from 'next-auth/react';
 import Toastify from '@/app/components/ToastifySnack';
 import capitalize from 'capitalize';
 import ImageUploader2 from '@/app/components/ImageUploader2';
 import HTMLReactParser from 'html-react-parser';
-import TextEditor from '../../components/TextEditor';
+import dynamic from 'next/dynamic';
+ 
+const DynamicHeader = dynamic(() => import('../../components/TextEditor'), {
+  ssr: false,
+})
 
 export default function page() {
     const theme = useTheme();
@@ -27,14 +30,12 @@ export default function page() {
     const [headerImage, _] = useAtom(selectedImageArrayAtom);
     const [bodyImage, __] = useAtom(selectedImageArrayAtom2);
     const [link, setLink] = useState("");
-    const editor = useRef<any>(null);
     const [content, setContent] = useState<string>('');
     const [openModal, setOpenModal] = useState<boolean>(false);
     const router = useRouter();
     const createBlogCategoryMutation = useCreateBlogCategory();
     const getBlogCategoryMutation = useGetBlogCategories(); 
     const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const {data: session} = useSession();
     const [blogCategories, setBlogCategories] = useState<any>([]);
     const [open, setOpen] = useState<boolean>(false);
     const [bcategory, setBCategory] = useState<string>("");
@@ -74,13 +75,6 @@ export default function page() {
         });
     }
 
-    const getHeight = () => {
-        if (typeof window !== 'undefined') {
-            return window.innerHeight;
-        }
-            return 0;
-    };
-
     const handleCreateNewCat = async () => {
         await createBlogCategoryMutation.mutateAsync({name: bcategory}, {
             onSuccess: async (response) => {
@@ -94,8 +88,6 @@ export default function page() {
             }
         })
     }
-    
-    const screenHeight = getHeight();
 
     const handleCreateBlog = async () => {
 
@@ -109,7 +101,7 @@ export default function page() {
             publisher: author,
             status: status
         }
-
+        
         await createBlogMutation.mutateAsync(payload, {
             onSuccess: async (response) => {
                 router.back()
@@ -121,10 +113,6 @@ export default function page() {
                 handleOpenNotification('error', '', errorMessage)
             }
         })
-    };
-
-    const config = {
-        height: 400
     };
 
     useEffect(() => {
@@ -346,7 +334,7 @@ export default function page() {
                         </Box>
 
                         <Box mt={4} mb={3}>
-                            <TextEditor
+                            <DynamicHeader
                                 preference={content}
                                 setPreference={setContent}
                             />
@@ -424,7 +412,7 @@ export default function page() {
             >
                 <Box className="flex flex-col p-10"
                     sx={{
-                        height: screenHeight/100 * 80
+                        height: '80vh'
                     }}
                 >
                     <Typography variant='h4' mb={2}>

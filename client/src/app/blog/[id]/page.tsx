@@ -234,9 +234,16 @@ export default function Blog({ params }: any) {
                                     gap: 2
                                 }}
                             >
-                                <Avatar
+                                <img
                                     src={blog.publisherImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.publisherImage}` : ''}
                                     alt='user image'
+                                    style={{
+                                        width: '2.3em',
+                                        height: '2.3em',
+                                        borderRadius: theme.borderRadius.full,
+                                        margin: 2
+                                    }}
+                                    crossOrigin='anonymous'
                                 />
                                 <Box
                                     sx={{
@@ -661,7 +668,7 @@ export default function Blog({ params }: any) {
                             </Box>
                         </Box>
 
-                        <Box
+                        {hotBlog && (<Box
                             sx={{
                                 display: 'flex',
                                 height: 'auto',
@@ -709,7 +716,7 @@ export default function Blog({ params }: any) {
                                     </Typography>
                                 </Box>
                             </Box>
-                        </Box>
+                        </Box>)}
                     </Box>
                 </Box>
             </Box>

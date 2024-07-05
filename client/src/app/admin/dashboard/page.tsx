@@ -2,7 +2,7 @@
 
 import { formAmount, formatNumberWithCommas } from "@/lib/helper";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { DatePicker, Select, Tag } from 'antd';
+import { Select, Tag } from 'antd';
 import CustomLineChart from "../../components/CustomChart";
 import { useEffect, useState } from "react";
 import CrowdAdminTable from "../../components/CrowdAdminTable";
@@ -21,7 +21,6 @@ const item = [
 export default function Dashboard() {
   const theme = useTheme();
   const md = useMediaQuery(theme.breakpoints.down('md'));
-  const { RangePicker } = DatePicker;
   const [currentItem, setCurrentItem] = useState<string>('Crowdfunding');
   const [currentPage, setCurrentPage] = useState(1);
   const crowdfundingMutation = useGetCrowdfundings();
@@ -81,7 +80,7 @@ export default function Dashboard() {
       });
     });
     setYears(yearArray);
-  }, [yrs]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
