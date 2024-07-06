@@ -610,15 +610,16 @@ export default class UserController {
         const advocacyId = req.params.advocacyId;
 
         const { error, value } = Joi.object<any>({
-            hospitalName: Joi.string().label('hospital name'),
-            hospitalAddress: Joi.string().label('hospital address'),
-            complaints: Joi.string().label('Comment')
+            complaints: Joi.string().label('Complaints')
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
         const advocacy = await datasources.advocacyDAOService.findById(advocacyId);
         if(!advocacy)
             return Promise.reject(CustomAPIError.response("Advocacy not found.", HttpStatus.NOT_FOUND.code));
+
+        if(advocacy.status === 'in-progess' || advocacy.status === 'closed') 
+            return Promise.reject(CustomAPIError.response("Advocacy can not be modified, it status is eigther closed or In progress.", HttpStatus.NOT_FOUND.code));
 
         await datasources.advocacyDAOService.updateByAny({ _id: advocacy._id }, { ...value })
 
@@ -726,6 +727,10 @@ export default class UserController {
 
                 if(!insight)
                     return reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+                
+                if(insight.status === 'approved') {
+                    return reject(CustomAPIError.response("Insight has already been approved.", HttpStatus.NOT_FOUND.code));
+                }
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
     

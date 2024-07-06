@@ -5,6 +5,7 @@ import PButton from "@/app/components/PButton";
 import Pagination from "@/app/components/Pagination";
 import { setMenuIndex } from "@/lib/atoms";
 import { wordBreaker } from "@/lib/helper";
+import { HourglassEmpty } from "@mui/icons-material";
 import { Box, Typography, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import capitalize from "capitalize";
@@ -77,59 +78,67 @@ export default function Advocacy() {
         flexDirection: 'column'
       }}
     >
-      {
-        advocacies.map((advocacy: any, index: number) => (
-          <Box key={advocacy._id}
-            sx={{
-              width: '100%',
-              height: 'auto',
-              p: 4,
-              backgroundColor: theme.palette.secondary.lightest,
-              border: `1px solid ${theme.palette.secondary.lighter}`,
-              borderRadius: theme.borderRadius.sm,
-              display: 'flex', gap: 4, flexDirection: 'column'
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
-            >
-              <Typography variant="labellg">
-                {advocacy.hospitalName}
-              </Typography>
-              <Tag 
-                color={advocacy.status === 'approved'
-                        ? 'success'
-                        : advocacy.status === 'closed'
-                          ? 'error'
-                          : 'warning'
-                      }
+      { advocacies.length > 0
+          ? (advocacies.map((advocacy: any, index: number) => (
+              <Box key={advocacy._id}
+                sx={{
+                  width: '100%',
+                  height: 'auto',
+                  p: 4,
+                  backgroundColor: theme.palette.secondary.lightest,
+                  border: `1px solid ${theme.palette.secondary.lighter}`,
+                  borderRadius: theme.borderRadius.sm,
+                  display: 'flex', gap: 4, flexDirection: 'column'
+                }}
               >
-                {capitalize.words(advocacy.status)}
-              </Tag>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Typography variant="labellg">
+                    {advocacy.hospitalName}
+                  </Typography>
+                  <Tag 
+                    color={advocacy.status === 'approved'
+                            ? 'success'
+                            : advocacy.status === 'closed'
+                              ? 'error'
+                              : 'warning'
+                          }
+                  >
+                    {capitalize.words(advocacy.status)}
+                  </Tag>
+                </Box>
+
+                <Typography variant="labelsm"
+                  sx={{
+                    color: theme.palette.secondary.light
+                  }}
+                >
+                  {wordBreaker(advocacy.complaints, 40)}
+                </Typography>
+
+                
+                <PButton transBg={true} bg={false} width='10%'
+                  onClick={() => {
+                    router.push(`/account/advocacy/${advocacy._id}`)
+                  }}
+                >
+                  Modify
+                </PButton>
+              </Box>
+            ))
+          ) : (
+            <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+              <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+              <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                  No Data
+              </Typography>
             </Box>
-
-            <Typography variant="labelsm"
-              sx={{
-                color: theme.palette.secondary.light
-              }}
-            >
-              {wordBreaker(advocacy.complaints, 40)}
-            </Typography>
-
-            
-            <PButton transBg={true} bg={false} width='10%'
-              onClick={() => {
-                router.push(`/account/advocacy/${advocacy._id}`)
-              }}
-            >
-              Modify
-            </PButton>
-          </Box>
-        ))
+          )
       }
 
       <Box

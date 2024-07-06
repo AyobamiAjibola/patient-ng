@@ -9,7 +9,7 @@ import Crowdfunding from "./crowdfunding/page";
 
 export default function page() {
   const [currentIndex, setCurrentIndex] = useAtom(setMenuIndex)
-
+  console.log(currentIndex, 'currentIndex')
   return (
     <>
       { currentIndex === 0 && <Profile/> }

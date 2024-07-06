@@ -1,11 +1,14 @@
 'use client';
 
+import { useGetSingleInsight, useUpdateInsight } from '@/app/admin/hooks/insightHook/useInsight';
 import InputField from '@/app/components/InputField';
-import PButton from '@/app/components/PButton';
+import PButton, { NButton } from '@/app/components/PButton';
+import Toastify from '@/app/components/ToastifySnack';
 import { customStyles } from '@/constant/customStyles';
 import { setMenuIndex } from '@/lib/atoms';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useAtom } from 'jotai';
+import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Select from "react-select";
 
@@ -24,10 +27,60 @@ export default function page({ params }: any) {
     hospital: '',
     rating: 0
   });
+  const {data: session} = useSession();
+  const getInsightMutation = useGetSingleInsight();
+  const updateInsightMutation = useUpdateInsight();
+
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setOpen(true);
+  };
 
   useEffect(() => {
     setCurrentIndex(2)
   },[]);
+
+  const handleUpdateInsight = async () => {
+    await updateInsightMutation.mutateAsync({
+        hospitalName: data.hospital,
+        rating: data.rating,
+        comment: data.reviews,
+        insightId: params.id
+    }, {
+        onSuccess: async () => {
+            await handleGetInsight()
+        },
+        onError: (error: any) => {
+            const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+            handleOpenNotification('error', '', errorMessage)
+        }
+    })
+  }
+
+  const handleGetInsight = async () => {
+    await getInsightMutation.mutateAsync(params.id, {
+        onSuccess: (response: any) => {
+            setData({
+                hospital: response.result.hospitalName,
+                reviews: response.result.comment,
+                rating: response.result.rating,
+            })
+        }
+    })
+  }
+
+  useEffect(() => {
+    if(params) {
+        handleGetInsight()
+    }
+  },[params, session]);
 
   return (
     <Box
@@ -120,9 +173,22 @@ export default function page({ params }: any) {
             />
         </Box>
 
-        <PButton transBg={false} bg={true} width='20%'>
-            Save
-        </PButton>
+        <NButton onClick={handleUpdateInsight}
+            bkgcolor={theme.palette.primary.main}
+            textcolor='white'
+            hovercolor={theme.palette.primary.main}
+            width='20%'
+        >
+            {updateInsightMutation.isLoading ? 'Saving...' : 'Save'}
+        </NButton>
+
+        <Toastify
+            open={open}
+            onClose={() => setOpen(false)}
+            message={message}
+            error={isError}
+            success={isSuccess}
+        />
     </Box>
   )
 }

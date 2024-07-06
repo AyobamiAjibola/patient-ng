@@ -47,7 +47,7 @@ export default function page({ params }: any) {
     };
 
   const fetchSingleCampaign = async () => {
-    await getSingleCampaign.mutateAsync(params.crowdfundingId, {
+    await getSingleCampaign.mutateAsync(params.id, {
         onSuccess: (response: any) => {
             setTitle(response.result.title)
             setAddress(response.result.address)
@@ -68,7 +68,7 @@ export default function page({ params }: any) {
         description,
         address,
         image: crowdImage[0],
-        crowdFundingId: params.crowdfundingId
+        crowdFundingId: params.id
     }
     await updateCrowdMutation.mutateAsync(payload, {
         onSuccess: async (response) => {

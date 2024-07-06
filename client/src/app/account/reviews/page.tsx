@@ -5,7 +5,7 @@ import PButton from "@/app/components/PButton";
 import Pagination from "@/app/components/Pagination";
 import { setMenuIndex } from "@/lib/atoms";
 import { wordBreaker } from "@/lib/helper";
-import { CalendarToday, Star, StarOutline } from "@mui/icons-material";
+import { CalendarToday, HourglassEmpty, Star, StarOutline } from "@mui/icons-material";
 import { Box, Rating, Typography, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import capitalize from "capitalize";
@@ -55,100 +55,108 @@ export default function Reviews() {
         flexDirection: 'column'
       }}
     >
-      {
-        reviews.map((review: any, index: number) => (
-          <Box
-            sx={{
-              width: '100%',
-              height: 'auto',
-              p: 4,
-              backgroundColor: theme.palette.secondary.lightest,
-              border: `1px solid ${theme.palette.secondary.lighter}`,
-              borderRadius: theme.borderRadius.sm,
-              display: 'flex', gap: 4, flexDirection: 'column'
-            }}
-          >
+      { reviews.length > 0
+          ?  (reviews.map((review: any, index: number) => (
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
-            >
-              <Typography variant="labellg">
-                {review.hospitalName}
-              </Typography>
-              <Tag 
-                color={review.status.toLowerCase() === 'approved'
-                        ? 'success'
-                        : review.status.toLowerCase() === 'rejected'
-                          ? 'error'
-                          : 'warning'
-                      }
-              >
-                {capitalize.words(review.status)}
-              </Tag>
-            </Box>
-
-            <Typography
-              sx={{
-                fontSize: theme.typography.labelsm.fontSize,
-                lineHeight: theme.typography.labelsm.lineHeight,
-                color: theme.palette.secondary.light
-              }}
-            >
-              {wordBreaker(review.comment, 40)}
-            </Typography>
-
-            <Box
-              sx={{
-                display: 'flex',
-                gap: 3
+                width: '100%',
+                height: 'auto',
+                p: 4,
+                backgroundColor: theme.palette.secondary.lightest,
+                border: `1px solid ${theme.palette.secondary.lighter}`,
+                borderRadius: theme.borderRadius.sm,
+                display: 'flex', gap: 4, flexDirection: 'column'
               }}
             >
               <Box
                 sx={{
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: 1
-                }}
-              >
-                <CalendarToday sx={{color: theme.palette.secondary.light, fontSize: '18px'}}/>
-                <Typography
-                  sx={{
-                    color: theme.palette.secondary.light,
-                    fontSize: theme.typography.labelxs.fontSize
-                  }}
-                >
-                  {moment(review.createdAt).format('DD MMM YY')}
-                </Typography>
-              </Box>
-
-              <Box
-                sx={{
-                  display: 'flex',
+                  justifyContent: 'space-between',
                   alignItems: 'center'
                 }}
               >
-                {/* <Star sx={{color: theme.palette.secondary.light, fontSize: '18px'}}/> */}
-                <Rating
-                  name="half-rating-read"
-                  size={'small'}
-                  value={review.rating}
-                  precision={0.5}
-                  readOnly
-                  sx={{ color: theme.palette.state.warning }}
-                />
-              </Box> 
-            </Box>
+                <Typography variant="labellg">
+                  {review.hospitalName}
+                </Typography>
+                <Tag 
+                  color={review.status.toLowerCase() === 'approved'
+                          ? 'success'
+                          : review.status.toLowerCase() === 'rejected'
+                            ? 'error'
+                            : 'warning'
+                        }
+                >
+                  {capitalize.words(review.status)}
+                </Tag>
+              </Box>
 
-            <PButton transBg={true} bg={false} width='10%'
-              onClick={() => router.push(`/account/reviews/${review._id}`)}
-            >
-              Modify
-            </PButton>
-          </Box>
-        ))
+              <Typography
+                sx={{
+                  fontSize: theme.typography.labelsm.fontSize,
+                  lineHeight: theme.typography.labelsm.lineHeight,
+                  color: theme.palette.secondary.light
+                }}
+              >
+                {wordBreaker(review.comment, 40)}
+              </Typography>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 3
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <CalendarToday sx={{color: theme.palette.secondary.light, fontSize: '18px'}}/>
+                  <Typography
+                    sx={{
+                      color: theme.palette.secondary.light,
+                      fontSize: theme.typography.labelxs.fontSize
+                    }}
+                  >
+                    {moment(review.createdAt).format('DD MMM YY')}
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
+                  {/* <Star sx={{color: theme.palette.secondary.light, fontSize: '18px'}}/> */}
+                  <Rating
+                    name="half-rating-read"
+                    size={'small'}
+                    value={review.rating}
+                    precision={0.5}
+                    readOnly
+                    sx={{ color: theme.palette.state.warning }}
+                  />
+                </Box> 
+              </Box>
+
+              <PButton transBg={true} bg={false} width='10%'
+                onClick={() => router.push(`/account/reviews/${review._id}`)}
+              >
+                Modify
+              </PButton>
+            </Box>
+            ))
+          ) : (
+            <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
+              <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
+              <Typography variant='paragraphlg' color={theme.palette.border.main}>
+                  No Data
+              </Typography>
+            </Box>
+          )
       }
 
       <Box
