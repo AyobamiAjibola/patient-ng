@@ -141,20 +141,20 @@ export default function HomePage() {
             }}
           >
             <Typography 
-              variant={isMobile ? 'labelsm' : 'h2'}
+              variant={isMobile ? 'labellg' : 'h1'}
               sx={{
                 color: 'white',
                 mb: isMobile ? 1 : 4,
-                width: isMobile ? '100%' : '50%'
+                width: isMobile ? '100%' : '80%'
               }}
             >
               Empowering Patients, Transforming Healthcare.
             </Typography>
             <Typography
-              variant={isMobile ? 'paragraphxxs' : 'paragraphsm'}
+              variant={isMobile ? 'paragraphsm' : 'paragraphxl'}
               sx={{
-                color: theme.palette.secondary.lighter,//'white',
-                width: isMobile ? '100%' : '70%'
+                color: theme.palette.secondary.lighter,
+                width: isMobile ? '100%' : '80%'
               }}
             >
               We believe in putting patients at the center of their healthcare journey. Discover a community-driven platform dedicated to providing support, resources, and advocacy for patients across Nigeria.

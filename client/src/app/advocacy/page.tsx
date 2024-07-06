@@ -16,8 +16,8 @@ import Toastify from "../components/ToastifySnack";
 import { useRouter } from "next/navigation";
 
 const advocacy = [
-  "Informal Complaint (Stage 1)",
-  "Formal Complaint (Stage 2)",
+  "Informal Complaint (Step 1)",
+  "Formal Complaint (Step 2)",
   "What to Include in your Complaint",
   "Submit your complaint online",
   "Request the HSE to review the complaint"
@@ -249,9 +249,9 @@ export default function page() {
         <Box
           sx={{
             mt: 4,
-            backgroundColor: '#FFF7D9',
+            backgroundColor: theme.palette.secondary.lightest,
             borderRadius: theme.borderRadius.sm,
-            border: `1px solid #CCA200`,
+            border: 'none',
             width: '100%',
             height: 'auto',
             display: 'flex',
@@ -262,12 +262,12 @@ export default function page() {
           <Box
             sx={{
               height: '100%',
-              borderRight: `1px solid #CCA200`,
+              borderRight: 'none',
               py: 3, pl: 4, pr: 2,
               display: 'flex',
               flexDirection: 'column',
               gap: 4,
-              backgroundColor: '#F5E8B7',
+              backgroundColor: theme.palette.primary.lightest,
               width: isMobile ? '100%' : '40%',
               borderTopLeftRadius: theme.borderRadius.sm,
               borderBottomLeftRadius: theme.borderRadius.sm,
@@ -287,25 +287,25 @@ export default function page() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#FFCB00',
+                  backgroundColor: theme.palette.primary.main,
                   borderRadius: theme.borderRadius.full
                 }}
               >
-                <Typography variant="labelsm">
+                <Typography variant="labelsm" color='white'>
                   {1}
                 </Typography>
               </Box>
               <Typography variant="labelsm"
                 sx={{
-                  color: currentStep === 1 ? '#CCA200' : 'black',
+                  color: currentStep === 1 ? theme.palette.primary.main : 'black',
                   '&:hover': {
-                    color: '#CCA200'
+                    color: theme.palette.primary.main
                   },
                   cursor: 'pointer'
                 }}
                 onClick={()=>setCurrentStep(1)}
               >
-                {'Informal Complaint (Stage 1)'}
+                {'Informal Complaint (step 1)'}
               </Typography>
             </Box>
             <Box
@@ -322,25 +322,25 @@ export default function page() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#FFCB00',
+                  backgroundColor: theme.palette.primary.main,
                   borderRadius: theme.borderRadius.full
                 }}
               >
-                <Typography variant="labelsm">
+                <Typography variant="labelsm" color='white'>
                   {2}
                 </Typography>
               </Box>
               <Typography variant="labelsm"
                 sx={{
-                  color: currentStep === 2 ? '#CCA200' : 'black',
+                  color: currentStep === 2 ? theme.palette.primary.main : 'black',
                   '&:hover': {
-                    color: '#CCA200'
+                    color: theme.palette.primary.main
                   },
                   cursor: 'pointer'
                 }}
                 onClick={()=>setCurrentStep(2)}
               >
-                {'Formal Complaint (Stage 2)'}
+                {'Formal Complaint (step 2)'}
               </Typography>
             </Box>
             <Box
@@ -357,25 +357,25 @@ export default function page() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#FFCB00',
+                  backgroundColor: theme.palette.primary.main,
                   borderRadius: theme.borderRadius.full
                 }}
               >
-                <Typography variant="labelsm">
+                <Typography variant="labelsm" color='white'>
                   {3}
                 </Typography>
               </Box>
               <Typography variant="labelsm"
                 sx={{
-                  color: currentStep === 3 ? '#CCA200' : 'black',
+                  color: currentStep === 3 ? theme.palette.primary.main : 'black',
                   '&:hover': {
-                    color: '#CCA200'
+                    color: theme.palette.primary.main
                   },
                   cursor: 'pointer'
                 }}
                 onClick={()=>setCurrentStep(3)}
               >
-                {'What to Include in your Complaint'}
+                {'What to Include in your Complaint (step 3)'}
               </Typography>
             </Box>
             <Box
@@ -392,25 +392,25 @@ export default function page() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#FFCB00',
+                  backgroundColor: theme.palette.primary.main,
                   borderRadius: theme.borderRadius.full
                 }}
               >
-                <Typography variant="labelsm">
+                <Typography variant="labelsm" color='white'>
                   {4}
                 </Typography>
               </Box>
               <Typography variant="labelsm"
                 sx={{
-                  color: currentStep === 4 ? '#CCA200' : 'black',
+                  color: currentStep === 4 ? theme.palette.primary.main : 'black',
                   '&:hover': {
-                    color: '#CCA200'
+                    color: theme.palette.primary.main
                   },
                   cursor: 'pointer'
                 }}
                 onClick={()=>setCurrentStep(4)}
               >
-                {'Submit your complaint online'}
+                {'Submit your complaint online or email to advocacy@patient.ng'}
               </Typography>
             </Box>
             <Box
@@ -427,19 +427,19 @@ export default function page() {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#FFCB00',
+                  backgroundColor: theme.palette.primary.main,
                   borderRadius: theme.borderRadius.full
                 }}
               >
-                <Typography variant="labelsm">
+                <Typography variant="labelsm" color='white'>
                   {5}
                 </Typography>
               </Box>
               <Typography variant="labelsm"
                 sx={{
-                  color: currentStep === 5 ? '#CCA200' : 'black',
+                  color: currentStep === 5 ? theme.palette.primary.main : 'black',
                   '&:hover': {
-                    color: '#CCA200'
+                    color: theme.palette.primary.main
                   },
                   cursor: 'pointer'
                 }}
@@ -457,18 +457,38 @@ export default function page() {
               flexDirection: 'column'
             }}
           >
-            <Typography variant={isMobile ? 'h5' : 'h3'}>
+            <Typography variant={isMobile ? 'h5' : 'h4'}>
               {currentStep === 1 
-                ? 'Informal Complaint (Stage 1)'
+                ? 'Informal Complaint (step 1)'
                 : currentStep === 2
-                  ? 'Formal Complaint (Stage 2)'
+                  ? 'Formal Complaint (step 2)'
                   : currentStep === 3
-                    ? 'What to Include in your Complaint'
+                    ? 'What to Include in your Complaint (step 3)'
                     : currentStep === 4
-                      ? 'Submit your complaint online'
-                      : 'Request the HSE to review the complaint'
+                      ? 'Submit your complaint online (step 4)'
+                      : 'Request the HSE to review the complaint (step 5)'
               }
             </Typography>
+            {currentStep === 3 && (<ul
+              style={{
+                listStyleType: 'disc',
+                margin: '20px',
+                padding: '20px'
+              }}
+            >
+              <li>Your name</li>
+              <li>Phone number</li>
+              <li>Email address</li>
+              <li>Name of the hospital</li>
+              <li>Name of the section in the hospital</li>
+              <li>Who was involved, dates and times of the experience</li>
+              <li>An accurate description of what happened.</li>
+              <li>Your complaint should also outline what you have done to resolve the issue to date</li>
+              <li>and what you want to happen now to resolve your issue.</li>
+              <li>You can also attach any documentation to your complaint that you feel is relevant, through the online form or email.</li>
+              <li>In your written complaint, you should grant permission to patient.ng to access your personal confidential information.</li>
+              <li>If you don’t grant patient.ng permission to access your personal confidential information, we may not be able to effectively process your complaint.</li>
+            </ul>)}
             <Typography variant="paragraphsm">
               {currentStep === 1
                 ? `If you are unhappy with the patient care received in a healthcare institution, you can raise issue by making a verbal complaint
@@ -478,12 +498,7 @@ export default function page() {
                         make a written complaint to the healthcare institution through patient.ng. You can do this by writing an email or filling out the complaints form on the
                         patient.ng website here.`
                   : currentStep === 3
-                    ? `Your name, phone number, email address, name of the hospital, name of the section in the hospital, who was
-                    involved, dates and times of the experience, an accurate description of what happened.
-                    Your complaint should also outline what you have done to resolve the issue to date, and what you want to happen now to resolve your issue.
-                    You can also attach any documentation to your complaint that you feel is relevant, through the online form or email.
-                    In your written complaint, you should grant permission to patient.ng to access your personal confidential information.
-                    If you don’t grant patient.ng permission to access your personal confidential information, we may not be able to effectively process your complaint.`
+                    ? ``
                     : currentStep === 4
                       ? `Submit your complaint online or email to advocacy@patient.ng`
                       : ` If you are unhappy with the response you receive from a healthcare institution after Step 3, you can consider asking our advocates at patient.ng to
@@ -561,7 +576,7 @@ export default function page() {
           flexDirection: 'column',
           height: 'auto',
           px: isMobile ? '20px' : '90px', py: 8,
-          backgroundColor: theme.palette.primary.lightest//'#FFF7D9'
+          backgroundColor: 'none'
         }}
       >
         {!isMobile && (<img
@@ -651,8 +666,8 @@ export default function page() {
 
       <Box
         sx={{
-          backgroundColor: theme.palette.primary.lightest,
-          pb: '4em'
+          pb: '4em',
+          px: isMobile ? '20px' : '90px',
         }}
       >
         <Box
@@ -664,14 +679,17 @@ export default function page() {
             gap: 2,
             py: 6,
             px: 2,
-            backgroundColor: 'white'
+            backgroundColor: theme.palette.primary.darker,
+            borderRadius: theme.borderRadius.md
           }}
         >
-          <Typography variant={isMobile ? "h5" : "h4"}>
-            {session?.user ? 'Not an advocate? Become an advocate today' : 'Sign up as an advocate today'}
+          <Typography variant={isMobile ? "h5" : "h4"} color={'white'}>
+            {/* {session?.user ? 'Not an advocate? Become an advocate today' : 'Sign up as an advocate today'} */}
+            Interested in becoming a patient advocate?
           </Typography>
-          <Typography variant="paragraphbase" mb={4} color={theme.palette.secondary.light}>
-            Just {session?.user ? 'one click' : 'a few clicks'} can make a difference. {session?.user && 'Sign up now'}.
+          <Typography variant="paragraphbase" mb={4} color={'white'}>
+            {/* Just {session?.user ? 'one click' : 'a few clicks'} can make a difference. {session?.user && 'Sign up now'}. */}
+            Join our community today
           </Typography>
           <NButton
             bkgcolor={theme.palette.primary.main}
@@ -679,7 +697,8 @@ export default function page() {
             width='200px'
             onClick={() => session?.user ? null : router.push('/signup')}
           >
-            {session?.user ? 'Continue' : 'Sign up'}
+            {/* {session?.user ? 'Continue' : 'Sign up'} */}
+            Sign up
           </NButton>
         </Box>
       </Box>

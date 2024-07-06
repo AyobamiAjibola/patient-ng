@@ -116,7 +116,7 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
   const handleLogout = async () => {
     await signOut({
       redirect: true,
-      callbackUrl: '/signin'
+      callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
     });
   };
 

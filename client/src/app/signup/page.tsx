@@ -260,7 +260,7 @@ export default function page() {
                         bkgcolor='white'
                         bordercolor={theme.palette.border.main}
                         hoverbordercolor={theme.palette.primary.main}
-                        width={'50%'}
+                        width={'100%'}
                     >
                         <img
                             src="/googleLogo.png"
@@ -274,7 +274,7 @@ export default function page() {
                             Sign in with Google
                         </Typography>
                     </NButton>
-                    <NButton
+                    {/* <NButton
                         textcolor='white'
                         bkgcolor='black'
                         bordercolor={'black'}
@@ -292,7 +292,7 @@ export default function page() {
                         <Typography variant='labelxs' ml={2}>
                             Sign in with Apple
                         </Typography>
-                    </NButton>
+                    </NButton> */}
                 </Box>
                 <Box
                     sx={{

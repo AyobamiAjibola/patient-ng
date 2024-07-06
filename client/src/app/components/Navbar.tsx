@@ -568,7 +568,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                 setSessionErrorModalOpen(false)
                 signOut({
                   redirect: true,
-                  callbackUrl: '/signin'
+                  callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
                 })
               }}
             >

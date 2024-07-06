@@ -105,7 +105,7 @@ export default function page({children}: any) {
                 setOpenModal(true)
                 signOut({
                   redirect: true,
-                  callbackUrl: '/signin'
+                  callbackUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
                 })
               }}
             >

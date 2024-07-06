@@ -167,7 +167,10 @@ export default function Insight() {
                 }}
             >
                 <Typography variant="h3">
-                    Compare the best healthcare facilities.
+                    Find a Healthcare proverder to review
+                </Typography>
+                <Typography variant="paragraphlg">
+                    Top rated healthcare providers better patient outcomes
                 </Typography>
             </Box>
 
@@ -197,7 +200,7 @@ export default function Insight() {
                         textcolor="white"
                         bkgcolor={theme.palette.primary.main}
                     >
-                        Write insight
+                        Leave a review
                     </NButton>
                     <Divider sx={{mt: 4}}/>
                     <Typography variant="labelxs" mt={4}>
@@ -508,6 +511,7 @@ export default function Insight() {
                 open={modalOpen}
                 width={isMobile ? '90%' : '60%'}
                 showCloseIcon={false}
+                height='auto'
             >
                 <Box className="flex flex-col p-2 gap-3"
                     sx={{
@@ -531,10 +535,10 @@ export default function Insight() {
                             alignItems: 'center'
                         }}
                     >
-                    <Star sx={{color: '#FFCB00', fontSize: '20px'}}/>
-                    <Typography variant="labelsm">
-                        Write Insight
-                    </Typography>
+                        <Star sx={{color: '#FFCB00', fontSize: '20px'}}/>
+                        <Typography variant="labelsm">
+                            Rating & Review
+                        </Typography>
                     </Box>
                     <IconButton onClick={handleModalClose}>
                     <Close sx={{fontSize: '16px'}}/>
@@ -551,7 +555,7 @@ export default function Insight() {
                             mb: 2
                         }}
                     >
-                        Health Care
+                        Select healthcare provider
                     </Typography>
                     <Select
                         className="w-full h-10 font-light"
@@ -576,7 +580,7 @@ export default function Insight() {
                 >
                     <InputField
                         label=""
-                        placeholder="Write your insight"
+                        placeholder="Leave a review here"
                         isBorder={true}
                         value={insight}
                         onChange={(e) => setInsight(e.target.value)}
@@ -594,9 +598,42 @@ export default function Insight() {
                             mb: 2
                         }}
                     >
-                        Rating
+                        Give a rating
                     </Typography>
-                    <Select
+                    <Box display={'flex'}>
+                        {
+                            [1,2,3,4,5].map((rating, index) => (
+                                <Box key={index}
+                                    onClick={()=>setSelectedRating(rating)}
+                                    sx={{
+                                        width: '60px',
+                                        display: 'flex',
+                                        gap: 1,
+                                        cursor: 'pointer',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        height: '40px',
+                                        p: 3,
+                                        borderRight: rating !== 5 ? `3px solid ${theme.palette.secondary.lightest}` : 'none',
+                                        borderTopLeftRadius: rating === 1 ? theme.borderRadius.sm : 'none',
+                                        borderBottomLeftRadius: rating === 1 ? theme.borderRadius.sm : 'none',
+                                        borderTopRightRadius: rating === 5 ? theme.borderRadius.sm : 'none',
+                                        borderBottomRightRadius: rating === 5 ? theme.borderRadius.sm : 'none',
+                                        backgroundColor: rating === selectedRating ? theme.palette.primary.main : theme.palette.secondary.lighter
+                                    }}
+                                >
+                                    <Star sx={{color: '#FFCB00', fontSize: '15px'}}/>
+                                    <Typography
+                                        variant="labelxs"
+                                        color={rating === selectedRating ? 'white' : 'black'}
+                                    >
+                                        {rating}
+                                    </Typography>
+                                </Box>
+                            ))
+                        }
+                    </Box>
+                    {/* <Select
                         className="w-full h-10 font-light"
                         options={[
                             {value: 0, label: 0},
@@ -616,7 +653,7 @@ export default function Insight() {
                             value: selectedRating,
                             label: selectedRating,
                         }}
-                    />
+                    /> */}
                 </Box>
                 <Box width={'100%'}>
                     <NButton type='submit'

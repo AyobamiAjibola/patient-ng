@@ -47,7 +47,7 @@ export default function layout({ children }: any) {
     const handleLogout = async () => {
         await signOut({
             redirect: true,
-            callbackUrl: '/signin'
+            callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
         });
         // redirect('/signin')
     };

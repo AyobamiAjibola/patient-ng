@@ -8,7 +8,7 @@ import { createTheme } from '@mui/material';
 const ipatientTheme: IPatientTypes = createTheme({
     palette: {
       //@ts-ignore
-      primary: { main: '#05CC7E', darker: '#004146', lightest: '#CDF4E5' },
+      primary: { main: '#05CC7E', darker: '#004146', lightest: '#E6F9F2' },
       secondary: {
         main: "#252525",
         light: "#68727D",

@@ -2,7 +2,7 @@
 
 import Navbar from "@/app/components/Navbar";
 import { Avatar, Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
-import PButton from "../components/PButton";
+import PButton, { NButton } from "../components/PButton";
 import Image from "next/image";
 import { LocationOn } from "@mui/icons-material";
 import { characterBreaker, formAmount, wordBreaker } from "@/lib/helper";
@@ -632,13 +632,16 @@ export default function CrowdFundings() {
                   ))
                 }
                 <Box sx={{width: '200px', mt: isMobile ? '50px' : '70px', ml: isMobile ? '60px' : '80px'}}>
-                  <PButton transBg={false} bg={true} width="100%"
+                  <NButton
+                    bkgcolor={theme.palette.primary.main}
+                    textcolor="white"
+                    width="100%"
                     onClick={() => router.push('/crowdfunding/campaigns')}
                   >
                     <Typography>
                       Support a Campaign
                     </Typography>
-                  </PButton>
+                  </NButton>
                 </Box>
                 
               </Box>
@@ -648,7 +651,7 @@ export default function CrowdFundings() {
                 }}
               >
                 <img
-                  src='/crowdImg.png'
+                  src='/crowed-img.png'
                   alt='campain'
                   style={{
                     width: '100%',
@@ -692,7 +695,11 @@ export default function CrowdFundings() {
                 Have a health-related cause? Start your crowdfunding campaign today!
               </Typography>
             </Box>
-            <PButton transBg={false} bg={true} width="250px"
+            <NButton
+              bkgcolor={theme.palette.primary.main}
+              textcolor={theme.palette.primary.darker}
+              hovercolor="white"
+              width="250px"
               onClick={() => router.push('/crowdfunding/new-campaign')}
             >
               <Typography 
@@ -705,7 +712,7 @@ export default function CrowdFundings() {
               >
                 Get started
               </Typography>
-            </PButton>
+            </NButton>
           </Box>
         </Box>
       </Box>
