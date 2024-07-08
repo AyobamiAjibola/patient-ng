@@ -1,7 +1,6 @@
 'use client';
 
-import { Box, Typography, useTheme } from "@mui/material";
-import { useMediaQuery } from "@uidotdev/usehooks";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import HTMLReactParser from 'html-react-parser';
 import { useGetDocs } from "../admin/hooks/userHook/useUser";
