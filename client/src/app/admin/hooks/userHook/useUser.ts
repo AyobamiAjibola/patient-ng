@@ -441,3 +441,129 @@ export const useDashDataGraph = () => {
     },
   });
 };
+
+export const useCreateHospital = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.createHospital(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['create-hospital'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useGetHospitals = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: () => {
+      return api.getHospitals();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-hospitals'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useGetDocs = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: () => {
+      return api.getDocs();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-docs'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useUpdateTC = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.updateTermsAndCondition(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['update-t-c'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useContactUs = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.updateContactUs(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-contact-us'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useDeleteHospital = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.deleteHospital(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['delete-hospital'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};

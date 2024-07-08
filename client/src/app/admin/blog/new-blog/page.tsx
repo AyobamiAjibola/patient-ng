@@ -435,7 +435,7 @@ export default function page() {
                 onClose={() => setOpen(false)}
                 open={open}
                 width={isMobile ? '80%' : '60%'}
-                height={250}
+                height='auto'
                 showCloseIcon={false}
             >
                 <Box className="flex flex-col py-5 px-10">

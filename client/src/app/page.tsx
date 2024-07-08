@@ -17,12 +17,13 @@ import HtmlToText from './components/HtmlToText';
 import { useFetchStories } from './admin/hooks/patientStoriesHook/usePatientStories';
 import { useGetPodcasts } from './admin/hooks/podcastHook/usePodcast';
 import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
+import { useAtom } from 'jotai';
+import { openModal, openType } from '@/lib/atoms';
 
 export default function HomePage() {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 900px)');
-  const isLoggedIn = true;
   const getCrowdfundingMutation = useGetCrowdfundings();
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
   const [blogs, setBlogs] = useState<any>([]);
@@ -34,6 +35,8 @@ export default function HomePage() {
   const [podcasts, setPodcasts] = useState<any>([]);
   const [webinar, setWebinar] = useState<any>([]);
   const { status: authStatus } = useSession();
+  const [_, setType] = useAtom(openType)
+  const [__, setOpen] = useAtom(openModal);
 
   const getHeight = () => {
     if (typeof window !== 'undefined') {
@@ -112,6 +115,32 @@ export default function HomePage() {
       <Navbar />
       <Box
         sx={{
+          display: 'flex',
+          gap: 3,
+          position: 'absolute',
+          pl: isMobile ? '20px' : '90px',
+          top: isMobile ? '15em' : '25em'
+        }}
+      >
+        <PButton transBg={false} bg={true}
+          onMouseEnter={()=>setType('contact')}
+          onClick={()=>setOpen(true)}
+        >
+          <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+            Contact Us
+          </Typography>
+        </PButton>
+        <PButton transBg={true} bg={false}
+          onMouseEnter={()=>setType('about')}
+          onClick={()=>setOpen(true)}
+        >
+          <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+            About Us
+          </Typography>
+        </PButton>
+      </Box>
+      <Box
+        sx={{
           width: '100%',
           height: isMobile ? imgHeight : '800px',
           marginTop: '-80px',
@@ -137,11 +166,11 @@ export default function HomePage() {
               position: 'absolute',
               display: 'flex',
               flexDirection: 'column',
-              top: isMobile ? 100 : 170
+              top: isMobile ? 90 : 170
             }}
           >
             <Typography 
-              variant={isMobile ? 'labellg' : 'h1'}
+              variant={isMobile ? 'h5' : 'h3'}
               sx={{
                 color: 'white',
                 mb: isMobile ? 1 : 4,
@@ -151,7 +180,7 @@ export default function HomePage() {
               Empowering Patients, Transforming Healthcare.
             </Typography>
             <Typography
-              variant={isMobile ? 'paragraphsm' : 'paragraphxl'}
+              variant={isMobile ? 'paragraphxs' : 'paragraphlg'}
               sx={{
                 color: theme.palette.secondary.lighter,
                 width: isMobile ? '100%' : '80%'
@@ -159,23 +188,6 @@ export default function HomePage() {
             >
               We believe in putting patients at the center of their healthcare journey. Discover a community-driven platform dedicated to providing support, resources, and advocacy for patients across Nigeria.
             </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                gap: 3, mt: isMobile ? 2 : 6
-              }}
-            >
-              <PButton transBg={false} bg={true}>
-                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-                  Contact Us
-                </Typography>
-              </PButton>
-              <PButton transBg={true} bg={false}>
-                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-                  About Us
-                </Typography>
-              </PButton>
-            </Box>
           </Box>
         </Box>
 
@@ -184,7 +196,7 @@ export default function HomePage() {
             height: isMobile ? '250px' : '700px',
             px: isMobile ? '20px' : '90px',
             position: 'absolute',
-            top: isMobile ? '14rem' : '35rem',
+            top: isMobile ? '17rem' : '30rem',
             width: '100%'
           }}
         >

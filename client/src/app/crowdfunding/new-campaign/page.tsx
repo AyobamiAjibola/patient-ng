@@ -347,7 +347,7 @@ export default function page() {
                     {steps && steps === '0' && (<Box
                         sx={{
                             display: 'flex',
-                            height: isMobile ? 'auto' : '70%',
+                            height: '70vh', //isMobile ? 'auto' : '70%',
                             width: '100%',
                             flexDirection: 'column',
                             py: 4,
@@ -366,7 +366,7 @@ export default function page() {
                         <Box
                             sx={{
                                 width: '100%',
-                                height: isMobile ? '300px' : '100%',
+                                height: '100%', //isMobile ? '300px' : '100%',
                                 border: `1px solid ${theme.palette.secondary.lighter}`,
                                 borderRadius: theme.borderRadius.sm,
                                 backgroundColor: 'white',

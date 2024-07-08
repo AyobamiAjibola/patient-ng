@@ -1,6 +1,7 @@
 import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
+    aboutAndContactUsHandler,
     createAdvocacyHandler,
     createAwardHandler,
     createInsightHandler,
@@ -9,17 +10,22 @@ import {
     deactivateUserHandler, 
     deleteAdvocacyHandler, 
     deleteAwardHandler, 
+    deleteHospitalHandler, 
     deleteInsightHandler, 
     getAllAdvocaciesHandler, 
     getAllInsightsHandler, 
     getAllUserHandler, 
     getAwardsHandler, 
+    getDocsHandler, 
+    getHospitalsHandler, 
     getSingleAdvocateHandler, 
     getSingleAwardHandler, 
     getSingleInsightHandler, 
     getSingleUserHandler, 
     getUserAdvocaciesHandler, 
     getUserInsightsHandler, 
+    postHospitalHandler, 
+    postTAndCHandler, 
     reviewOnInsightHandler, 
     siteVisitCountHandler, 
     updateAdvocacyHandler, 
@@ -195,6 +201,42 @@ const userEndpoints: RouteEndpoint  = [
         method: 'post',
         path: '/dashboard-data-graph',
         handler: dashboardDataUsersGraphHandler
+    },
+    {
+        name: 'post hospital',
+        method: 'post',
+        path: '/post-hospital',
+        handler: postHospitalHandler
+    },
+    {
+        name: 'get hospitals',
+        method: 'get',
+        path: '/get-hospitals',
+        handler: getHospitalsHandler
+    },
+    {
+        name: 'get ipatient docs',
+        method: 'get',
+        path: '/get-docs',
+        handler: getDocsHandler
+    },
+    {
+        name: 'post T and C',
+        method: 'put',
+        path: '/post-t-and-c',
+        handler: postTAndCHandler
+    },
+    {
+        name: 'post about and contact us',
+        method: 'put',
+        path: '/post-contact-about-us',
+        handler: aboutAndContactUsHandler
+    },
+    {
+        name: 'delete hospital',
+        method: 'delete',
+        path: '/delete-hospital/:id',
+        handler: deleteHospitalHandler
     }
 ]
 

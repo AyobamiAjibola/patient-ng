@@ -217,8 +217,68 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const createHospital = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      ('/post-hospital', requestParameters);
+    return response.data;
+  };
+
+  const updateTermsAndCondition = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      ('/post-t-and-c', requestParameters);
+    return response.data;
+  };
+
+  const updateContactUs = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      ('/post-contact-about-us', requestParameters);
+    return response.data;
+  };
+
+  const deleteHospital = async (
+    id: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.delete<
+      types.ApiResponseSuccess<any>>
+      (`/delete-hospital/${id}`);
+    return response.data;
+  };
+
+  const getHospitals = async (): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/get-hospitals`);
+    return response.data;
+  };
+
+  const getDocs = async (): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/get-docs`);
+    return response.data;
+  };
+
   return {
     deleteAward,
+    getDocs,
+    getHospitals,
+    updateTermsAndCondition,
+    updateContactUs,
+    deleteHospital,
+    createHospital,
     dashData,
     dashDataGraph,
     siteVisit,

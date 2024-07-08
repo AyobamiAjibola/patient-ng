@@ -184,7 +184,7 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
                 color: theme.palette.primary.darker
             }}
         >
-            Patient.ng
+          Patient.ng
         </Typography>)}
       </DrawerHeader>
 

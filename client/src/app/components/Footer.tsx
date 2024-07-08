@@ -1,12 +1,18 @@
 'user client'
 
 import { Copyright, FacebookRounded, FiberManualRecord, Instagram, LinkedIn } from "@mui/icons-material";
-import { Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material"
-import { Button, Dropdown } from "antd";
+import { Box, Divider, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Dropdown } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { MenuProps } from 'antd';
 import Link from "next/link";
+import MModal from "./Modal";
+import { useAtom } from "jotai";
+import { openModal, openType } from "@/lib/atoms";
+import HTMLReactParser from 'html-react-parser';
+import { useEffect, useState } from "react";
+import { useGetDocs } from "../admin/hooks/userHook/useUser";
 
 const links = [
     {name: "Advocacy", link: '/advocacy'},
@@ -28,6 +34,13 @@ export default function Footer() {
     const theme = useTheme();
     const isMobile = useMediaQuery('(max-width: 900px)');
     const router = useRouter();
+    const [open, setOpen] = useAtom(openModal);
+    const [data, setData] = useState<any>({
+        contactUs: '',
+        aboutUs: ''
+    });
+    const getDocsMutation = useGetDocs();
+    const [type, setType] = useAtom(openType)
 
     const items: MenuProps['items'] = [
         {
@@ -79,8 +92,27 @@ export default function Footer() {
             ),
         },
     ];
-      
 
+    const handleGetDocs = async () => {
+        await getDocsMutation.mutateAsync({}, {
+            onSuccess: (response: any) => {
+                setData({
+                    contactUs: response.result.contactUs,
+                    aboutUs: response.result.aboutUs
+                })
+            }
+        })
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+        setType('')
+    }
+
+    useEffect(() => {
+        handleGetDocs()
+    },[]);
+      
     return (
         <Box
             sx={{
@@ -204,43 +236,83 @@ export default function Footer() {
                         alignItems: 'center', gap: 2
                     }}
                 >
-                    <Typography
+                    <Typography onClick={()=>router.push('/privacy-policy')}
                         sx={{
                             fontSize: theme.typography.labelxs.fontSize,
-                            color: theme.palette.primary.main
+                            color: theme.palette.primary.main,
+                            cursor: 'pointer'
                         }}
                     >
                         Terms & Conditions
                     </Typography>
                     <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
-                    <Typography
+                    <Typography onClick={()=>router.push('/privacy-policy')}
                         sx={{
                             fontSize: theme.typography.labelxs.fontSize,
-                            color: theme.palette.primary.main
+                            color: theme.palette.primary.main,
+                            cursor: 'pointer'
                         }}
                     >
                         Privacy policy
                     </Typography>
                     <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
                     <Typography
+                        onMouseEnter={()=>setType('about')}
+                        onClick={()=>setOpen(true)}
                         sx={{
                             fontSize: theme.typography.labelxs.fontSize,
-                            color: theme.palette.primary.main
+                            color: theme.palette.primary.main,
+                            cursor: 'pointer'
                         }}
                     >
                         About us
                     </Typography>
                     <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
                     <Typography
+                        onMouseEnter={()=>setType('contact')}
+                        onClick={()=>setOpen(true)}
                         sx={{
                             fontSize: theme.typography.labelxs.fontSize,
-                            color: theme.palette.primary.main
+                            color: theme.palette.primary.main,
+                            cursor: 'pointer'
                         }}
                     >
                         Contact us
                     </Typography>
                 </Box>
             </Box>
+
+            <MModal
+                onClose={handleClose}
+                open={open}
+                width={isMobile ? '95%' : '60%'}
+                height='auto'
+                showCloseIcon={false}
+            >
+                <Box className="flex flex-col"
+                    sx={{
+                        py: isMobile ? 2 : 5,
+                        px: isMobile ? 3 : 10
+                    }}
+                >
+                    <Typography variant={isMobile ? "h6" : "h5"}>
+                        {type === 'contact' ? 'Contact Us' : 'About Us'}
+                    </Typography>
+                    <Divider sx={{my: 3}} />
+                    <Box
+                        sx={{
+                            bgcolor: 'white',
+                            width: 'white',
+                            p: 3,
+                            height: 'auto',
+                            borderBottomLeftRadius: theme.borderRadius.sm,
+                            borderBottomRightRadius: theme.borderRadius.sm
+                        }}
+                    >
+                        {type === 'contact' ? HTMLReactParser(data.contactUs) : HTMLReactParser(data.aboutUs)}
+                    </Box>
+                </Box>
+            </MModal>
         </Box>
     )
 }

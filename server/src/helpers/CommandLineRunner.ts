@@ -10,24 +10,22 @@ import AbstractCrudRepository = appModelTypes.AbstractCrudRepository;
 import UserRepository from '../repository/UserRepository';
 import admin from '../resources/data/admin.json';
 import { IUserModel } from '../models/User';
-// import BankRepository from '../repository/BankRepository';
-// import Bank from '../models/Bank';
-// import axiosClient from '../services/api/axiosClient';
-// import IPayStackBank = appModelTypes.IPayStackBank;
+import PatientDocsRepository from '../repository/PatientDocsRepository';
+import { IPatientDocsModel } from '../models/PatientDocs';
 
 export default class CommandLineRunner {
   public static singleton: CommandLineRunner = new CommandLineRunner();
   private userRepository: AbstractCrudRepository;
-  // private bankRepository: BankRepository;
+  private patientDocsRepository: PatientDocsRepository;
 
   constructor() {
     this.userRepository = new UserRepository();
-    // this.bankRepository = new BankRepository();
+    this.patientDocsRepository = new PatientDocsRepository();
   }
 
   public static async run() {
     await this.singleton.loadDefaultUser();
-    // await this.singleton.loadPayStackBanks();
+    await this.singleton.loadDefaultPatientDocs();
   }
 
   async createUploadDirectory() {
@@ -35,32 +33,20 @@ export default class CommandLineRunner {
     if (!dirExist) await fs.mkdir(UPLOAD_BASE_PATH);
   }
 
-  // async loadPayStackBanks() {
-  //   await Bank.collection.drop();
+  async loadDefaultPatientDocs() {
+    const patientDocs = await this.patientDocsRepository.findOne({});
 
-  //   axiosClient.defaults.baseURL = `${process.env.PAYMENT_GW_BASE_URL}`;
-  //   axiosClient.defaults.headers.common['Authorization'] = `Bearer ${process.env.PAYMENT_GW_SECRET_KEY}`;
-
-  //   const response = await axiosClient.get('/bank');
-
-  //   const banks = response.data.data as IPayStackBank[];
-
-  //   const bankValues = banks.map(bank => ({
-  //     name: bank.name,
-  //     slug: bank.slug,
-  //     code: bank.code,
-  //     longCode: bank.longcode,
-  //     gateway: bank.gateway,
-  //     payWithBank: bank.pay_with_bank,
-  //     active: bank.active,
-  //     country: bank.country,
-  //     currency: bank.currency,
-  //     type: bank.type,
-  //     isDeleted: bank.is_deleted,
-  //   }));
-
-  //   await this.bankRepository.bulkCreate(bankValues as any);
-  // }
+    if(!patientDocs) {
+      await this.patientDocsRepository.save({
+        termsAndCondition: {
+          content: '',
+          dateUpdated: new Date()
+        },
+        aboutUs: '',
+        contactUs: ''
+      } as IPatientDocsModel)
+    }
+  }
 
   async loadDefaultUser() {
     const adminUser = await this.userRepository.findOne({ email: admin.email });

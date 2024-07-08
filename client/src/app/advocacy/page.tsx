@@ -145,7 +145,7 @@ export default function page() {
                 <></>
               ) : (
                 <NButton
-                  onClick={() => setOpenModalReg(true)}
+                  onClick={() => router.push('/signup')}
                   textcolor={theme.palette.primary.main}
                   bordercolor={theme.palette.primary.main}
                   bkgcolor="white"
@@ -244,7 +244,7 @@ export default function page() {
             color: theme.palette.secondary.light,
           }}
         >
-          This guide explains the different stages of the HSE Your Service, Your Say complaints policy.
+          This guide details the different steps of the Patient.ng complaints process.
         </Typography>
         <Box
           sx={{
@@ -282,8 +282,8 @@ export default function page() {
             >
               <Box
                 sx={{
-                  width: '50px',
-                  height: '50px',
+                  minWidth: '50px',
+                  minHeight: '50px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -317,8 +317,8 @@ export default function page() {
             >
               <Box
                 sx={{
-                  width: '50px',
-                  height: '50px',
+                  minWidth: '50px',
+                  minHeight: '50px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -352,8 +352,8 @@ export default function page() {
             >
               <Box
                 sx={{
-                  width: '50px',
-                  height: '50px',
+                  minWidth: '50px',
+                  minHeight: '50px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -387,8 +387,8 @@ export default function page() {
             >
               <Box
                 sx={{
-                  width: '50px',
-                  height: '50px',
+                  minWidth: '50px',
+                  minHeight: '50px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -410,7 +410,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(4)}
               >
-                {'Submit your complaint online or email to advocacy@patient.ng'}
+                Step 4
               </Typography>
             </Box>
             <Box
@@ -422,8 +422,8 @@ export default function page() {
             >
               <Box
                 sx={{
-                  width: '50px',
-                  height: '50px',
+                  minWidth: '50px',
+                  minHeight: '50px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -445,7 +445,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(5)}
               >
-                {'Request the HSE to review the complaint'}
+                Step 5
               </Typography>
             </Box>
           </Box>
@@ -471,23 +471,22 @@ export default function page() {
             </Typography>
             {currentStep === 3 && (<ul
               style={{
-                listStyleType: 'disc',
-                margin: '20px',
-                padding: '20px'
+                margin: '10px',
+                padding: '10px'
               }}
             >
-              <li>Your name</li>
-              <li>Phone number</li>
-              <li>Email address</li>
-              <li>Name of the hospital</li>
-              <li>Name of the section in the hospital</li>
-              <li>Who was involved, dates and times of the experience</li>
-              <li>An accurate description of what happened.</li>
-              <li>Your complaint should also outline what you have done to resolve the issue to date</li>
-              <li>and what you want to happen now to resolve your issue.</li>
-              <li>You can also attach any documentation to your complaint that you feel is relevant, through the online form or email.</li>
-              <li>In your written complaint, you should grant permission to patient.ng to access your personal confidential information.</li>
-              <li>If you don’t grant patient.ng permission to access your personal confidential information, we may not be able to effectively process your complaint.</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Your name</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Phone number</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Email address</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Name of the hospital</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Name of the section in the hospital</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Who was involved, dates and times of the experience</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> An accurate description of what happened.</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Your complaint should also outline what you have done to resolve the issue to date</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> and what you want to happen now to resolve your issue.</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> You can also attach any documentation to your complaint that you feel is relevant, through the online form or email.</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> In your written complaint, you should grant permission to patient.ng to access your personal confidential information.</li>
+              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> If you don’t grant patient.ng permission to access your personal confidential information, we may not be able to effectively process your complaint.</li>
             </ul>)}
             <Typography variant="paragraphsm">
               {currentStep === 1
@@ -500,7 +499,7 @@ export default function page() {
                   : currentStep === 3
                     ? ``
                     : currentStep === 4
-                      ? `Submit your complaint online or email to advocacy@patient.ng`
+                      ? `Submit your complaint online or email to complaints@patient.ng`
                       : ` If you are unhappy with the response you receive from a healthcare institution after Step 3, you can consider asking our advocates at patient.ng to
                       review your complaint even further.
                       To proceed, you should reply to patient.ng within 30 days of the initial response. Your email response should begin with`
@@ -683,7 +682,7 @@ export default function page() {
             borderRadius: theme.borderRadius.md
           }}
         >
-          <Typography variant={isMobile ? "h5" : "h4"} color={'white'}>
+          <Typography variant={isMobile ? "h5" : "h4"} color={'white'} textAlign={'center'}>
             {/* {session?.user ? 'Not an advocate? Become an advocate today' : 'Sign up as an advocate today'} */}
             Interested in becoming a patient advocate?
           </Typography>

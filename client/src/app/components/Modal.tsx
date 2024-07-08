@@ -34,6 +34,7 @@ const MModal = ({ onClose, open, width, showCloseIcon = true, onClickOut = true,
           p: theme.spacing(2),
           borderRadius: theme.borderRadius.sm,
           height: height,
+          maxHeight: '80vh',
           overflow: 'scroll',
           ...props
         }}

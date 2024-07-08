@@ -59,7 +59,7 @@ const TextEditor = ({ preference, setPreference }: any) => {
           theme="snow"
           modules={modules}
           formats={formats}
-          placeholder="Blog content...."
+          placeholder="Content...."
           onChange={handleProcedureContentChange}
           className="h-[250px]"
           style={{width: '100%'}}

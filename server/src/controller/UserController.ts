@@ -13,6 +13,8 @@ import Generic from "../utils/Generic";
 import { IInsightModel } from "../models/Insight";
 import { IAwardModel } from "../models/Award";
 import SiteVisitCount, { ISiteVisitCountModel } from "../models/SiteVisitCount";
+import HospitalInfo from "../models/HospitalInfo";
+import PatientDocs from "../models/PatientDocs";
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 form.setMaxListeners(15);
@@ -657,6 +659,128 @@ export default class UserController {
       
         return Promise.resolve(response);
 
+    }
+
+    @TryCatch
+    public async postHospital (req: Request) {
+        const { error, value } = Joi.object<any>({
+            hospitalName: Joi.string().required().label('Hospital Name'),
+            address: Joi.string().label('Address')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const hospital = await HospitalInfo.findOne({ hospitalName: value.hospitalName.toLowerCase() });
+        if(hospital)
+            return Promise.reject(CustomAPIError.response("Hospital already exist.", HttpStatus.FORBIDDEN.code));
+
+        await HospitalInfo.create({
+            hospitalName: value.hospitalName.toLowerCase(),
+            address: value.address
+        });
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.'
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async postTAndC (req: Request) {
+        const { error, value } = Joi.object<any>({
+            content: Joi.string().required().label('Content')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const terms = await PatientDocs.findOne({});
+
+        await PatientDocs.updateOne({ _id: terms?._id }, { 
+            termsAndCondition: {
+                content: value.content,
+                dateUpdated: new Date()
+            }
+        })
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.'
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async aboutAndContactUs (req: Request) {
+        const { error, value } = Joi.object<any>({
+            aboutUs: Joi.string().label('About Us'),
+            contactUs: Joi.string().label('Contact Us')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const terms = await PatientDocs.findOne({});
+
+        await PatientDocs.updateOne({ _id: terms?._id }, { 
+            aboutUs: value.aboutUs ? value.aboutUs : terms?.aboutUs,
+            contactUs: value.contactUs ? value.contactUs : terms?.contactUs
+        })
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.'
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async getHospitals (req: Request) {
+
+        const hospitals = await HospitalInfo.find({});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: hospitals
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getDocs (req: Request) {
+
+        const tc = await PatientDocs.findOne({});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            result: tc
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async deleteHospital (req: Request) {
+        const id = req.params.id
+        
+        const hospital = await HospitalInfo.findById(id);
+
+        if(!hospital)
+            return Promise.reject(CustomAPIError.response("Hospital does not exist.", HttpStatus.NOT_FOUND.code));
+
+        await HospitalInfo.deleteOne({ _id: hospital._id });
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted.'
+        };
+      
+        return Promise.resolve(response);
     }
 
     private async doCreateInsight(req: Request): Promise<HttpResponse<IUserModel>> {

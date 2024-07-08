@@ -169,3 +169,39 @@ export const dashboardDataHandler = authenticateRouteWrapper(async (req, res) =>
 
     res.status(response.code).json(response);
 });
+
+export const postHospitalHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.postHospital(req);
+
+    res.status(response.code).json(response);
+});
+
+export const postTAndCHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.postTAndC(req);
+
+    res.status(response.code).json(response);
+});
+
+export const aboutAndContactUsHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.aboutAndContactUs(req);
+
+    res.status(response.code).json(response);
+});
+
+export const getHospitalsHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getHospitals(req);
+
+    res.status(response.code).json(response);
+};
+
+export const getDocsHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getDocs(req);
+
+    res.status(response.code).json(response);
+};
+
+export const deleteHospitalHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.deleteHospital(req);
+
+    res.status(response.code).json(response);
+});

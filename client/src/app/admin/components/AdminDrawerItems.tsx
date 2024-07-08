@@ -8,7 +8,10 @@ import {
     FlagOutlined, 
     KeyboardVoiceOutlined, 
     MedicationOutlined, 
-    PersonOutlineOutlined 
+    PersonOutlineOutlined,
+    LocalHospitalOutlined,
+    HandshakeOutlined,
+    FindInPageOutlined
 } from "@mui/icons-material"
 
 const items = {
@@ -64,6 +67,23 @@ const items = {
             title: 'Award Mgt',
             link: '/admin/award',
             iconName: EmojiEventsOutlined
+        }
+    ],
+    OTHERS: [
+        {
+            title: 'Hospitals',
+            link: '/admin/hospitals',
+            iconName: LocalHospitalOutlined
+        },
+        {
+            title: 'T&C',
+            link: '/admin/terms-and-condition',
+            iconName: HandshakeOutlined
+        },
+        {
+            title: 'Contact/About Us',
+            link: '/admin/contact-and-about-us',
+            iconName: FindInPageOutlined
         }
     ]
 }
