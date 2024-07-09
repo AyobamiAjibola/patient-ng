@@ -49,7 +49,7 @@ export default function layout({ children }: any) {
             redirect: true,
             callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
         });
-        redirect('/signin')
+        router.push('/signin')
     };
 
     useEffect(() => {
