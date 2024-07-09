@@ -30,6 +30,7 @@ export default function MenuDropDown2({ anchorEl, setAnchorEl, open, handleClick
       redirect: true,
       callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
     });
+    router.push('signin')
   };
 
   return (

@@ -21,6 +21,7 @@ import { wordBreaker } from "@/lib/helper";
 import { useCreateInsight, useGetInsights } from "../admin/hooks/insightHook/useInsight";
 import Toastify from "../components/ToastifySnack";
 import { useSession } from "next-auth/react";
+import { useGetHospitals } from "../admin/hooks/userHook/useUser";
 
 const rates = [
     "All",
@@ -55,6 +56,7 @@ export default function Insight() {
     const insightsMutation = useGetInsights();
     const [insightData, setInsightData] = useState<any>([]);
     const { data: session } = useSession();
+    const getHospitalMutation = useGetHospitals();
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -116,6 +118,22 @@ export default function Insight() {
         })
     }
 
+    const fetchHospitals = async () => {
+        getHospitalMutation.mutateAsync({}, {
+            onSuccess: (response: any) => {
+                let array: any = [];
+    
+                response.results.map((item: any, index: number) => {
+                array.push({
+                    value: item.hospitalName,
+                    label: capitalize.words(item.hospitalName),
+                });
+                });
+                setHospitals(array);
+            }
+        })
+    }
+
     useEffect(() => {
         let stateArray: any = [];
         const newData = Object.entries(stateLga);
@@ -130,15 +148,7 @@ export default function Insight() {
     }, []);
 
     useEffect(() => {
-        let array: any = [];
-    
-        hospitalNames.map((item, index) => {
-          array.push({
-            value: item,
-            label: capitalize.words(item),
-          });
-        });
-        setHospitals(array);
+        fetchHospitals()
     }, []);
 
     useEffect(() => {

@@ -138,7 +138,7 @@ export default class AuthenticationController {
                 .label("password"),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-
+        console.log(value, 'vals')
         const password = await this.passwordEncoder?.encode(value.password as string);
 
         const payload: Partial<IUserModel> = {

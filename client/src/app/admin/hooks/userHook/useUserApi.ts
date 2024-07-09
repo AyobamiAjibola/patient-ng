@@ -82,7 +82,6 @@ export const useUserApi = () => {
   const signUp = async (
     requestParameters: any
   ): Promise<types.ApiResponseSuccess<any>> => {
-
     const response = await axiosAuth.post<
       types.ApiResponseSuccess<any>>
       ('/sign-up', requestParameters);

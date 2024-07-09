@@ -107,6 +107,7 @@ export default function page({children}: any) {
                   redirect: true,
                   callbackUrl:`${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
                 })
+                router.push('signin')
               }}
             >
               Sign in

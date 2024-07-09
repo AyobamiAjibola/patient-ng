@@ -118,32 +118,36 @@ export default function page() {
     
         await validateSignUpTokenMutation.mutateAsync(payload, {
           onSuccess: async () => {
-            await signUpMutation.mutateAsync({}, {
-              onSuccess: async () => {
-                await signIn('credentials', {
-                  email,
-                  password,
-                  redirect: false,
-                });
-                
-                await update({
-                  ...session,
-                  user: {
-                    ...session?.user,
-                    level: 1,
-                  },
-                });
-    
-                setOpenAccountVerifyModal(false)
-                setOpenModalReg2(true);
-                // setUserDetails({});
-                localStorage.removeItem('userInfo')
-              },
-              onError: (error: any) => {
-                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
-                handleOpenNotification('error', '', errorMessage)
-              }
+            await signUpMutation.mutateAsync(userDetails, {
+                onSuccess: async () => {
+                    await signIn('credentials', {
+                        email,
+                        password,
+                        redirect: false,
+                    });
+                    
+                    await update({
+                        ...session,
+                        user: {
+                            ...session?.user,
+                            level: 1,
+                        },
+                    });
+        
+                    setOpenAccountVerifyModal(false)
+                    setOpenModalReg2(true);
+                    // setUserDetails({});
+                    localStorage.removeItem('userInfo')
+                },
+                onError: (error: any) => {
+                    const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                    handleOpenNotification('error', '', errorMessage)
+                }
             })
+          },
+          onError: (error: any) => {
+            const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+            handleOpenNotification('error', '', errorMessage)
           }
         })
       }
