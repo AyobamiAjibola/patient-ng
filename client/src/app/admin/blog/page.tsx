@@ -85,7 +85,7 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Blog
         </Typography>
-        {session?.user.userType.includes('blogger') && (<NButton 
+        {session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') && (<NButton 
           textcolor="white" 
           bkgcolor={theme.palette.primary.main} 
           onClick={() => router.push('/admin/blog/new-blog')}

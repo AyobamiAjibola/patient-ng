@@ -11,7 +11,8 @@ import {
     PersonOutlineOutlined,
     LocalHospitalOutlined,
     HandshakeOutlined,
-    FindInPageOutlined
+    FindInPageOutlined,
+    AttachFileOutlined
 } from "@mui/icons-material"
 
 const items = {
@@ -84,6 +85,11 @@ const items = {
             title: 'Contact/About Us',
             link: '/admin/contact-and-about-us',
             iconName: FindInPageOutlined
+        },
+        {
+            title: 'Advocacy Files',
+            link: '/admin/advocacy-files',
+            iconName: AttachFileOutlined
         }
     ]
 }

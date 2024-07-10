@@ -335,7 +335,7 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Webinars
         </Typography>
-        {session?.user.userType.includes('webinar') && (<NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => setOpenModal(true)}>
+        {session?.user.userType.includes('webinar') || session?.user.userType.includes('admin') && (<NButton textcolor="white" bkgcolor={theme.palette.primary.main} onClick={() => setOpenModal(true)}>
           <Add/> New webinar
         </NButton>)}
       </Box>

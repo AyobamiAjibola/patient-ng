@@ -22,6 +22,7 @@ import capitalize from "capitalize";
 import Toastify from "@/app/components/ToastifySnack";
 import { useCreateCrowdfunding } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
 import { useSession } from "next-auth/react";
+import { useFetchSingleUser } from "@/app/admin/hooks/userHook/useUser";
 
 interface IProps {
     title: string;
@@ -52,6 +53,8 @@ export default function page() {
     const { verifyBank, verifyBankIsLoading, verified } = useBank();
     const [isErrorMsg, setIsErrorMsg] = useState<boolean>(false);
     const { data: session } = useSession();
+    const singleUserMutation = useFetchSingleUser();
+    const [userImg, setUserImg] = useState<string>('');
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -247,6 +250,18 @@ export default function page() {
     // },[data.accountNumber, data.bankCode]);
 
     const hasMounted = useRef(false);
+
+    useEffect(() => {
+        const handleFetch = async () => {
+            await singleUserMutation.mutateAsync(session?.user.userId as string, {
+                onSuccess: (response: any) => {
+                    setUserImg(response.result.image)
+                }
+            })
+        }
+        
+        handleFetch();
+    },[session]);
 
     useEffect(() => {
         const handleVeriBank = async () => {
@@ -1020,21 +1035,17 @@ export default function page() {
                                         borderBottomRightRadius: theme.borderRadius.sm
                                     }}
                                 >
-                                    <Avatar
-                                        src={"/model.png"}
+                                    <img
+                                        src={userImg ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${userImg}` : "/logo.png"}
                                         alt="user image"
-                                        sx={{
+                                        style={{
                                             width: '20px',
-                                            height: '20px'
+                                            height: '20px',
+                                            borderRadius: '50%'
                                         }}
                                     />
-                                    <Typography
-                                        sx={{
-                                            fontSize: theme.typography.labelxs.fontSize,
-                                            fontWeight: theme.typography.labelxs.fontWeight,
-                                        }}
-                                    >
-                                        Abayomi Olowu
+                                    <Typography variant="labelxs" className="capitalize">
+                                        {session?.user.fullName}
                                     </Typography>
                                     <Typography
                                         sx={{

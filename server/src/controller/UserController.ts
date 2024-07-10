@@ -8,13 +8,14 @@ import HttpStatus from "../helpers/HttpStatus";
 import datasources from '../services/dao';
 import { IUserModel } from "../models/User";
 import formidable, { File } from 'formidable';
-import { UPLOAD_BASE_PATH } from "../config/constants";
+import { ALLOWED_FILE_TYPES2, MESSAGES, UPLOAD_BASE_PATH } from "../config/constants";
 import Generic from "../utils/Generic";
 import { IInsightModel } from "../models/Insight";
 import { IAwardModel } from "../models/Award";
 import SiteVisitCount, { ISiteVisitCountModel } from "../models/SiteVisitCount";
 import HospitalInfo from "../models/HospitalInfo";
 import PatientDocs from "../models/PatientDocs";
+import AdvocacyFiles from "../models/AdvocacyFiles";
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 form.setMaxListeners(15);
@@ -587,8 +588,8 @@ export default class UserController {
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
 
-        if(user && !user.userType.includes("advocacy"))
-            return Promise.reject(CustomAPIError.response("You are not authorized as an advocate.", HttpStatus.UNAUTHORIZED.code));
+        // if(user && !user.userType.includes("advocacy"))
+        //     return Promise.reject(CustomAPIError.response("You are not authorized as an advocate.", HttpStatus.UNAUTHORIZED.code));
 
         const payload = {
             ...value,
@@ -959,5 +960,52 @@ export default class UserController {
 
             })
         })
+    }
+
+    private async doUploadMenuFile(req: Request): Promise<HttpResponse<any>> {
+        return new Promise((resolve, reject) => {
+            form.parse(req, async (err, fields, files) => {
+                //@ts-ignore
+                const userId = req.user._id;
+
+                const { error, value } = Joi.object<any>({
+                    file: Joi.any().label('file'),
+                    description: Joi.string().required().label('description'),
+                }).validate(fields);
+    
+                if (error) {
+                    return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+                }
+    
+                const user = await datasources.userDAOService.findById(userId);
+                if (!user)
+                    return reject(CustomAPIError.response('User not found', HttpStatus.NOT_FOUND.code));
+
+                if(user && !user.userType.includes("admin"))
+                    return Promise.reject(CustomAPIError.response("You not authorized.", HttpStatus.UNAUTHORIZED.code));
+        
+                const menuFile = await AdvocacyFiles.findOne({});
+
+                const basePath = `${UPLOAD_BASE_PATH}/files`;
+        
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                const payload = {
+                    file: _image,
+                    description: value.description
+                };
+
+                await AdvocacyFiles.findOneAndUpdate(
+                    { _id: menuFile?._id }, 
+                    { $push: { files: payload } },
+                    { new: true }
+                )
+
+                return resolve('' as any);
+            });
+        });
     }
 }
