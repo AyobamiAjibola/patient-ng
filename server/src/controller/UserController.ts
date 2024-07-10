@@ -897,14 +897,14 @@ export default class UserController {
                     firstName: Joi.string().label('First Name'),
                     lastName: Joi.string().label('Last Name'),
                     phone: Joi.string().label('Phone Number'),
-                    age: Joi.string().label('Age'),
-                    gender: Joi.string().label('Gender'),
-                    address: Joi.string().label('Address'),
+                    age: Joi.string().allow('').label('Age'),
+                    gender: Joi.string().allow('').label('Gender'),
+                    address: Joi.string().allow('').label('Address'),
                     userType: Joi.string().label('user types'),
                     healthInterests: Joi.array().optional().label('Health Interests'),
                     image: Joi.any().label('image'),
-                    state: Joi.string().label('State'),
-                    lga: Joi.string().label('LGA'),
+                    state: Joi.string().allow('').label('State'),
+                    lga: Joi.string().allow('').label('LGA'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 

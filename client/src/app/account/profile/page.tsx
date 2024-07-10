@@ -141,7 +141,7 @@ export default function Profile() {
       lga: selectedDistrict,
       userId: session?.user.userId
     }
-
+    console.log(payload, 'payload')
     updateUserMutation.mutateAsync(payload, {
       onSuccess: async () => {
         await fetchSingleUser(session?.user.userId)
@@ -331,11 +331,11 @@ export default function Profile() {
                   },
                   maxLength: {
                     value: 11,
-                    message: 'Phone Number should not exceed 12 digits',
+                    message: 'Phone Number should not exceed 11 digits',
                   },
                   minLength: {
                     value: 11,
-                    message: 'Phone Number should not less than 12 digits',
+                    message: 'Phone Number should not less than 11 digits',
                   },
                 })}
             />

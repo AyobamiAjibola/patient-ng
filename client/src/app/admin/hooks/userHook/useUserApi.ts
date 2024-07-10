@@ -41,12 +41,12 @@ export const useUserApi = () => {
     formData.append('firstName', data.firstName);
     formData.append('lastName', data.lastName);
     formData.append('email', data.email);
-    formData.append('state', data.state);
-    formData.append('lga', data.lga);
+    formData.append('state', data.state ? data.state : '');
+    formData.append('lga', data.lga ? data.lga : '');
     formData.append('phone', data.phone);
-    formData.append('age', data.age.toString());
-    formData.append('gender', data.gender);
-    formData.append('address', data.address);
+    formData.append('age', data.age ? data.age.toString() : '');
+    formData.append('gender', data.gender ? data.gender : '');
+    formData.append('address', data.address ? data.address : '');
     formData.append('image', data.image);
 
     if(data.userType && data.userType.length > 0 && session?.user.isAdmin) {
