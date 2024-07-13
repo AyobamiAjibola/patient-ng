@@ -104,10 +104,10 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarI
             <Typography variant='labelxs'
               onClick={()=>handleWebinarEdit(record._id)}
               sx={{
-                cursor: !session?.user.userType.includes('blogger') ? 'default' : 'pointer',
-                color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : theme.palette.primary.main,
+                cursor: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? 'pointer' : 'default',
+                color: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? theme.palette.primary.main : theme.palette.border.main,
                 '&:hover': {
-                  color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : theme.palette.primary.main
+                  color: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? theme.palette.primary.main : theme.palette.border.main
                 }
               }}
             >
@@ -117,10 +117,10 @@ const WebinarAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setWebinarI
               color={theme.palette.primary.main}
               onClick={()=>handleChangeStatus(record._id)}
               sx={{
-                cursor: !session?.user.userType.includes('blogger') ? 'default' : 'pointer',
-                color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : theme.palette.primary.darker,
+                cursor: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? 'pointer' : 'default',
+                color: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? theme.palette.primary.darker : theme.palette.border.main,
                 '&:hover': {
-                  color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : theme.palette.primary.darker
+                  color: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? theme.palette.primary.darker : theme.palette.border.main
                 }
               }}
             >

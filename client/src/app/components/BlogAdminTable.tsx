@@ -109,10 +109,10 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       key: 'action',
       render: (_, record) => {
         const handleUser = () => {
-          if(!session?.user.userType.includes('blogger')) {
-            return;
-          } else {
+          if(session?.user.userType.includes('blogger') || session?.user.userType.includes('admin')) {
             router.push(`/admin/blog${record.urlSlug}`)
+          } else {
+            return;
           }
         }
         return (
@@ -125,10 +125,10 @@ const BlogAdminTable: React.FC = ({data}: any) => {
             <Typography variant='labelxs'
               onClick={handleUser}
               sx={{
-                cursor: !session?.user.userType.includes('blogger') ? 'default' : 'pointer',
-                color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : 'black',
+                cursor: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? 'pointer' : 'default',
+                color: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? 'black' : theme.palette.border.main,
                 '&:hover': {
-                  color: !session?.user.userType.includes('blogger') ? theme.palette.border.main : theme.palette.primary.main
+                  color: session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') ? theme.palette.primary.main : theme.palette.border.main
                 }
               }}
             >

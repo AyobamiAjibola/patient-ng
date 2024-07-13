@@ -101,10 +101,10 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setPodcastI
             <Typography variant='labelxs'
               onClick={()=>handleWebinarEdit(record._id)}
               sx={{
-                cursor: !session?.user.userType.includes('podcast') ? 'default' : 'pointer',
-                color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.darker,
+                cursor: session?.user.userType.includes('podcast') || session?.user.userType.includes('admin') ? 'pointer' : 'default',
+                color: session?.user.userType.includes('podcast') || session?.user.userType.includes('admin') ? theme.palette.primary.darker : theme.palette.border.main,
                 '&:hover': {
-                  color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.darker
+                  color: session?.user.userType.includes('podcast') || session?.user.userType.includes('admin') ? theme.palette.primary.darker : theme.palette.border.main
                 }
               }}
             >
@@ -114,10 +114,10 @@ const PodcastAdminTable: React.FC = ({data, setIsEdit, setOpenModal, setPodcastI
               color={theme.palette.primary.main}
               onClick={()=>handleChangeStatus(record._id)}
               sx={{
-                cursor: !session?.user.userType.includes('podcast') ? 'default' : 'pointer',
-                color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.main,
+                cursor: session?.user.userType.includes('podcast') || session?.user.userType.includes('admin') ? 'pointer' : 'default',
+                color: session?.user.userType.includes('podcast') || session?.user.userType.includes('admin') ? theme.palette.primary.main : theme.palette.border.main,
                 '&:hover': {
-                  color: !session?.user.userType.includes('podcast') ? theme.palette.border.main : theme.palette.primary.main
+                  color: session?.user.userType.includes('podcast') || session?.user.userType.includes('admin') ? theme.palette.primary.main : theme.palette.border.main
                 }
               }}
             >
