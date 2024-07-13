@@ -166,7 +166,7 @@ export default function page() {
           }}
         >
           <img
-            src="/advocacy-img.png"
+            src="/advocacy-img.jpg"
             alt="advocacy image"
             style={{
               width: '100%',

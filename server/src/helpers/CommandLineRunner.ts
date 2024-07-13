@@ -12,25 +12,40 @@ import admin from '../resources/data/admin.json';
 import { IUserModel } from '../models/User';
 import PatientDocsRepository from '../repository/PatientDocsRepository';
 import { IPatientDocsModel } from '../models/PatientDocs';
+import AdvocacyFilesRepository from '../repository/AdvocacyFilesRepository';
+import { IAdvocacyFilesModel } from '../models/AdvocacyFiles';
 
 export default class CommandLineRunner {
   public static singleton: CommandLineRunner = new CommandLineRunner();
   private userRepository: AbstractCrudRepository;
   private patientDocsRepository: PatientDocsRepository;
+  private advocacyFilesRepository: AdvocacyFilesRepository;
 
   constructor() {
     this.userRepository = new UserRepository();
     this.patientDocsRepository = new PatientDocsRepository();
+    this.advocacyFilesRepository = new AdvocacyFilesRepository();
   }
 
   public static async run() {
     await this.singleton.loadDefaultUser();
     await this.singleton.loadDefaultPatientDocs();
+    await this.singleton.loadDefaultAdvocacyFiles();
   }
 
   async createUploadDirectory() {
     const dirExist = await Generic.fileExist(UPLOAD_BASE_PATH);
     if (!dirExist) await fs.mkdir(UPLOAD_BASE_PATH);
+  }
+
+  async loadDefaultAdvocacyFiles() {
+    const patientDocs = await this.advocacyFilesRepository.findOne({});
+
+    if(!patientDocs) {
+      await this.advocacyFilesRepository.save({
+        files: []
+      } as any)
+    }
   }
 
   async loadDefaultPatientDocs() {

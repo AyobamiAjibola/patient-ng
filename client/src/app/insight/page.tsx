@@ -476,7 +476,7 @@ export default function Insight() {
                                             </Box>
 
                                             <Typography variant="labelsm"
-                                                onClick={() => router.push(`/insight/${index}`)}
+                                                onClick={() => router.push(`/insight/${review._id}`)}
                                                 sx={{
                                                     mr: 2, mt: 1,
                                                     color: theme.palette.primary.main,

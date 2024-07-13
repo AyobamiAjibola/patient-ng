@@ -205,3 +205,21 @@ export const deleteHospitalHandler = authenticateRouteWrapper(async (req, res) =
 
     res.status(response.code).json(response);
 });
+
+export const uploadMenuFileHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.uploadFile(req);
+
+    res.status(response.code).json(response);
+});
+
+export const fetchFilesHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.fetchFiles(req);
+
+    res.status(response.code).json(response);
+};
+
+export const deleteFileHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.deleteFile(req);
+
+    res.status(response.code).json(response);
+});

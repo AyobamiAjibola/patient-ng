@@ -82,8 +82,8 @@ const items = {
             iconName: HandshakeOutlined
         },
         {
-            title: 'Contact/About Us',
-            link: '/admin/contact-and-about-us',
+            title: 'About Us',
+            link: '/admin/about-us',
             iconName: FindInPageOutlined
         },
         {

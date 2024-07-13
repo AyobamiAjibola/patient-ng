@@ -15,7 +15,7 @@ import { NextFunction, Request } from 'express';
 // import UserToken from '../models/UserToken';
 import * as Jimp from 'jimp';
 import UserToken from '../models/UserToken';
-import { ALLOWED_FILE_TYPES, ALLOWED_FILE_TYPES_VID, MESSAGES } from '../config/constants';
+import { ALLOWED_FILE_TYPES, ALLOWED_FILE_TYPES2, ALLOWED_FILE_TYPES_VID, MAX_SIZE_IN_BYTE_VID, MESSAGES } from '../config/constants';
 import { File } from 'formidable';
 const { promisify } = require('util');
 
@@ -167,6 +167,7 @@ export default class Generic {
     //   return { error: error.message };
     // }
   };
+
   public static async handleImage(image: File, basePath: string): Promise<{ result?: string, error?: string }> {
     try {
         if (!image) return { result: '' };
@@ -187,7 +188,32 @@ export default class Generic {
     }
   }
 
+  public static async handleFiles(file: File, basePath: string): Promise<{ result?: string, error?: string }> {
+    try {
+        if (!file) return { result: '' };
+        const allowedFileTypes = ALLOWED_FILE_TYPES2;
+        if (!allowedFileTypes.includes(file.mimetype as string)) {
+            throw new CustomAPIError(MESSAGES.file_type_error, HttpStatus.BAD_REQUEST.code);
+        }
 
+        const maxSizeInBytes = MAX_SIZE_IN_BYTE_VID;
+        const actualSize = file.size / (1024 * 1024);
+
+        if (actualSize > maxSizeInBytes) {
+          throw new CustomAPIError(MESSAGES.vid_size_error, HttpStatus.BAD_REQUEST.code);
+        }
+
+        const imagePath = await Generic.getImagePath({
+            tempPath: file.filepath,
+            filename: file.originalFilename as string,
+            basePath,
+        });
+        
+        return { result: imagePath };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  }
 
   public static async handleVideo(video: File, basePath: string): Promise<{ result?: string, error?: string }> {
     try {

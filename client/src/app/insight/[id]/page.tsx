@@ -206,14 +206,16 @@ export default function page({ params }: any) {
               cursor: 'pointer'
             }}
           >
-            <Avatar
+            <img
               src={insightMutation.data?.result && insightMutation.data?.result.user.image 
                     ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${insightMutation.data?.result.user.image}`
                     : "/logo.png"}
-              sx={{
+              style={{
                 width: 30,
-                height: 30
+                height: 30,
+                borderRadius: '50%'
               }}
+              crossOrigin="anonymous"
             />
             <Typography variant="labelxs">
               Write a review
@@ -241,15 +243,17 @@ export default function page({ params }: any) {
                       alignItems: 'center'
                     }}
                   >
-                    <Avatar
+                    <img
                       src={review.user.image 
                             ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.user.image}`
                             : "/person.png"}
                       alt="review image"
-                      sx={{
+                      style={{
                         width: 40,
-                        height: 40
+                        height: 40,
+                        borderRadius: '50%'
                       }}
+                      crossOrigin="anonymous"
                     />
                     <Box
                       sx={{

@@ -526,7 +526,7 @@ export const useUpdateTC = () => {
   });
 };
 
-export const useContactUs = () => {
+export const useAboutUs = () => {
   const api = useUserApi();
   const queryClient = useQueryClient();
 
@@ -536,7 +536,7 @@ export const useContactUs = () => {
     any
   >({
     mutationFn: (requestParameters: string) => {
-      return api.updateContactUs(requestParameters);
+      return api.updateAboutUs(requestParameters);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['get-contact-us'] });
@@ -561,6 +561,90 @@ export const useDeleteHospital = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['delete-hospital'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useUploadAdvocacyFile = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.uploadAdvocacyFile(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['upload-file'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useGetAdvocacyFiles = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: () => {
+      return api.getFiles();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-files'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useDeleteAdvocacyFile = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: number) => {
+      return api.deleteFile(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['delete-file'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useContactUs = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.contactUs(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['contact-us'] });
     },
     onError: (error: Error) => {
       console.error('Error:', error);

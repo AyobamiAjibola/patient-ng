@@ -2,6 +2,7 @@ import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
     changePasswordHandler,
+    contactUsHandler,
     createUserHandler,
     getAccessTokenHandler,
     resetPasswordHandler,
@@ -81,6 +82,12 @@ const authEndpoints: RouteEndpoint  = [
         path: '/reset-user-password',
         handler: resetUserPasswordHandler
     },
+    {
+        name: 'contact us',
+        method: 'post',
+        path: '/contact-us',
+        handler: contactUsHandler
+    }
 ]
 
 export default authEndpoints;

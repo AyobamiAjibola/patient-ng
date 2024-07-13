@@ -13,6 +13,7 @@ import SendMailService from "../services/SendMailService";
 import { IUserModel } from "../models/User";
 import Generic from "../utils/Generic";
 import mail_template from "../resources/template/email/password";
+import contact_us from "../resources/template/email/contactUs";
 import UserToken from "../models/UserToken";
 import { verify } from 'jsonwebtoken';
 
@@ -79,6 +80,44 @@ export default class AuthenticationController {
         return Promise.resolve(response);
     }
 
+    public async contactUs(req: Request) {
+        const { error, value } = Joi.object<any>({
+            email: Joi.string().required().label('Email'),
+            firstName: Joi.string().required().label('First Name'),
+            lastName: Joi.string().required().label('Last Name'),
+            phone: Joi.string().required().label('Phone Number'),
+            message: Joi.string().required().label('Message'),
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const mail = contact_us({
+            message: value.message,
+            phone: value.phone,
+        });
+
+        await sendMailService.sendMail({
+            to: 'ayurbarmi5@gmail.com',
+            replyTo: value.email,
+            // @ts-ignore
+            'reply-to': value.email,
+            from: {
+              name: `${value.firstName} ${value.lastName}`,
+              address: value.email,
+            },
+            subject: `You have a contact us email from ${value.firstName}.`,
+            html: mail,
+            bcc: [<string>process.env.SMTP_BCC]
+        });
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: `Successful.`
+        };
+
+        return Promise.resolve(response);
+ 
+    }
+
     public async validateSignUpToken (req: Request) {
         try {
 
@@ -138,7 +177,7 @@ export default class AuthenticationController {
                 .label("password"),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-        console.log(value, 'vals')
+
         const password = await this.passwordEncoder?.encode(value.password as string);
 
         const payload: Partial<IUserModel> = {

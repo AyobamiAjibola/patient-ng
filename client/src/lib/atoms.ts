@@ -20,4 +20,5 @@ export const speakerData = atom([{
 }]);
 export const setFundraisingId = atom<string>('');
 export const openModal = atom<boolean>(false);
+export const openModal2 = atom<boolean>(false);
 export const openType = atom<string>('');

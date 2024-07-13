@@ -16,6 +16,7 @@ import SiteVisitCount, { ISiteVisitCountModel } from "../models/SiteVisitCount";
 import HospitalInfo from "../models/HospitalInfo";
 import PatientDocs from "../models/PatientDocs";
 import AdvocacyFiles from "../models/AdvocacyFiles";
+import fs from 'fs';
 
 const form = formidable({ uploadDir: UPLOAD_BASE_PATH });
 form.setMaxListeners(15);
@@ -385,6 +386,70 @@ export default class UserController {
         };
       
         return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async uploadFile (req: Request) {
+        await this.doUploadFile(req);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated.'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async fetchFiles (req: Request) {
+        const files = await AdvocacyFiles.find({});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated.',
+            result: files
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async deleteFile (req: Request) {
+        const { id } = req.body;
+
+         const filesRecord = await AdvocacyFiles.findOne({});
+
+         if (!filesRecord || !Array.isArray(filesRecord.files)) {
+            return Promise.reject(CustomAPIError.response("Files not found.", HttpStatus.NOT_FOUND.code))
+         }
+ 
+        const files = filesRecord.files;
+        const fileIndex = files.findIndex(file => file._id.toString() === id);
+
+        if (fileIndex === -1) {
+            return Promise.reject(CustomAPIError.response("File does not exist.", HttpStatus.NOT_FOUND.code));
+        }
+    
+        const file = files[fileIndex];
+        const _file = file.file.split('files/')[1];
+        const filePath = `${UPLOAD_BASE_PATH}/files/${_file}`;
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Failed to delete file from path: ${filePath}`, err);
+                return Promise.reject(CustomAPIError.response(`Failed to delete file from path: ${filePath}`, HttpStatus.NOT_FOUND.code));
+            }
+        });
+ 
+        files.splice(fileIndex, 1);
+        await filesRecord.save();
+
+         const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted file.'
+        };
+      
+        return Promise.resolve(response);
+
     }
 
     @TryCatch
@@ -962,7 +1027,8 @@ export default class UserController {
         })
     }
 
-    private async doUploadMenuFile(req: Request): Promise<HttpResponse<any>> {
+    private async doUploadFile(req: Request): Promise<HttpResponse<any>> {
+
         return new Promise((resolve, reject) => {
             form.parse(req, async (err, fields, files) => {
                 //@ts-ignore
@@ -970,7 +1036,7 @@ export default class UserController {
 
                 const { error, value } = Joi.object<any>({
                     file: Joi.any().label('file'),
-                    description: Joi.string().required().label('description'),
+                    description: Joi.string().label('description'),
                 }).validate(fields);
     
                 if (error) {
@@ -987,14 +1053,14 @@ export default class UserController {
                 const menuFile = await AdvocacyFiles.findOne({});
 
                 const basePath = `${UPLOAD_BASE_PATH}/files`;
-        
-                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+  
+                const { result: file, error: imageError } = await Generic.handleFiles(files.file as File, basePath);
                 if (imageError) {
                     return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
                 }
 
                 const payload = {
-                    file: _image,
+                    file: file,
                     description: value.description
                 };
 
@@ -1008,4 +1074,5 @@ export default class UserController {
             });
         });
     }
+
 }

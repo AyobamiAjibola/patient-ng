@@ -15,7 +15,7 @@ import QueueEvents = appCommonTypes.QueueEvents;
     image_size_error: 'Image size exceeds the allowed limit',
     image_type_error: 'Invalid image format. Only JPEG, PNG, and JPG images are allowed',
     file_type_error: 'Invalid file format. Only mp4 and pdf are allowed',
-    vid_size_error: 'Video file size exceeds the allowed limit',
+    vid_size_error: 'File size exceeds the allowed limit.',
     vid_type_error: 'Invalid video format. Only Mp4, WebM, MKV and FLV video formats are allowed'
   };
 
@@ -59,7 +59,7 @@ import QueueEvents = appCommonTypes.QueueEvents;
 
   export const ALLOWED_FILE_TYPES2 = ['application/pdf', 'video/mp4']
 
-  export const MAX_SIZE_IN_BYTE_VID = 200 * 1024 * 1024; // 200MB
+  export const MAX_SIZE_IN_BYTE_VID = 100 * 1024 * 1024; // 200MB
   export const ALLOWED_FILE_TYPES_VID = ['video/mp4', 'video/mkv', 'video/flv', 'video/webm'];
 
   export const PAYMENT_CHANNELS = ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer', 'eft'];

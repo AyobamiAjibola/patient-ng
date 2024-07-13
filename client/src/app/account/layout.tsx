@@ -47,9 +47,9 @@ export default function layout({ children }: any) {
     const handleLogout = async () => {
         await signOut({
             redirect: true,
-            callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/`
+            callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
         });
-        router.push(`${process.env.NEXT_PUBLIC_CLIENT_URL}/`)
+        // router.push(`${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`)
     };
 
     useEffect(() => {

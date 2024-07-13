@@ -236,7 +236,7 @@ export const useUserApi = () => {
     return response.data;
   };
 
-  const updateContactUs = async (
+  const updateAboutUs = async (
     requestParameters: any
   ): Promise<types.ApiResponseSuccess<any>> => {
 
@@ -270,12 +270,58 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const uploadAdvocacyFile = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const formData = new FormData();
+
+    formData.append('file', data.file);
+    formData.append('description', data.description);
+ 
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      (`/upload-advocacy-file`, formData);
+    return response.data;
+  };
+
+  const getFiles = async (): Promise<types.ApiResponseSuccess<any>> => {
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/get-advocacy-files`);
+    return response.data;
+  };
+
+  const deleteFile = async (
+    data: number
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      (`/delete-advocacy-file`, { id: data });
+    return response.data;
+  };
+
+  const contactUs = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+ 
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      (`/contact-us`, data);
+    return response.data;
+  };
+
   return {
     deleteAward,
+    contactUs,
+    getFiles,
+    uploadAdvocacyFile,
+    deleteFile,
     getDocs,
     getHospitals,
     updateTermsAndCondition,
-    updateContactUs,
+    updateAboutUs,
     deleteHospital,
     createHospital,
     dashData,

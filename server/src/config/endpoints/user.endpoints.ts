@@ -10,8 +10,10 @@ import {
     deactivateUserHandler, 
     deleteAdvocacyHandler, 
     deleteAwardHandler, 
+    deleteFileHandler, 
     deleteHospitalHandler, 
     deleteInsightHandler, 
+    fetchFilesHandler, 
     getAllAdvocaciesHandler, 
     getAllInsightsHandler, 
     getAllUserHandler, 
@@ -33,7 +35,8 @@ import {
     updateAwardHandler, 
     updateInsightHandler, 
     updateUserOnboardingHandler, 
-    updateUserProfileHandler
+    updateUserProfileHandler,
+    uploadMenuFileHandler
 } from '../../routes/userRoute';
 
 const userEndpoints: RouteEndpoint  = [
@@ -237,6 +240,24 @@ const userEndpoints: RouteEndpoint  = [
         method: 'delete',
         path: '/delete-hospital/:id',
         handler: deleteHospitalHandler
+    },
+    {
+        name: 'upload advocacy file',
+        method: 'post',
+        path: '/upload-advocacy-file',
+        handler: uploadMenuFileHandler
+    },
+    {
+        name: 'fetch files',
+        method: 'get',
+        path: '/get-advocacy-files',
+        handler: fetchFilesHandler
+    },
+    {
+        name: 'delete file',
+        method: 'post',
+        path: '/delete-advocacy-file',
+        handler: deleteFileHandler
     }
 ]
 

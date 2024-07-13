@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface IAdvocacyFiles {
     files: {
+        _id: string,
         description: string,
         file: string
     }[];

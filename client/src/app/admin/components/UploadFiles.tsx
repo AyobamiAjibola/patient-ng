@@ -49,7 +49,7 @@ const Uploader: React.FC<UploaderProps> = ({
     //@ts-ignore
     const selectedFiles = Array.from(event.target.files);
     const validFiles = selectedFiles.filter((file) =>
-      /\.(jpg|jpeg|png|pdf)$/i.test(file.name)
+      /\.(mp4|pdf)$/i.test(file.name)
     );
 
     if (validFiles.length === 0) {
@@ -112,7 +112,7 @@ const Uploader: React.FC<UploaderProps> = ({
             <input
               type="file"
               ref={inputRef}
-              accept="image/jpeg, image/png, application/pdf"
+              accept="application/pdf, video/mp4"
               style={{ display: 'none' }}
               onChange={handleFileInputChange}
             />
@@ -120,7 +120,12 @@ const Uploader: React.FC<UploaderProps> = ({
           <Typography
             variant="paragraphsm"
           >
-            Supports: JPEG or PNG or PDF
+            Supports: MP4 or PDF
+          </Typography>
+          <Typography
+            variant="paragraphxxs"
+          >
+            Allowed file size: 50MB
           </Typography>
           {error && (
             <Typography color={theme.palette.primary.main}>{error}</Typography>
