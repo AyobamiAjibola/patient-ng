@@ -15,7 +15,7 @@ import Footer from "@/app/components/Footer";
 import { useGetCrowdfundings } from "../admin/hooks/crowdFuncdingHook/useCrowdFunding";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import CrowdCard from "../components/crowdCard";
+import CrowdCard from "../components/CrowdCard";
 
 const stories = [
   {

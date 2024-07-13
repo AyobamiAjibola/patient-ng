@@ -2,7 +2,7 @@
 
 import { useGetCrowdfundings } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
 import Navbar from "@/app/components/Navbar"
-import CrowdCard from "@/app/components/crowdCard";
+import CrowdCard from "@/app/components/CrowdCard";
 import { HourglassEmpty } from "@mui/icons-material";
 import { Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material"
 import { Button } from "antd";

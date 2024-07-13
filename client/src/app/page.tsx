@@ -19,7 +19,7 @@ import { useGetPodcasts } from './admin/hooks/podcastHook/usePodcast';
 import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
 import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
-import CrowdCard from './components/crowdCard';
+import CrowdCard from './components/CrowdCard';
 
 export default function HomePage() {
   const theme = useTheme();
