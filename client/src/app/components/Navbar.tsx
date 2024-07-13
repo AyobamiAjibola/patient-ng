@@ -570,7 +570,6 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                   redirect: true,
                   callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
                 })
-                router.push(`${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`)
               }}
             >
               Sign in

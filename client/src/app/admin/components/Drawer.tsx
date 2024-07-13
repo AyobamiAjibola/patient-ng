@@ -118,7 +118,6 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
       redirect: true,
       callbackUrl: `${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`
     });
-    router.push(`${process.env.NEXT_PUBLIC_CLIENT_URL}/signin`)
   };
 
   const fetchSingleUser = async (id: any) => {
