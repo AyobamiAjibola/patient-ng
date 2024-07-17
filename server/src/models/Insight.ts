@@ -1,45 +1,33 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 interface IInsight {
-    hospitalName: string;
-    hospitalAddress: string;
-    state: string;
-    image: string;
+    hospital: mongoose.Types.ObjectId;
     rating: number;
-    comment: string;
-    status: string;
     reviews: {
         review: string;
+        status: string;
+        rating: number;
+        createdAt: Date;
         user: mongoose.Types.ObjectId;
     }[]
-    user: mongoose.Types.ObjectId;
 };
 
 const insightSchema = new Schema<IInsight>({
-    hospitalName: { type: String },
-    hospitalAddress: { type: String },
-    state: { type: String },
-    status: { type: String, default: 'pending' },
-    image: { type: String },
+    hospital: { type: Schema.Types.ObjectId, ref: 'HospitalInfo' },
     rating: { type: Number },
-    comment: { type: String },
     reviews: [{
+        status: { type: String },
+        rating: { type: Number },
         review: { type: String },
+        createdAt: { type: Date },
         user: { type: Schema.Types.ObjectId, ref: 'User' }
-    }],
-    user: { type: Schema.Types.ObjectId, ref: 'User' }
+    }]
 }, { timestamps: true });
 
 insightSchema.pre(['findOne', 'find'], function (next) {
     this.populate({
-        path: 'user',
-        select: '_id firstName lastName email phone image'
-      });
-    next();
-});
-
-insightSchema.pre(['findOne', 'find'], function (next) {
-    this.populate({
+        path: 'hospital'
+      }).populate({
         path: 'reviews.user',
         select: 'firstName lastName image'
       });

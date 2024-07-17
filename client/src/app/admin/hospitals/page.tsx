@@ -8,6 +8,13 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useCreateHospital, useDeleteHospital, useGetHospitals } from "../hooks/userHook/useUser";
 import Toastify from "@/app/components/ToastifySnack";
+import { useAtom } from "jotai";
+import { selectedImageArrayAtom } from "@/lib/atoms";
+import ImageUploader from "@/app/components/ImageUploader";
+import MultipleTextField from "@/app/components/MultipleTextField";
+import { stateLga } from "@/constant/state";
+import Select from "react-select";
+import { customStyles } from "@/constant/customStyles";
 
 export default function page() {
     const theme = useTheme();
@@ -15,10 +22,19 @@ export default function page() {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [name, setName] = useState<string>('');
     const [address, setAddress] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [phone, setPhone] = useState<string>('');
+    const [website, setWebsite] = useState<string>('');
     const createHospitalMutation = useCreateHospital();
     const getHospitalsMutation = useGetHospitals();
     const [hospitals, setHospitals] = useState<any>([]);
     const deleteHospitalMutation = useDeleteHospital();
+    const [image, _] = useAtom(selectedImageArrayAtom);
+    const [items, setItems] = useState<any>([]);
+    const [state, setState] = useState([]); 
+    const [selectedState, setSelectedState] = useState('');
+    const [lga, setLga] = useState('');
+    const [district, setDistrict] = useState<any[]>([]);
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -33,9 +49,35 @@ export default function page() {
     };
 
     const handleCreateHospital = async () => {
+        const phoneNumbers = /.*\d.*/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const websiteRegex = /^(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+        if(items.length > 4) {
+            handleOpenNotification('error', '', 'Services can not be more that 4.')
+            return;
+        }
+        if(phone.length > 11 || phone.length < 11 && !phoneNumbers.test(phone)) {
+            handleOpenNotification('error', '', 'Phone numbers should only contain 11 numbers.')
+            return;
+        }
+        if(!emailRegex.test(email)) {
+            handleOpenNotification('error', '', 'Invalid email address.')
+            return;
+        }
+        if(!websiteRegex.test(website)) {
+            handleOpenNotification('error', '', 'Invalid website.')
+            return;
+        }
         await createHospitalMutation.mutateAsync({
             hospitalName: name,
-            address
+            address,
+            phone,
+            website: `https://${website}`,
+            image: image[0],
+            services: items,
+            email,
+            state: selectedState,
+            lga
         }, {
             onSuccess: async () => {
                 handleOpenNotification('success', 'Successfully added hospital.')
@@ -57,6 +99,28 @@ export default function page() {
         })
     };
 
+    const handleDistrict = (value: any) => {
+        if (!value) {
+          return;
+        }
+        const newData = Object.entries(stateLga).find(
+          (_items) => _items[0] === value
+        );
+    
+        if (!newData) {
+          return;
+        }
+        const districtArray = newData[1]?.map(
+          (item) => {
+            return {
+              value: item,
+              label: item,
+            };
+          }
+        );
+        setDistrict(districtArray);
+    };
+
     const handleDelete = async (id: any) => {
         await deleteHospitalMutation.mutateAsync(id, {
           onSuccess: async () => {
@@ -68,6 +132,19 @@ export default function page() {
     useEffect(() => {
         handleGetHospitals()
     },[]);
+
+    useEffect(() => {
+        let stateArray: any = [];
+        const newData = Object.entries(stateLga);
+    
+        newData.map((item, index) => {
+          stateArray.push({
+            value: item[0],
+            label: item[0],
+          });
+        });
+        setState(stateArray);
+    }, []);
 
     return (
         <>
@@ -123,7 +200,7 @@ export default function page() {
                         }}
                     >
                         <InputField
-                            label="Hospital"
+                            label="Hospital Name"
                             placeholder="Enter hospital name"
                             isBorder={true}
                             labelStyle={{
@@ -144,9 +221,193 @@ export default function page() {
                             }}
                             value={address}
                             onChange={(e)=>setAddress(e.target.value)}
-                            multiline={true}
-                            rows={6}
                         />
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
+                                gap: 2,
+                                width: '100%'
+                            }}
+                        >
+                            <Box width={isMobile ? '100%' : '50%'}>
+                                <InputField
+                                    label="Email"
+                                    placeholder="Enter email"
+                                    isBorder={true}
+                                    labelStyle={{
+                                        fontSize: theme.typography.labelbase.fontSize,
+                                        fontWeight: 500
+                                    }}
+                                    value={email}
+                                    onChange={(e)=>setEmail(e.target.value)}
+                                />
+                            </Box>
+                            <Box width={isMobile ? '100%' : '50%'}>
+                                <InputField
+                                    label="Phone Number"
+                                    placeholder="Enter phone number"
+                                    isBorder={true}
+                                    labelStyle={{
+                                        fontSize: theme.typography.labelbase.fontSize,
+                                        fontWeight: 500
+                                    }}
+                                    value={phone}
+                                    onChange={(e)=>setPhone(e.target.value)}
+                                />
+                            </Box>
+                        </Box>
+
+                        <Box width='100%'>
+                            <InputField
+                                label="Website"
+                                placeholder="Enter website"
+                                isBorder={true}
+                                labelStyle={{
+                                    fontSize: theme.typography.labelbase.fontSize,
+                                    fontWeight: 500
+                                }}
+                                value={website}
+                                onChange={(e)=>setWebsite(e.target.value)}
+                                startAdornment={(
+                                    <Box
+                                        sx={{
+                                            m: 1,
+                                            borderRadius: theme.borderRadius.xs,
+                                            boxShadow: 2,
+                                            bgcolor: 'white',
+                                            width: '4em',
+                                            minHeight: '25px',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center'
+                                        }}
+                                    >
+                                        <Typography variant="labelsm" 
+                                            color={theme.palette.secondary.light}
+                                        >
+                                            https://
+                                        </Typography>
+                                    </Box>
+                                )}
+                            />
+                        </Box>
+
+                        <Box width='100%'
+                            sx={{
+                                display: 'flex',
+                                flexDirection: isMobile ? 'column' : 'row',
+                                gap: 2
+                            }}
+                        >
+                            <Box width={isMobile ? '100%' : '50%'}>
+                                <Typography
+                                    sx={{
+                                        fontSize: theme.typography.labelxs.fontSize,
+                                        fontWeight: theme.typography.labelsm.fontWeight,
+                                        mb: 2
+                                    }}
+                                >
+                                    State
+                                </Typography>
+                                <Select
+                                    className="w-full h-10 font-light"
+                                    options={state}
+                                    styles={customStyles}
+                                    placeholder="Select State"
+                                    name="state"
+                                    onChange={(item) => {
+                                        handleDistrict(String(item?.value));
+                                        setSelectedState(String(item?.value));
+                                    }}
+                                    value={{
+                                        value: selectedState,
+                                        label: selectedState
+                                    }}
+                                />
+                            </Box>
+
+                            <Box
+                                sx={{
+                                    width: isMobile ? '100%' : '50%'
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontSize: theme.typography.labelxs.fontSize,
+                                        fontWeight: theme.typography.labelsm.fontWeight,
+                                        mb: 2
+                                    }}
+                                >
+                                    LGA
+                                </Typography>
+                                <Select
+                                    className="w-full h-10 font-light"
+                                    options={district}
+                                    styles={customStyles}
+                                    placeholder="Choose lga"
+                                    name="lga"
+                                    onChange={(item) => {
+                                        setLga(String(item?.value))
+                                    }}
+                                    value={{
+                                        value: lga,
+                                        label: lga
+                                    }}
+                                />
+                            </Box>
+                        </Box>
+
+                        <Box
+                            sx={{
+                            width: '100%',
+                            mb: 3
+                            }}
+                        >
+                            <MultipleTextField
+                                label={"Services"}
+                                labelStyle={{
+                                    fontSize: theme.typography.fontSize.labelxs,
+                                    fontWeight: 500
+                                }}
+                                items={items}
+                                setItems={setItems}
+                                infoText="Please type in the services and then press enter."
+                            />
+                        </Box>
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}
+                        >
+                            <Typography variant='labelbase' mb={2}>
+                                Hospital Image
+                            </Typography>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    border: `3px dashed ${theme.palette.secondary.lighter}`,
+                                    borderRadius: theme.borderRadius.sm,
+                                    backgroundColor: "white",
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    flexDirection: 'column'
+                                }}
+                            >
+                                <ImageUploader
+                                    label={''}
+                                    showImageName={true}
+                                    allowMultiple={false}
+                                    showDomiImage={false}
+                                    spacebtwimgtypes={-2}
+                                    title={false}
+                                />
+                            </Box>
+                        </Box>
 
                         <NButton
                             bkgcolor={theme.palette.primary.main}

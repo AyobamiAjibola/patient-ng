@@ -7,10 +7,17 @@ interface IProps {
   label?: string;
   labelStyle?: any;
   items: string[];
-  setItems: any
+  setItems: any;
+  infoText?: string;
 }
 
-const MultipleTextField = ({ label, labelStyle, items, setItems }: IProps) => {
+const MultipleTextField = ({ 
+  label, 
+  labelStyle, 
+  items, 
+  setItems, 
+  infoText = 'Please type in the nominees and then press enter.' 
+}: IProps) => {
   const [inputValue, setInputValue] = useState('');
   const theme = useTheme();
 
@@ -74,7 +81,7 @@ const MultipleTextField = ({ label, labelStyle, items, setItems }: IProps) => {
       )}
     />
     <Typography variant='paragraphxxs' color={theme.palette.state.error}>
-      Please type in the nominees and then press enter.
+      {infoText}
     </Typography>
     </label>
   );

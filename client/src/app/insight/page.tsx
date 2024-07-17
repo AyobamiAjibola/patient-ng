@@ -3,7 +3,7 @@
 import Footer from "@/app/components/Footer";
 import Navbar from "../components/Navbar";
 import { Box, Divider, IconButton, Rating, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { Close, HourglassEmpty, Language, LocalPhone, MailOutline, Star, ToggleOff, ToggleOn } from "@mui/icons-material";
+import { Close, FiberManualRecord, HourglassEmpty, Language, LocalPhone, MailOutline, Star, ToggleOff, ToggleOn } from "@mui/icons-material";
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
 import { stateLga } from "@/constant/state";
@@ -15,9 +15,7 @@ import Pagination from "../components/Pagination";
 import { useRouter } from "next/navigation";
 import { NButton } from "../components/PButton";
 import MModal from "../components/Modal";
-import { useWindowSize } from "@uidotdev/usehooks";
 import InputField from "../components/InputField";
-import { wordBreaker } from "@/lib/helper";
 import { useCreateInsight, useGetInsights } from "../admin/hooks/insightHook/useInsight";
 import Toastify from "../components/ToastifySnack";
 import { useSession } from "next-auth/react";
@@ -26,16 +24,9 @@ import { useGetHospitals } from "../admin/hooks/userHook/useUser";
 const rates = [
     "All",
     "3.0",
-    "4.0",
+    "4.4",
     "4.5"
 ]
-
-const hospitalNames = [
-    'ABC Hospital',
-    'X Hospital',
-    'XYZ Hospital',
-    'XYZ Hospital',
-]   
 
 export default function Insight() {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -48,7 +39,6 @@ export default function Insight() {
     const router = useRouter();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [insight, setInsight] = useState<string>('');
-    const size = useWindowSize();
     const [selectedRating, setSelectedRating] = useState<number>(0);
     const [hospitals, setHospitals] = useState([]);
     const [selectedHospital, setSelectedHospital] = useState<string>('');
@@ -57,6 +47,7 @@ export default function Insight() {
     const [insightData, setInsightData] = useState<any>([]);
     const { data: session } = useSession();
     const getHospitalMutation = useGetHospitals();
+    const [rate, setRate] = useState<string>('All');
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -69,13 +60,20 @@ export default function Insight() {
         setIsSuccess(type === 'success');
         setOpen(true);
     };
+    
 
     const filteredData =
         insightData &&
-        insightData.filter((item: any) =>
-        item.hospitalName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+        insightData.filter((item: any) => {
+        // if(rate === 'All') {
+        //     return item;
+        // }
 
+        return item.hospital.rating.toString() === searchQuery || 
+                item.hospital.hospitalName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.hospital.state.toLowerCase().includes(searchQuery.toLowerCase())
+    });
+   
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         const cleanedInput = inputValue.replace(/[^a-zA-Z0-9 ]/g, '');
@@ -93,7 +91,7 @@ export default function Insight() {
     }
 
     const reviewsPage = filteredData.length ? 10 : filteredData.length;
-    const totalPages = Math.ceil(filteredData.length / reviewsPage);
+    const totalPages = Math.ceil(filteredData.length / reviewsPage) || 1;
     const startIndex = (currPage - 1) * reviewsPage;
     const endIndex = Math.min(startIndex + reviewsPage, filteredData.length);
     const currentData = filteredData.slice(startIndex, endIndex);
@@ -177,10 +175,10 @@ export default function Insight() {
                 }}
             >
                 <Typography variant="h3">
-                    Find a Healthcare proverder to review
+                    Find a Healthcare provider to review
                 </Typography>
                 <Typography variant="paragraphlg">
-                    Top rated healthcare providers better patient outcomes
+                    Top rated healthcare providers, better patient outcomes
                 </Typography>
             </Box>
 
@@ -205,13 +203,21 @@ export default function Insight() {
                         borderRadius: theme.borderRadius.sm
                     }}
                 >
-                    <NButton onClick={()=>setModalOpen(true)}
-                        width={'100%'}
-                        textcolor="white"
-                        bkgcolor={theme.palette.primary.main}
+                    <Typography variant="labelxs"
+                        onClick={()=>{
+                            setRate('All')
+                            setSearchQuery('')
+                        }}
+                        sx={{
+                            cursor: 'pointer',
+                            color: theme.palette.state.error,
+                            '&:hover': {
+                                color: theme.palette.primary.main
+                            }
+                        }}
                     >
-                        Leave a review
-                    </NButton>
+                        Clear filter
+                    </Typography>
                     <Divider sx={{mt: 4}}/>
                     <Typography variant="labelxs" mt={4}>
                         RATING
@@ -227,7 +233,7 @@ export default function Insight() {
                         }}
                     >
                         {
-                            rates.map((rate, index) => (
+                            rates.map((rating, index) => (
                                 <Box key={index}
                                     sx={{
                                         display: 'flex',
@@ -237,11 +243,16 @@ export default function Insight() {
                                         alignItems: 'center',
                                         p: 1,
                                         cursor: 'pointer',
+                                        bgcolor: rating === rate ? theme.palette.primary.main : 'transparent',
+                                        color: rating === rate ? 'white' : 'black',
                                         '&:hover': {
                                             backgroundColor: theme.palette.primary.main
                                         },
                                         width:'100%'
                                     }}
+                                    onClick={()=>{
+                                        setSearchQuery(rating)
+                                        setRate(rating)}}
                                 >
                                     <Star sx={{color: '#FFCB00', fontSize: '14px'}}/>
                                     <Typography
@@ -250,7 +261,7 @@ export default function Insight() {
                                             fontWeight: theme.typography.labelsm.fontWeight
                                         }}
                                     >
-                                        {rate}+
+                                        {rating === "All" ? `${rating}` : `${rating}+`}
                                     </Typography>
                                 </Box>
                             ))
@@ -274,6 +285,7 @@ export default function Insight() {
                         placeholder="Choose state"
                         name="state"
                         onChange={(item) => {
+                            setSearchQuery(String(item?.value))
                             setSelectedState(String(item?.value));
                         }}
                         value={{
@@ -330,9 +342,10 @@ export default function Insight() {
                         <Search
                             placeholder="Search"
                             allowClear
-                            enterButton={<Button style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
+                            enterButton={<Button disabled style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
                             size="large"
                             onChange={handleSearchChange}
+                            // onMouseEnter={()=>setRate('All')}
                         />
                     </Box>
                     {
@@ -365,7 +378,7 @@ export default function Insight() {
                                                 }}
                                             >
                                                 <img
-                                                    src={review.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.image}` : "/logo.png"}
+                                                    src={review.hospital.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${review.hospital.image}` : "/logo.png"}
                                                     alt="insights image"
                                                     crossOrigin="anonymous"
                                                     style={{
@@ -379,7 +392,6 @@ export default function Insight() {
                                                 sx={{
                                                     display: 'flex',
                                                     flexDirection: 'column',
-                                                    justifyContent: 'space-between',
                                                     gap: 1,
                                                     width: isMobile ? '100%' : '75%'
                                                 }}
@@ -391,17 +403,18 @@ export default function Insight() {
                                                     }}
                                                 >
                                                     <Typography variant="labelxl">
-                                                        {review.hospitalName}
+                                                        {review.hospital.hospitalName}
                                                     </Typography>
                                                     <Box
                                                         sx={{
                                                             display: 'flex',
-                                                            gap: 2
+                                                            gap: 2,
+                                                            alignItems: 'center'
                                                         }}
                                                     >
                                                         <Rating
                                                             name="half-rating-read"
-                                                            size={'small'}
+                                                            size={'medium'}
                                                             value={+review.rating}
                                                             precision={0.5}
                                                             readOnly
@@ -421,19 +434,13 @@ export default function Insight() {
                                                                 color: theme.palette.secondary.light
                                                             }}
                                                         >
-                                                            {review.reviews.length} Reviews
+                                                            {review.reviews.length} {review.reviews.length > 1 ? 'Reviews' : 'Review'}
                                                         </Typography>
                                                         
                                                     </Box>
                                                 </Box>
-                                                <Typography variant="paragraphxs" color={theme.palette.secondary.light} mt={-1}>
-                                                    {capitalize.words('lagos')} state
-                                                </Typography>
-                                                <Typography variant="paragraphxs" color={theme.palette.secondary.light}>
-                                                    {wordBreaker(review.comment, isMobile ? 10 : 20)}{review.comment.length > 30 ? '...' : ''}
-                                                </Typography>
-                                                <Typography variant="labelxxs" color={theme.palette.secondary.light} mb={isMobile ? 1 : 3}>
-                                                    Written by {`${capitalize.words(review.user.firstName)} ${capitalize.words(review.user.lastName)}`}
+                                                <Typography variant="paragraphsm" color={theme.palette.secondary.light} mt={3}>
+                                                    {review.hospital.state}, {review.hospital.lga}
                                                 </Typography>
                                             </Box>
                                         </Box>
@@ -449,34 +456,90 @@ export default function Insight() {
                                             <Box
                                                 sx={{
                                                     display: 'flex',
-                                                    gap: 1, mt: 1
+                                                    alignItems: 'center',
+                                                    gap: 1
                                                 }}
                                             >
-                                                <IconButton>
-                                                    <Language 
-                                                        sx={{
-                                                            color: theme.palette.primary.main
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        gap: 1, mt: 1
+                                                    }}
+                                                >
+                                                    <IconButton
+                                                        onClick={() => {
+                                                            if(!review.hospital.website) return;
+                                                            const newWindow = window?.open(`${review.hospital.website}`, '_blank');
+                                                            newWindow?.focus();
                                                         }}
-                                                    />
-                                                </IconButton>
-                                                <IconButton>
-                                                    <MailOutline
-                                                        sx={{
-                                                            color: theme.palette.primary.main
-                                                        }}
-                                                    />
-                                                </IconButton>
-                                                <IconButton>
-                                                    <LocalPhone
-                                                        sx={{
-                                                            color: theme.palette.primary.main
-                                                        }}
-                                                    />
-                                                </IconButton>
+                                                    >
+                                                        <Language 
+                                                            sx={{
+                                                                color: theme.palette.primary.main
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        component="a"
+                                                        href={`mailto:${review.hospital.email}`}
+                                                    >
+                                                        <MailOutline
+                                                            sx={{
+                                                                color: theme.palette.primary.main
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                    <IconButton
+                                                        component="a"
+                                                        href={`tel:${review.hospital.phone}`}                                        
+                                                    >
+                                                        <LocalPhone
+                                                            sx={{
+                                                                color: theme.palette.primary.main
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                </Box>
+                                                <Box sx={{height: '35px', width: '1px', bgcolor: theme.palette.secondary.lighter}}/>
+                                            </Box>
+
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 2,
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                {
+                                                    review.hospital.services.map((service: string, index: number) => (
+                                                        <Box
+                                                            key={index}
+                                                            sx={{
+                                                                display: 'flex',
+                                                                alignItems: 'center'
+                                                            }}
+                                                        >
+                                                            <Typography className="capitalize" variant="paragraphxs"
+                                                                color={theme.palette.secondary.light}
+                                                            >
+                                                                [{ service }]
+                                                            </Typography>
+                                                            {index !== 3 || review.hospital.services.length === 1 && (<FiberManualRecord 
+                                                                sx={{
+                                                                    mx: 2, 
+                                                                    fontSize: '10px', 
+                                                                    color: theme.palette.border.main
+                                                                }}
+                                                            />)}
+                                                        </Box>
+                                                    ))
+                                                }
                                             </Box>
 
                                             <Typography variant="labelsm"
+                                                component={'button'}
                                                 onClick={() => router.push(`/insight/${review._id}`)}
+                                                onMouseEnter={()=>localStorage.setItem('rating', review.rating)}
                                                 sx={{
                                                     mr: 2, mt: 1,
                                                     color: theme.palette.primary.main,
@@ -568,7 +631,7 @@ export default function Insight() {
                         Select healthcare provider
                     </Typography>
                     <Select
-                        className="w-full h-10 font-light"
+                        className="w-full h-auto font-light"
                         options={hospitals}
                         styles={customStyles}
                         placeholder="Choose hospitals"
@@ -643,27 +706,6 @@ export default function Insight() {
                             ))
                         }
                     </Box>
-                    {/* <Select
-                        className="w-full h-10 font-light"
-                        options={[
-                            {value: 0, label: 0},
-                            {value: 1, label: 1},
-                            {value: 2, label: 2},
-                            {value: 3, label: 3},
-                            {value: 4, label: 4},
-                            {value: 5, label: 5}
-                        ]}
-                        styles={customStyles}
-                        placeholder="Choose rating"
-                        name="rating"
-                        onChange={(item) => {
-                            setSelectedRating(Number(item?.value));
-                        }}
-                        value={{
-                            value: selectedRating,
-                            label: selectedRating,
-                        }}
-                    /> */}
                 </Box>
                 <Box width={'100%'}>
                     <NButton type='submit'

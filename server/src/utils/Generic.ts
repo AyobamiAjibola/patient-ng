@@ -200,7 +200,7 @@ export default class Generic {
         const actualSize = file.size / (1024 * 1024);
 
         if (actualSize > maxSizeInBytes) {
-          throw new CustomAPIError(MESSAGES.vid_size_error, HttpStatus.BAD_REQUEST.code);
+          return { error: MESSAGES.vid_size_error };
         }
 
         const imagePath = await Generic.getImagePath({

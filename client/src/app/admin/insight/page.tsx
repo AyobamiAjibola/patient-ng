@@ -2,11 +2,10 @@
 
 import Pagination from "@/app/components/Pagination";
 import { wordBreaker } from "@/lib/helper";
-import { Box, Divider, Rating, Typography, useMediaQuery, useTheme } from "@mui/material";
-import capitalize from "capitalize";
+import { Box, Rating, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useGetInsights } from "../hooks/insightHook/useInsight";
+import { useGeAllReviews, useGetInsights } from "../hooks/insightHook/useInsight";
 import { useSession } from "next-auth/react";
 import moment from "moment";
 
@@ -16,7 +15,7 @@ export default function page() {
   const md = useMediaQuery(theme.breakpoints.down('md'));
   const isMobile = useMediaQuery('(max-width: 900px)');
   const router = useRouter();
-  const insightsMutation = useGetInsights();
+  const reviewsMutation = useGeAllReviews();
   const [insights, setInsights] = useState<any>([]);
   const { data: session } = useSession();
 
@@ -32,16 +31,15 @@ export default function page() {
 
   useEffect(() => {
     const handleFetchInsights = async () => {
-        await insightsMutation.mutateAsync({})
+      await reviewsMutation.mutateAsync({}, {
+        onSuccess: (response: any) => {
+          console.log(response, 'response')
+          setInsights(response.results)
+        }
+      })
     }
     handleFetchInsights();
-  },[session]);
-
-  useEffect(() => {
-      if(insightsMutation.isSuccess) {
-          setInsights(insightsMutation.data.results)
-      }
-  },[insightsMutation.isSuccess]);
+  },[]);
 
   return (
     <Box
@@ -52,7 +50,7 @@ export default function page() {
       }}
     >
       <Typography variant={ md ? "h5" : "h4" } mb={4}>
-        Advocacy
+        Reviews
       </Typography>
 
       <Box
@@ -67,8 +65,7 @@ export default function page() {
           flexDirection: 'column'
         }}
       >
-        {
-          insightCurrentData.map((review: any, index: number) => (
+        { insightCurrentData.map((review: any, index: number) => (
             <Box key={index}
               onClick={() => router.push(`/insight/${review._id}`)}
               sx={{
@@ -97,10 +94,10 @@ export default function page() {
                   }}
                 >
                   <Typography variant="labelxl">
-                    {review.hospitalName}
+                    {review.hospital.hospitalName}
                   </Typography>
                   {!isMobile && (<Typography variant="labelxxs" color={theme.palette.secondary.light}>
-                    {moment(review.createdAt).fromNow()}
+                    {review.createdAt ? moment(review.createdAt).fromNow() : 'Today' }
                   </Typography>)}
                 </Box>
                 <Box
@@ -117,16 +114,16 @@ export default function page() {
                     readOnly
                     sx={{ color: '#FFCB00' }}
                   />
-                    <Typography color={theme.palette.secondary.light} variant='labelxs'>
+                    {/* <Typography color={theme.palette.secondary.light} variant='labelxs'>
                       {review.reviews.length} Reviews
-                    </Typography>
+                    </Typography> */}
                 </Box>
               </Box>
               <Typography variant="paragraphxs" color={theme.palette.secondary.light} mt={-2} className="capitalize">
-                {'lagos'} state
+                {review.hospital.state}, {review.hospital.lga}
               </Typography>
               <Typography variant="paragraphsm" color={theme.palette.secondary.light}>
-                  {wordBreaker(review.comment, isMobile ? 10 : 30)}{review.comment.length > 30 ? '...' : ''}
+                  {wordBreaker(review.review, isMobile ? 10 : 30)}{review.review.length > 30 ? '...' : ''}
               </Typography>
               <Typography className="capitalize" variant="labelxxs" color={theme.palette.secondary.light} mt={isMobile ? 1 : 3}>
                   Written by {review.user.firstName} {review.user.lastName}

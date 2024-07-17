@@ -78,7 +78,28 @@ export const useGetInsights = () => {
       return api.getInsights();
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['get_advocacies'] });
+      await queryClient.invalidateQueries({ queryKey: ['get_insights'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
+};
+
+export const useGeAllReviews = () => {
+  const api = useInsightApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: () => {
+      return api.getAllReviews();
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get_reviews'] });
     },
     onError: (error: Error) => {
       console.error('Error creating user:', error);
@@ -120,7 +141,7 @@ export const useGetSingleInsight = () => {
       return api.getSingleInsight(requestParameters);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['get_advocacy'] });
+      await queryClient.invalidateQueries({ queryKey: ['get-single-insight'] });
     },
     onError: (error: Error) => {
       console.error('Error creating user:', error);

@@ -134,17 +134,17 @@ export const getAllInsightsHandler = async (req: Request, res:Response) =>  {
     res.status(response.code).json(response);
 };
 
-export const createInsightHandler = authenticateRouteWrapper(async (req, res) =>  {
-    const response = await userController.createInsight(req);
+// export const createInsightHandler = authenticateRouteWrapper(async (req, res) =>  {
+//     const response = await userController.createInsight(req);
 
-    res.status(response.code).json(response);
-});
+//     res.status(response.code).json(response);
+// });
 
-export const updateInsightHandler = authenticateRouteWrapper(async (req, res) =>  {
-    const response = await userController.updateInsight(req);
+// export const updateInsightHandler = authenticateRouteWrapper(async (req, res) =>  {
+//     const response = await userController.updateInsight(req);
 
-    res.status(response.code).json(response);
-});
+//     res.status(response.code).json(response);
+// });
 
 export const reviewOnInsightHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await userController.reviewOnInsight(req);
@@ -223,3 +223,27 @@ export const deleteFileHandler = authenticateRouteWrapper(async (req, res) =>  {
 
     res.status(response.code).json(response);
 });
+
+export const getInsightRatingsHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getInsightRatings(req);
+
+    res.status(response.code).json(response);
+};
+
+export const getAllReviewsHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getAllReviews(req);
+
+    res.status(response.code).json(response);
+};
+
+export const getSingleReviewHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getSingleReview(req);
+
+    res.status(response.code).json(response);
+};
+
+export const changeReviewStatusHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.changeReviewStatus(req);
+
+    res.status(response.code).json(response);
+};

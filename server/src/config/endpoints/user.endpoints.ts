@@ -2,9 +2,10 @@ import { appCommonTypes } from '../../@types/app-common';
 import RouteEndpoint = appCommonTypes.RouteEndpoints;
 import { 
     aboutAndContactUsHandler,
+    changeReviewStatusHandler,
     createAdvocacyHandler,
     createAwardHandler,
-    createInsightHandler,
+    // createInsightHandler,
     dashboardDataHandler,
     dashboardDataUsersGraphHandler,
     deactivateUserHandler, 
@@ -16,13 +17,16 @@ import {
     fetchFilesHandler, 
     getAllAdvocaciesHandler, 
     getAllInsightsHandler, 
+    getAllReviewsHandler, 
     getAllUserHandler, 
     getAwardsHandler, 
     getDocsHandler, 
     getHospitalsHandler, 
+    getInsightRatingsHandler, 
     getSingleAdvocateHandler, 
     getSingleAwardHandler, 
     getSingleInsightHandler, 
+    getSingleReviewHandler, 
     getSingleUserHandler, 
     getUserAdvocaciesHandler, 
     getUserInsightsHandler, 
@@ -33,7 +37,7 @@ import {
     updateAdvocacyHandler, 
     updateAdvocacyStatusHandler, 
     updateAwardHandler, 
-    updateInsightHandler, 
+    // updateInsightHandler, 
     updateUserOnboardingHandler, 
     updateUserProfileHandler,
     uploadMenuFileHandler
@@ -77,18 +81,18 @@ const userEndpoints: RouteEndpoint  = [
         path: '/post-insight-review/:insightId',
         handler: reviewOnInsightHandler
     },
-    {
-        name: 'update insight',
-        method: 'put',
-        path: '/update-insight/:insightId',
-        handler: updateInsightHandler
-    },
-    {
-        name: 'create insight',
-        method: 'post',
-        path: '/create-insight',
-        handler: createInsightHandler
-    },
+    // {
+    //     name: 'update insight',
+    //     method: 'put',
+    //     path: '/update-insight/:insightId',
+    //     handler: updateInsightHandler
+    // },
+    // {
+    //     name: 'create insight',
+    //     method: 'post',
+    //     path: '/create-insight',
+    //     handler: createInsightHandler
+    // },
     {
         name: 'get insight',
         method: 'get',
@@ -258,6 +262,30 @@ const userEndpoints: RouteEndpoint  = [
         method: 'post',
         path: '/delete-advocacy-file',
         handler: deleteFileHandler
+    },
+    {
+        name: 'insight ratings',
+        method: 'post',
+        path: '/get-insight-ratings',
+        handler: getInsightRatingsHandler
+    },
+    {
+        name: 'get all reviews',
+        method: 'get',
+        path: '/get-all-reviews',
+        handler: getAllReviewsHandler
+    },
+    {
+        name: 'get single review',
+        method: 'get',
+        path: '/get-single-review',
+        handler: getSingleReviewHandler
+    },
+    {
+        name: 'change review status',
+        method: 'put',
+        path: '/change-review-status/:reviewId',
+        handler: changeReviewStatusHandler
     }
 ]
 

@@ -217,12 +217,27 @@ export const useUserApi = () => {
   };
 
   const createHospital = async (
-    requestParameters: any
+    data: any
   ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const formData = new FormData();
+
+    formData.append('email', data.email);
+    formData.append('address', data.address);
+    formData.append('phone', data.phone);
+    formData.append('website', data.website);
+    formData.append('image', data.image);
+    formData.append('hospitalName', data.hospitalName);
+    formData.append('state', data.state);
+    formData.append('lga', data.lga);
+
+    if(data.services) {
+      formData.append('services', JSON.stringify(data.services));
+    }
 
     const response = await axiosAuth.post<
       types.ApiResponseSuccess<any>>
-      ('/post-hospital', requestParameters);
+      ('/post-hospital', formData);
     return response.data;
   };
 
@@ -312,8 +327,30 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const insightsRatingsData = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+ 
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<any>>
+      (`/get-insight-ratings`, data);
+    return response.data;
+  };
+
+  const changeReviewState = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+ 
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      (`/change-review-status/${data.reviewId}`, {status: data.status});
+    return response.data;
+  };
+
   return {
     deleteAward,
+    changeReviewState,
+    insightsRatingsData,
     contactUs,
     getFiles,
     uploadAdvocacyFile,

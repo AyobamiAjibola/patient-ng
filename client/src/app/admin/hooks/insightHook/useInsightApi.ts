@@ -39,7 +39,10 @@ export const useInsightApi = () => {
   
       const response = await axiosAuth.put<
         types.ApiResponseSuccess<any>>
-        (`/post-insight-review/${requestParameters.insightId}`, { review: requestParameters.review });
+        (`/post-insight-review/${requestParameters.insightId}`, { 
+          review: requestParameters.review, 
+          rating: requestParameters.rating 
+        });
       return response.data;
     };
     
@@ -80,6 +83,14 @@ export const useInsightApi = () => {
       return response.data;
     };
 
+    const getAllReviews = async (): Promise<types.ApiResponseSuccess<any>> => {
+  
+      const response = await axiosAuth.get<
+        types.ApiResponseSuccess<any>>
+        (`/get-all-reviews`);
+      return response.data;
+    };
+
 return {
     createInsight,
     getUsersInsights,
@@ -87,6 +98,7 @@ return {
     getInsights,
     deleteInsight,
     updateInsight,
-    postInsightReview
+    postInsightReview,
+    getAllReviews
   };
 };

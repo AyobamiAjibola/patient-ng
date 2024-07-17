@@ -4,7 +4,7 @@ import { useGetCrowdfundings } from "@/app/admin/hooks/crowdFuncdingHook/useCrow
 import Navbar from "@/app/components/Navbar"
 import CrowdCard from "@/app/components/CrowdCard";
 import { HourglassEmpty } from "@mui/icons-material";
-import { Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material"
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Button } from "antd";
 import Search from "antd/es/input/Search";
 import { useSession } from "next-auth/react";
@@ -14,23 +14,10 @@ import { useEffect, useState } from "react";
 export default function page() {
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
   const campaignsMutation = useGetCrowdfundings();
   const {data: session} = useSession();
-
-  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-    height: 7,
-    borderRadius: 5,
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: theme.palette.secondary.lighter
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-      borderRadius: 5,
-      backgroundColor: theme.palette.primary.main
-    },
-  }));
 
   const handleSearchChange = (e: any) => {
     const inputValue = e.target.value;

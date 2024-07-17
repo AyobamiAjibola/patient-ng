@@ -13,7 +13,7 @@ import Generic from "../utils/Generic";
 import { IInsightModel } from "../models/Insight";
 import { IAwardModel } from "../models/Award";
 import SiteVisitCount, { ISiteVisitCountModel } from "../models/SiteVisitCount";
-import HospitalInfo from "../models/HospitalInfo";
+import HospitalInfo, { IHospitalInfoModel } from "../models/HospitalInfo";
 import PatientDocs from "../models/PatientDocs";
 import AdvocacyFiles from "../models/AdvocacyFiles";
 import fs from 'fs';
@@ -417,14 +417,14 @@ export default class UserController {
     public async deleteFile (req: Request) {
         const { id } = req.body;
 
-         const filesRecord = await AdvocacyFiles.findOne({});
+         const filesRecord: any = await AdvocacyFiles.findOne({});
 
          if (!filesRecord || !Array.isArray(filesRecord.files)) {
             return Promise.reject(CustomAPIError.response("Files not found.", HttpStatus.NOT_FOUND.code))
          }
  
         const files = filesRecord.files;
-        const fileIndex = files.findIndex(file => file._id.toString() === id);
+        const fileIndex = files.findIndex((file: any) => file._id.toString() === id);
 
         if (fileIndex === -1) {
             return Promise.reject(CustomAPIError.response("File does not exist.", HttpStatus.NOT_FOUND.code));
@@ -456,12 +456,83 @@ export default class UserController {
     public async getUserInsights (req: Request) {
         const userId = req.params.userId;
 
-        const insights = await datasources.insightDAOService.findAll({user: userId});
+        const insights = await datasources.insightDAOService.findAll({});
+        const filteredInsights = insights.filter(insight => insight.reviews.length !== 0);
+
+        const insightsResult = await Promise.all(filteredInsights.flatMap(async (insight) => {
+            const userReviews = insight.reviews.filter(review => review.user._id.toString() === userId);
+            const hospital = await HospitalInfo.findById(insight.hospital);
+
+            return userReviews.map(review => ({
+                review,
+                hospital: hospital
+            }));
+        }));
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: 'Successful.',
-            results: insights
+            results: insightsResult.flat()
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getAllReviews(req: Request) {
+        const insights = await datasources.insightDAOService.findAll({});
+        const filteredInsights = insights.filter(insight => insight.reviews.length !== 0);
+
+        const reviews = await Promise.all(filteredInsights.flatMap(async (insight) => {
+            const hospital = await HospitalInfo.findById(insight.hospital);
+            
+            return insight.reviews.map(review => ({
+                //@ts-ignore
+                ...review._doc,
+                hospital: hospital,
+                _id: insight._id
+            }));
+        }));
+
+        // Flatten the nested arrays of reviews
+        const flattenedReviews = reviews.flat();
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            results: flattenedReviews
+        };
+
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async getSingleReview (req: Request) {
+        const reviewId = req.params.reviewId;
+
+        const insights = await datasources.insightDAOService.findAll({});
+        const filteredInsights = insights.filter(insight => insight.reviews.length !== 0);
+
+        const reviews = await Promise.all(filteredInsights.flatMap(async (insight) => {
+            const hospital = await HospitalInfo.findById(insight.hospital);
+            
+            return insight.reviews.map(review => ({
+                //@ts-ignore
+                ...review._doc,
+                hospital: hospital,
+                _id: insight._id
+            }));
+        }));
+
+        // Flatten the nested arrays of reviews
+        const flattenedReviews = reviews.flat();
+
+        const singleReview = flattenedReviews.find(review => review._id === reviewId);
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful.',
+            result: singleReview
         };
       
         return Promise.resolve(response);
@@ -474,13 +545,89 @@ export default class UserController {
         const insight = await datasources.insightDAOService.findById( insightId );
         if(!insight)
             return Promise.reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+    
+        const totalRating = insight.reviews
+                                .filter((item: any) => item.status === 'Accepted')
+                                .reduce((acc, review) => acc + review.rating, 0);
+        const maxRating = insight.reviews
+                            .filter((item: any) => item.status === 'Accepted')
+                            .length * 5;
+        const avgRating = totalRating / maxRating * 100;
+        const rating = (5 * avgRating) / 100;
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: 'Successful.',
-            result: insight
+            result: { insight, rating }
         };
       
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async changeReviewStatus (req: Request) {
+        const reviewId = req.params.reviewId;
+        const status = req.body.status;
+
+        const insights = await datasources.insightDAOService.findAll({});
+        const filteredInsights = insights.filter(insight => insight.reviews.length !== 0);
+
+        const reviews = await Promise.all(filteredInsights.flatMap(async (insight) => {
+            const hospital = await HospitalInfo.findById(insight.hospital);
+            
+            return insight.reviews.map(review => {
+                const payload = {
+                    //@ts-ignore
+                    ...review._doc,
+                    hospital: hospital,
+                    insightId: insight._id,
+                    //@ts-ignore
+                    reviewId: review._doc._id
+                }
+                
+                return payload;
+        });
+        }));
+
+        // Flatten the nested arrays of reviews
+        const flattenedReviews = reviews.flat();
+        const singleReview = flattenedReviews.find(review => review.reviewId.toString() === reviewId);
+
+        if (!singleReview) {
+            const response: HttpResponse<any> = {
+                code: HttpStatus.NOT_FOUND.code,
+                message: 'Review not found.',
+            };
+            return Promise.reject(response);
+        }
+        // Find the insight that contains this review
+        const insightToUpdate = filteredInsights.find(insight => insight._id.toString() === singleReview.insightId.toString());
+    
+        if (!insightToUpdate) {
+            const response: HttpResponse<any> = {
+                code: HttpStatus.NOT_FOUND.code,
+                message: 'Insight not found.',
+            };
+            return Promise.reject(response);
+        }
+    
+        // Update the status of the review within the insight
+        insightToUpdate.reviews = insightToUpdate.reviews.map(review => {
+            //@ts-ignore
+            if (review._id.toString() === reviewId) {
+                review.status = status;
+            }
+            return review;
+        });
+    
+        // Save the updated insight
+        await insightToUpdate.save();
+    
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Review status updated successfully.',
+        };
+        
         return Promise.resolve(response);
     }
 
@@ -503,17 +650,47 @@ export default class UserController {
     }
 
     @TryCatch
-    public async getAllInsights (req: Request) {
+    public async getAllInsights(req: Request) {
+        // Fetch all insights
         const insights = await datasources.insightDAOService.findAll({});
+
+        const insightsResult = await Promise.all(insights.map(async (insight) => {
+            const hospital = await HospitalInfo.findById(insight.hospital);
+
+            let totalRating = 0;
+            const reviewPayload = insight.reviews
+                                    .filter((item: any) => item.status === 'Accepted')
+                                    .map(review => {
+                totalRating += review.rating;
+                return review;
+            });
+
+            const maxRating = insight.reviews
+                                .filter((item: any) => item.status === 'Accepted')
+                                .length * 5;
+            const avgRating = totalRating / maxRating * 100;
+            const rating = (5 * avgRating) / 100 || 0;
+            const actualRating =  Math.ceil(rating * 10) / 10
+
+            await HospitalInfo.findOneAndUpdate({ _id: hospital._id }, { rating: actualRating })
+
+            return {
+                reviews: reviewPayload,
+                hospital,
+                rating: actualRating,
+                _id: insight._id
+            };
+        }));
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: 'Successful.',
-            results: insights
+            results: insightsResult
         };
-      
+
         return Promise.resolve(response);
     }
+
 
     @TryCatch
     public async reviewOnInsight (req: Request) {
@@ -521,7 +698,8 @@ export default class UserController {
         const insightId = req.params.insightId;
 
         const { error, value } = Joi.object<any>({
-            review: Joi.string().required().label('Review')
+            review: Joi.string().required().label('Review'),
+            rating: Joi.number().required().label('Rating')
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -531,42 +709,73 @@ export default class UserController {
 
         insight.reviews.unshift({
             review: value.review,
-            user: userId
+            rating: value.rating,
+            status: 'Accepted',
+            user: userId,
+            createdAt: new Date()
         });
     
         await datasources.insightDAOService.updateByAny({ _id: insight._id }, { reviews: insight.reviews });
         
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successfully commented on the insight.'
+            message: 'Successful.'
         };
       
         return Promise.resolve(response);
     }
 
     @TryCatch
-    public async createInsight (req: Request) {
-        await this.doCreateInsight(req);
+    public async getInsightRatings(req: Request) {
+        const hospital = req.body.hospital;
+
+        const hospitalData = await HospitalInfo.findOne({ hospitalName: hospital.toLowerCase() })
+
+        const insights = await datasources.insightDAOService.findAll({ 
+            hospital: hospitalData?._id
+        });
+
+        const ratings = {
+            one: { totalRating: 0 },
+            two: { totalRating: 0 },
+            three: { totalRating: 0 },
+            four: { totalRating: 0 },
+            five: { totalRating: 0 },
+        };
+        let totalRating = 0;
+        insights.forEach((review) => {
+            review.reviews.filter((item: any) => item.status === 'Accepted').forEach((insight: any) => {
+                totalRating += insight.rating
+                switch (insight.rating) {
+                    case 1:
+                        ratings.one.totalRating += insight.rating;
+                        break;
+                    case 2:
+                        ratings.two.totalRating += insight.rating;
+                        break;
+                    case 3:
+                        ratings.three.totalRating += insight.rating;
+                        break;
+                    case 4:
+                        ratings.four.totalRating += insight.rating;
+                        break;
+                    case 5:
+                        ratings.five.totalRating += insight.rating;
+                        break;
+                }
+            })
+        });
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successfully created insight.'
+            message: 'Successful.',
+            result: { ratings, total: totalRating }
         };
-      
+
         return Promise.resolve(response);
     }
 
-    @TryCatch
-    public async updateInsight (req: Request) {
-        await this.doUpdateInsight(req);
 
-        const response: HttpResponse<any> = {
-            code: HttpStatus.OK.code,
-            message: 'Successfully updated.'
-        };
-      
-        return Promise.resolve(response);
-    }
     
     @TryCatch
     public async getUserAdvocacies (req: Request) {
@@ -729,20 +938,8 @@ export default class UserController {
 
     @TryCatch
     public async postHospital (req: Request) {
-        const { error, value } = Joi.object<any>({
-            hospitalName: Joi.string().required().label('Hospital Name'),
-            address: Joi.string().label('Address')
-        }).validate(req.body);
-        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-        const hospital = await HospitalInfo.findOne({ hospitalName: value.hospitalName.toLowerCase() });
-        if(hospital)
-            return Promise.reject(CustomAPIError.response("Hospital already exist.", HttpStatus.FORBIDDEN.code));
-
-        await HospitalInfo.create({
-            hospitalName: value.hospitalName.toLowerCase(),
-            address: value.address
-        });
+        await this.doPostHospital(req);
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
@@ -839,7 +1036,10 @@ export default class UserController {
         if(!hospital)
             return Promise.reject(CustomAPIError.response("Hospital does not exist.", HttpStatus.NOT_FOUND.code));
 
+        const insight = await datasources.insightDAOService.findByAny({ hospital: hospital._id })
+
         await HospitalInfo.deleteOne({ _id: hospital._id });
+        await datasources.insightDAOService.deleteById(insight?._id)
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
@@ -849,108 +1049,103 @@ export default class UserController {
         return Promise.resolve(response);
     }
 
-    private async doCreateInsight(req: Request): Promise<HttpResponse<IUserModel>> {
-        return new Promise((resolve, reject) => {
-            const userId = req.user._id;
+    // private async doCreateInsight(req: Request): Promise<HttpResponse<IUserModel>> {
+    //     return new Promise((resolve, reject) => {
+    //         const userId = req.user._id;
 
-            form.parse(req, async (err, fields, files) => {
-                const { error, value } = Joi.object<any>({
-                    hospitalName: Joi.string().label('Hospital name'),
-                    // hospitalAddress: Joi.string().label('Hospital address'),
-                    // state: Joi.string().label('State'),
-                    image: Joi.any().label('Image'),
-                    rating: Joi.string().label('Rating'),
-                    comment: Joi.string().label('Comment'),
-                }).validate(fields);
-                if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    //         form.parse(req, async (err, fields, files) => {
+    //             const { error, value } = Joi.object<any>({
+    //                 hospitalName: Joi.string().label('Hospital name'),
+    //                 rating: Joi.string().label('Rating'),
+    //                 comment: Joi.string().label('Comment'),
+    //             }).validate(fields);
+    //             if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-                const [user] = await Promise.all([
-                    datasources.userDAOService.findById(userId)
-                ]);
+    //             const [user, hospital] = await Promise.all([
+    //                 datasources.userDAOService.findById(userId),
+    //                 HospitalInfo.findOne({ hospitalName: value.hospitalName.toLowerCase() })
+    //             ]);
         
-                if(!user)
-                    return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
+    //             if(!user)
+    //                 return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
+    //             if(!hospital)
+    //                 return reject(CustomAPIError.response("Hospital not found.", HttpStatus.NOT_FOUND.code));
 
-                const basePath = `${UPLOAD_BASE_PATH}/photo`;
-    
-                // const [_image] = await Promise.all([
-                //     Generic.handleImage(files.titleImage as File, basePath)
-                // ]);
-                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
-                if (imageError) {
-                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
-                }
+    //             // const basePath = `${UPLOAD_BASE_PATH}/photo`;
+    //             // const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+    //             // if (imageError) {
+    //             //     return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+    //             // }
 
-                const payload = {
-                    ...value,
-                    rating: +value.rating,
-                    image: _image,
-                    user: user._id
-                }
+    //             const payload = {
+    //                 ...value,
+    //                 rating: +value.rating,
+    //                 hospital: hospital._id,
+    //                 // image: _image,
+    //                 user: user._id
+    //             }
 
-                const insight: any = await datasources.insightDAOService.create(payload as IInsightModel);
+    //             const insight: any = await datasources.insightDAOService.create(payload as IInsightModel);
 
-                return resolve(insight)
+    //             return resolve(insight)
 
-            })
-        })
-    }
+    //         })
+    //     })
+    // }
 
-    private async doUpdateInsight(req: Request): Promise<HttpResponse<IUserModel>> {
-        return new Promise((resolve, reject) => {
-            const insightId = req.params.insightId
+    // private async doUpdateInsight(req: Request): Promise<HttpResponse<IUserModel>> {
+    //     return new Promise((resolve, reject) => {
+    //         const insightId = req.params.insightId
 
-            form.parse(req, async (err, fields, files) => {
-                const { error, value } = Joi.object<any>({
-                    hospitalName: Joi.string().label('Hospital name'),
-                    // hospitalAddress: Joi.string().label('Hospital address'),
-                    // state: Joi.string().label('State'),
-                    image: Joi.any().label('Image'),
-                    rating: Joi.string().label('Rating'),
-                    comment: Joi.string().label('Comment'),
-                }).validate(fields);
-                if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+    //         form.parse(req, async (err, fields, files) => {
+    //             const { error, value } = Joi.object<any>({
+    //                 hospitalName: Joi.string().label('Hospital name'),
+    //                 image: Joi.any().label('Image'),
+    //                 rating: Joi.string().label('Rating'),
+    //                 comment: Joi.string().label('Comment'),
+    //             }).validate(fields);
+    //             if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-                const [insight] = await Promise.all([
-                    datasources.insightDAOService.findById(insightId)
-                ]);
+    //             const [insight] = await Promise.all([
+    //                 datasources.insightDAOService.findById(insightId)
+    //             ]);
 
-                if(!insight)
-                    return reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
+    //             if(!insight)
+    //                 return reject(CustomAPIError.response("Insight not found.", HttpStatus.NOT_FOUND.code));
                 
-                if(insight.status === 'approved') {
-                    return reject(CustomAPIError.response("Insight has already been approved.", HttpStatus.NOT_FOUND.code));
-                }
+    //             if(insight.status === 'approved') {
+    //                 return reject(CustomAPIError.response("Insight has already been approved.", HttpStatus.NOT_FOUND.code));
+    //             }
 
-                const basePath = `${UPLOAD_BASE_PATH}/photo`;
+    //             const basePath = `${UPLOAD_BASE_PATH}/photo`;
     
-                // const [_image] = await Promise.all([
-                //     Generic.handleImage(files.titleImage as File, basePath)
-                // ]);
-                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
-                if (imageError) {
-                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
-                }
+    //             // const [_image] = await Promise.all([
+    //             //     Generic.handleImage(files.titleImage as File, basePath)
+    //             // ]);
+    //             const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+    //             if (imageError) {
+    //                 return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+    //             }
 
-                const imagePath = 'photo/'
-                if (_image && insight.image) {
-                    await Generic.deleteExistingImage(insight.image, basePath, imagePath);
-                };
+    //             const imagePath = 'photo/'
+    //             if (_image && insight.image) {
+    //                 await Generic.deleteExistingImage(insight.image, basePath, imagePath);
+    //             };
     
 
-                const payload = {
-                    ...value,
-                    image: _image ? _image : insight.image
-                }
+    //             const payload = {
+    //                 ...value,
+    //                 image: _image ? _image : insight.image
+    //             }
 
 
-                const updatedInsight: any = await datasources.insightDAOService.updateByAny({ _id: insight._id }, payload as IInsightModel);
+    //             const updatedInsight: any = await datasources.insightDAOService.updateByAny({ _id: insight._id }, payload as IInsightModel);
 
-                return resolve(updatedInsight)
+    //             return resolve(updatedInsight)
 
-            })
-        })
-    }
+    //         })
+    //     })
+    // }
 
     private async doUpdateUserProfile(req: Request): Promise<HttpResponse<IUserModel>> {
         return new Promise((resolve, reject) => {
@@ -1073,6 +1268,60 @@ export default class UserController {
                 return resolve('' as any);
             });
         });
+    }
+
+    private async doPostHospital(req: Request): Promise<HttpResponse<any>> {
+        return new Promise((resolve, reject) => {
+            form.parse(req, async (err, fields, files) => {
+                const { error, value } = Joi.object<any>({
+                    hospitalName: Joi.string().required().label('Hospital name'),
+                    address: Joi.string().required().label('Address'),
+                    email: Joi.string().required().label('Email'),
+                    state: Joi.string().required().label('State'),
+                    lga: Joi.string().required().label('LGA'),
+                    phone: Joi.string().required().label('Phone number'),
+                    image: Joi.any().label('Image'),
+                    services: Joi.string().required().label('Services'),
+                    website: Joi.string().required().label('Website'),
+                }).validate(fields);
+                if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+                const [hospital] = await Promise.all([
+                    HospitalInfo.findOne({ hospitalName: value.hospitalName.toLowerCase() })
+                ]);
+
+                if(hospital)
+                    return reject(CustomAPIError.response("Hospital already exist.", HttpStatus.NOT_FOUND.code));
+
+                const basePath = `${UPLOAD_BASE_PATH}/photo`;
+
+                const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
+                if (imageError) {
+                    return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
+                }
+
+                let services;
+                if(value.services) {
+                    services = JSON.parse(value.services)
+                }
+
+                const payload = {
+                    ...value,
+                    services: services,
+                    image: _image ? _image : hospital?.image
+                }
+
+                const newHospital = await HospitalInfo.create(payload as IHospitalInfoModel);
+
+                await datasources.insightDAOService.create({
+                    hospital: newHospital._id,
+                    rating: 0
+                } as IInsightModel)
+
+                return resolve('Success' as any)
+
+            })
+        })
     }
 
 }

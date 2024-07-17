@@ -4,7 +4,7 @@ import InputField from "@/app/components/InputField";
 import PButton, { NButton } from "@/app/components/PButton";
 import Pagination from "@/app/components/Pagination";
 import { ArrowBack, FiberManualRecord, FileDownloadOutlined, KeyboardArrowRightOutlined, LockOutlined, PersonOutline } from "@mui/icons-material";
-import { Avatar, Box, Button, LinearProgress, Rating, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Avatar, Box, Button, Divider, LinearProgress, Rating, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import { useRouter } from "next/navigation";
 import { createElement, useEffect, useState } from "react";
@@ -13,7 +13,7 @@ import { stateLga } from "@/constant/state";
 import { customStyles } from "@/constant/customStyles";
 import Select from "react-select";
 import { formAmount, wordBreaker } from "@/lib/helper";
-import { useFetchSingleUser, useResetUserPassword, useToggleUserStatus, useUpdateUser } from "../../hooks/userHook/useUser";
+import { useChangeReviewStatus, useFetchSingleUser, useResetUserPassword, useToggleUserStatus, useUpdateUser } from "../../hooks/userHook/useUser";
 import { useSession } from "next-auth/react";
 import MultiSelectComponent from "../../components/MultiSelect";
 import capitalize from "capitalize";
@@ -86,6 +86,8 @@ export default function page({ params }: any) {
     const [advocacy, setAdvocacy] = useState<any>([]);
     const [insights, setInsights] = useState<any>([]);
     const userInsightsMutation = useGetUserInsights();
+    const reviewStatusMutation = useChangeReviewStatus();
+    const [status, setStatus] = useState<string>('');
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -107,11 +109,11 @@ export default function page({ params }: any) {
     const currentData = advocacy.slice(startIndex, endIndex);
 
     //Insights pagination
-    const insightItemsPerPage = insights.length ? 10 : insights.length;
-    const insightTotalPages = Math.ceil(insights.length / insightItemsPerPage);
+    const insightItemsPerPage = insights?.length ? 10 : insights?.length;
+    const insightTotalPages = Math.ceil(insights?.length / insightItemsPerPage);
     const insightStartIndex = (currPage - 1) * insightItemsPerPage;
-    const insightEndIndex = Math.min(insightStartIndex + insightItemsPerPage, insights.length);
-    const insightCurrentData = insights.slice(insightStartIndex, insightEndIndex);
+    const insightEndIndex = Math.min(insightStartIndex + insightItemsPerPage, insights?.length);
+    const insightCurrentData = insights?.slice(insightStartIndex, insightEndIndex);
 
     const handleUserStatus = async() => {
         if(getUserMutation.data?.result) {
@@ -128,6 +130,23 @@ export default function page({ params }: any) {
         } else {
             return null;
         }
+    }
+
+    const handleChangeReviewStatus = async (id: string) => {
+        const payload = {
+            reviewId: id,
+            status
+        }
+        await reviewStatusMutation.mutateAsync(payload, {
+            onSuccess: () => {
+                fetchInsights()
+                handleOpenNotification('success', `Successfully changed status to ${status}`)
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
     }
 
     const handleDistrict = (value: any) => {
@@ -151,6 +170,14 @@ export default function page({ params }: any) {
         );
         setDistrict(districtArray);
     };
+
+    const fetchInsights = async () => {
+        await userInsightsMutation.mutateAsync(params.id, {
+            onSuccess: (response: any) => {
+                setInsights(response.results)
+            }
+        })
+    }
 
     const handleToggleStatus = async () => {
         await toggleCrowdfundingStatusMutation.mutateAsync(getActiveCrowdfundingMutation.data?.result._id, {
@@ -312,9 +339,9 @@ export default function page({ params }: any) {
     useEffect(() => {
         const fetchActiveCrowdfunding = async () => {
             await getActiveCrowdfundingMutation.mutateAsync(params.id)
-            await userInsightsMutation.mutateAsync(params.id)
         }
         
+        fetchInsights()
         fetchActiveCrowdfunding()
     },[params, session]);
 
@@ -343,12 +370,6 @@ export default function page({ params }: any) {
             setAdvocacy(getUsersAdvocacyMutation.data?.results)
         }
     },[getUsersAdvocacyMutation.isSuccess]);
-
-    useEffect(() => {
-        if(userInsightsMutation.isSuccess) {
-            setInsights(userInsightsMutation.data?.results)
-        }
-    },[userInsightsMutation.isSuccess]);
 
     return (
         <Box
@@ -415,13 +436,15 @@ export default function page({ params }: any) {
                             gap: 3
                         }}
                     >
-                        <Avatar
-                            src={getUserMutation.data?.result?.image ? getUserMutation.data?.result?.image : "/model.png"}
+                        <img
+                            src={getUserMutation.data?.result?.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${getUserMutation.data?.result?.image}` : "/model.png"}
                             alt="image"
-                            sx={{
+                            style={{
                                 width: 100,
-                                height: 100
+                                height: 100,
+                                borderRadius: '50%'
                             }}
+                            crossOrigin="anonymous"
                         />
                         <Box
                             sx={{
@@ -1190,47 +1213,110 @@ export default function page({ params }: any) {
                                                 }}
                                             >
                                                 {
-                                                    insightCurrentData.map((review: any, index: number) => (
-                                                        <Box key={index}
-                                                            onClick={()=>router.push(`/insight/${review._id}`)}
-                                                            sx={{
-                                                                borderRadius: theme.borderRadius.sm,
-                                                                border: `1px solid ${theme.palette.secondary.lighter}`,
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                cursor: 'pointer',
-                                                                p: 4, gap: 2,
-                                                                '&:hover': {
-                                                                    border: `1px solid ${theme.palette.primary.main}`,
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Box
+                                                    insightCurrentData.map((review: any, index: number) => {
+                                                        const reviewData = review.review;
+                                                        return (
+                                                            <Box key={index}
+                                                                // onClick={()=>router.push(`/insight/${reviewData._id}`)}
                                                                 sx={{
+                                                                    borderRadius: theme.borderRadius.sm,
+                                                                    border: `1px solid ${theme.palette.secondary.lighter}`,
                                                                     display: 'flex',
-                                                                    justifyContent: 'space-between'
+                                                                    flexDirection: 'column',
+                                                                    cursor: 'pointer',
+                                                                    p: 4, gap: 2
                                                                 }}
                                                             >
-                                                                <Rating
-                                                                    name="half-rating-read"
-                                                                    size={'small'}
-                                                                    value={review.rating}
-                                                                    precision={0.5}
-                                                                    readOnly
-                                                                    sx={{ color: theme.palette.state.warning }}
-                                                                />
-                                                                <Typography variant="labelxxs" color={theme.palette.secondary.light}>
-                                                                    {moment(review.createdAt).format('MM/DD/YYYY(hh:mm A)')}
+                                                                <Box
+                                                                    sx={{
+                                                                        display: 'flex',
+                                                                        gap: 2,
+                                                                        alignItems: 'center'
+                                                                    }}
+                                                                >
+                                                                    <img
+                                                                        src={getUserMutation.data?.result?.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${getUserMutation.data?.result?.image}` : "/model.png"}
+                                                                        alt="user image"
+                                                                        style={{
+                                                                            width: 40,
+                                                                            height: 40,
+                                                                            borderRadius: '50%'
+                                                                        }}
+                                                                        crossOrigin="anonymous"
+                                                                    />
+                                                                    <Box
+                                                                        sx={{
+                                                                            display: 'flex',
+                                                                            flexDirection: 'column'
+                                                                        }}
+                                                                    >
+                                                                        <Typography variant="labelxxs" className="capitalize">
+                                                                            {reviewData.user.firstName} {reviewData.user.lastName}
+                                                                        </Typography>
+                                                                        <Typography variant="paragraphxxs"color={theme.palette.secondary.light}>
+                                                                            {getUserMutation.data?.result?.email || ''}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </Box>
+                                                                <Divider sx={{mt: 1,}}/>
+                                                                <Box
+                                                                    sx={{
+                                                                        display: 'flex',
+                                                                        justifyContent: 'space-between'
+                                                                    }}
+                                                                >
+                                                                    <Rating
+                                                                        name="half-rating-read"
+                                                                        size={'small'}
+                                                                        value={reviewData.rating}
+                                                                        precision={0.5}
+                                                                        readOnly
+                                                                        sx={{ color: theme.palette.state.warning }}
+                                                                    />
+                                                                    <Typography variant="labelxxs" color={theme.palette.secondary.light}>
+                                                                        {moment(reviewData.createdAt).fromNow()}
+                                                                    </Typography>
+                                                                </Box>
+                                                                <Typography variant="labelsm">
+                                                                    {review.hospital.hospitalName}
                                                                 </Typography>
+                                                                <Typography variant="labelsm" color={theme.palette.secondary.light}>
+                                                                    {wordBreaker(reviewData.review, 30)}
+                                                                </Typography>
+                                                                <Divider sx={{mt: 3, mb: 2}}/>
+                                                                <Box
+                                                                    sx={{
+                                                                        display: 'flex',
+                                                                        gap: 2,
+                                                                        justifyContent: 'flex-end',
+                                                                        alignItems: 'center'
+                                                                    }}
+                                                                >
+                                                                    <NButton
+                                                                        bkgcolor={reviewData.status === "Rejected" ? theme.palette.border.main : "transparent"}
+                                                                        textcolor={reviewData.status === "Rejected" ? theme.palette.secondary.light : theme.palette.state.error}
+                                                                        hoverbordercolor={theme.palette.state.error}
+                                                                        hovercolor={theme.palette.state.error}
+                                                                        bordercolor={reviewData.status === "Rejected" ? theme.palette.border.main : theme.palette.state.error}
+                                                                        onClick={()=>handleChangeReviewStatus(reviewData._id)}
+                                                                        onMouseEnter={()=>setStatus("Rejected")}
+                                                                        disabled={reviewData.status === "Rejected"}
+                                                                    >
+                                                                        Reject
+                                                                    </NButton>
+                                                                    <NButton
+                                                                        bkgcolor={reviewData.status === "Accepted" ? theme.palette.border.main : theme.palette.primary.main}
+                                                                        textcolor={reviewData.status === "Accepted" ? theme.palette.secondary.light : "white"}
+                                                                        hovercolor={theme.palette.primary.main}
+                                                                        onClick={()=>handleChangeReviewStatus(reviewData._id)}
+                                                                        onMouseEnter={()=>setStatus("Accepted")}
+                                                                        disabled={reviewData.status === "Accepted"}
+                                                                    >
+                                                                        Approve
+                                                                    </NButton>
+                                                                </Box>
                                                             </Box>
-                                                            <Typography variant="labelsm">
-                                                                {review.hospitalName}
-                                                            </Typography>
-                                                            <Typography variant="labelsm" color={theme.palette.secondary.light}>
-                                                                {wordBreaker(review.comment, 30)}
-                                                            </Typography>
-                                                        </Box>
-                                                    ))
+                                                    )})
                                                 }
 
                                                 <Box

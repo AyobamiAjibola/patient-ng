@@ -4,26 +4,34 @@ import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { ArrowForward, Close, Star } from "@mui/icons-material";
-import { Avatar, Box, Divider, IconButton, LinearProgress, Rating, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Divider, IconButton, Rating,  LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useWindowSize } from "@uidotdev/usehooks";
 import InputField from "@/app/components/InputField";
 import { NButton } from "@/app/components/PButton";
 import { useGetSingleInsight, usePostInsightReview } from "@/app/admin/hooks/insightHook/useInsight";
 import { useSession } from "next-auth/react";
 import capitalize from "capitalize";
 import Toastify from "@/app/components/ToastifySnack";
+import { useFetchSingleUser, useInsightsRatingsReports } from "@/app/admin/hooks/userHook/useUser";
 
 export default function page({ params }: any) {
   const isMobile = useMediaQuery('(max-width: 900px)');
   const theme = useTheme();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const size = useWindowSize();
   const [review, setReview] = useState<string>('');
   const insightMutation = useGetSingleInsight();
   const { data: session } = useSession();
   const reviewMutation = usePostInsightReview();
-
+  const insightsRatingsReportsMutation = useInsightsRatingsReports();
+  const [ratingData, setRatingData] = useState<any>([]);
+  const [insightData, setInsightData] = useState<any>({});
+  const loggedUserMutation = useFetchSingleUser();
+  const [userImage, setUserImage] = useState<string>('');
+  const [selectedRating, setSelectedRating] = useState<number>(0);
+  const rating = localStorage.getItem('rating');
+  const [totalRatings, setTotalRatings] = useState<number>(0);
+  const [hospitalName, setHospitalName] = useState<string>('');
+ 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
@@ -36,18 +44,39 @@ export default function page({ params }: any) {
     setOpen(true);
   };
 
+  const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+    height: 7,
+    borderRadius: 5,
+    [`&.${linearProgressClasses.colorPrimary}`]: {
+      backgroundColor: theme.palette.secondary.lighter
+    },
+    [`& .${linearProgressClasses.bar}`]: {
+      borderRadius: 5,
+      backgroundColor: theme.palette.primary.main
+    },
+  }));
+
   const handleCloseModal = () => {
     setReview('');
     setModalOpen(false)
   };
 
+  const handleInsightsRatings = async (hospitalName: string) => {
+    await insightsRatingsReportsMutation.mutateAsync({hospital: hospitalName}, {
+      onSuccess: (response: any) => {
+        setRatingData(Object.entries(response.result.ratings))
+        setTotalRatings(response.result.total)
+      }
+    })
+  }
+
   const handleReview = async () => {
-    await reviewMutation.mutateAsync({ review: review, insightId: params.id }, {
+    await reviewMutation.mutateAsync({ review: review, rating: selectedRating, insightId: params.id }, {
       onSuccess: async (response: any) => {
-        await insightMutation.mutateAsync(params.id);
+        await handleGetInsight()
         setModalOpen(false)
         setReview('')
-        handleOpenNotification('success', response.message)
+        // handleOpenNotification('success', response.message)
       },
       onError: (error: any) => {
           const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
@@ -56,13 +85,24 @@ export default function page({ params }: any) {
     })
   }
 
-  useEffect(() => {
-    const getInsight = async () => {
-      if(params.id) {
-        await insightMutation.mutateAsync(params.id)
+  const handleGetInsight = async () => {
+    await insightMutation.mutateAsync(params.id, {
+      onSuccess: (response: any) => {
+        const filteredData = response.result.insight.reviews.filter((item: any) => item.status === 'Accepted')
+        setInsightData(filteredData)
+        setHospitalName(response.result.insight.hospital.hospitalName)
+        handleInsightsRatings(response.result.insight.hospital.hospitalName)
       }
-    }
-    getInsight()
+    })
+  }
+
+  useEffect(() => {
+    handleGetInsight()
+    loggedUserMutation.mutateAsync(session?.user.userId as string, {
+      onSuccess: (response: any) => {
+        setUserImage(response.result.image)
+      }
+    })
   },[session, params]);
 
   return (
@@ -95,10 +135,10 @@ export default function page({ params }: any) {
             }}
           >
             <img
-               src={insightMutation.data?.result && insightMutation.data?.result.user.image 
-                      ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${insightMutation.data?.result.user.image}`
+               src={insightData.hospital?.image
+                      ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${insightData.hospital?.image}`
                       : "/logo.png"}
-              alt="hosital image"
+              alt="hospital image"
               style={{
                 width: '5em',
                 height: '5em',
@@ -113,11 +153,11 @@ export default function page({ params }: any) {
                 gap: 2
               }}
             >
-              <Typography variant="labelbase">
-                {insightMutation.data?.result && capitalize.words(insightMutation.data?.result.hospitalName) || ''}
+              <Typography variant="labelbase" className="capitalize">
+                {hospitalName || ''}
               </Typography>
-              <Typography color={theme.palette.secondary.light} variant="paragraphxxs">
-                {insightMutation.data?.result && insightMutation.data?.result.reviews.length} Reviews
+              <Typography color={theme.palette.secondary.light} variant="paragraphsm">
+                {insightData.length} {insightData.length > 1 ? 'Reviews' : 'Review'}
               </Typography>
               <Box
                 sx={{
@@ -129,16 +169,16 @@ export default function page({ params }: any) {
                 <Rating
                   name="half-rating-read"
                   size={'small'}
-                  value={4}
+                  value={rating ? +rating : 0}
                   precision={0.5}
                   readOnly
                   sx={{ color: '#FFCB00' }}
                 />
                 <Typography variant="paragraphxs" color={theme.palette.secondary.light} mb={-1}>
-                  {insightMutation.data?.result && insightMutation.data?.result.rating}
+                  {/* {rating ? Math.ceil(+rating * 10) / 10 : 0} */}
+                  {rating}
                 </Typography>
               </Box>
-              
             </Box>
           </Box>
           <Box
@@ -183,12 +223,6 @@ export default function page({ params }: any) {
             gap: 3
           }}
         >
-          <Typography variant="labellg" mb={-3}>
-            Review
-          </Typography>
-          <Typography variant="paragraphsm" color={theme.palette.secondary.light} width={isMobile ? '100%' : '70%'}>
-            {insightMutation.data?.result && insightMutation.data?.result.comment}
-          </Typography>
           <Box
             onClick={() => setModalOpen(true)}
             sx={{
@@ -207,9 +241,9 @@ export default function page({ params }: any) {
             }}
           >
             <img
-              src={insightMutation.data?.result && insightMutation.data?.result.user.image 
-                    ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${insightMutation.data?.result.user.image}`
-                    : "/logo.png"}
+              src={userImage 
+                  ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${userImage}`
+                  : "/logo.png"}
               style={{
                 width: 30,
                 height: 30,
@@ -221,9 +255,100 @@ export default function page({ params }: any) {
               Write a review
             </Typography>
           </Box>
+
+          <Box
+            sx={{
+              bgcolor: 'white',
+              borderRadius: theme.borderRadius.sm,
+              border: `1px solid ${theme.palette.border.main}`,
+              width: isMobile ? '100%' : '70%',
+              p: 3,
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1
+              }}
+            >
+              <Typography variant="h5">
+                Reviews
+              </Typography>
+              <Box display={'flex'} alignItems={'center'}>
+                <Star
+                  sx={{ color: '#FFCB00', fontSize: '30px' }}
+                />
+                <Typography variant="h5">
+                  {/* {rating ? Math.ceil(+rating * 10) / 10 : 0} */}
+                  {rating}
+                </Typography>
+              </Box>
+            </Box>
+            <Typography variant="paragraphlg" my={3}>
+              Based on {insightData.length} {insightData.length > 1 ? 'Reviews' : 'Review'}
+            </Typography>
+
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+              }}
+            >
+              {
+                ratingData.map((rating: any, index: number) => {
+                  return (
+                    <Box key={index}
+                      sx={{
+                        display: 'flex',
+                        gap: 1,
+                        alignItems: 'center',
+                        my: 1
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: theme.borderRadius.xs,
+                          border: `1px solid ${theme.palette.border.main}`,
+                          bgcolor: 'white'
+                        }}
+                      />
+                      <Typography px={1}> 
+                        {rating[0] === 'one' 
+                          ? 1
+                          : rating[0] === 'two'
+                            ? 2
+                            : rating[0] === 'three'
+                              ? 3
+                              : rating[0] === 'four'
+                                ? 4 : 5 
+                        }
+                      </Typography>
+                      <Typography mr={2}>
+                        {index === 0 ? 'star' : 'stars'}
+                      </Typography>
+                      <Box width='100%' pr={2}>
+                        <BorderLinearProgress variant="determinate" value={rating[1].totalRating > 0 ? rating[1].totalRating / totalRatings * 100 : 0} />
+                      </Box>
+                      <Typography>
+                        {
+                          rating[1].totalRating === 0
+                            ? `${0}%`
+                            : `${Math.ceil(rating[1].totalRating / totalRatings * 100 * 10) / 10}%`
+                        }
+                      </Typography>
+                    </Box>
+                )})
+              }
+            </Box>
+          </Box>
           <Divider sx={{width: isMobile ? '100%' : '70%', my: 2}}/>
-          { insightMutation.data?.result.reviews.length > 0 
-            ? insightMutation.data?.result.reviews.map((review: any, index: number) => (
+          { insightData.length > 0 
+            ? insightData.map((review: any, index: number) => (
                 <Box key={index}
                   sx={{
                     width: isMobile ? '100%' : '70%',
@@ -264,6 +389,14 @@ export default function page({ params }: any) {
                       <Typography variant="labelxs">
                         {`${capitalize.words(review.user.firstName)} ${capitalize.words(review.user.lastName)}`}
                       </Typography>
+                      <Rating
+                        name="half-rating-read"
+                        size={'small'}
+                        value={review.rating}
+                        precision={0.5}
+                        readOnly
+                        sx={{ color: '#FFCB00' }}
+                      />
                     </Box>
                   </Box>
                   <Divider sx={{my: 2}}/>
@@ -287,7 +420,7 @@ export default function page({ params }: any) {
         open={modalOpen}
         width={isMobile ? '90%' : '60%'}
         showCloseIcon={false}
-        height={isMobile ? '80%' : '350px'}
+        height={'auto'}
       >
         <Box className="flex flex-col p-2 gap-3"
           sx={{
@@ -320,6 +453,53 @@ export default function page({ params }: any) {
               <Close sx={{fontSize: '16px'}}/>
             </IconButton>
           </Box>
+
+          <Box
+            sx={{
+                width: '100%'
+            }}
+          >
+            <Typography variant="labelxs"
+                sx={{
+                    mb: 2
+                }}
+            >
+                Give a rating
+            </Typography>
+            <Box display={'flex'}>
+                {
+                    [1,2,3,4,5].map((rating, index) => (
+                        <Box key={index}
+                            onClick={()=>setSelectedRating(rating)}
+                            sx={{
+                                width: '60px',
+                                display: 'flex',
+                                gap: 1,
+                                cursor: 'pointer',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '40px',
+                                p: 3,
+                                borderRight: rating !== 5 ? `3px solid ${theme.palette.secondary.lightest}` : 'none',
+                                borderTopLeftRadius: rating === 1 ? theme.borderRadius.sm : 'none',
+                                borderBottomLeftRadius: rating === 1 ? theme.borderRadius.sm : 'none',
+                                borderTopRightRadius: rating === 5 ? theme.borderRadius.sm : 'none',
+                                borderBottomRightRadius: rating === 5 ? theme.borderRadius.sm : 'none',
+                                backgroundColor: rating === selectedRating ? theme.palette.primary.main : theme.palette.secondary.lighter
+                            }}
+                        >
+                            <Star sx={{color: '#FFCB00', fontSize: '15px'}}/>
+                            <Typography
+                                variant="labelxs"
+                                color={rating === selectedRating ? 'white' : 'black'}
+                            >
+                                {rating}
+                            </Typography>
+                        </Box>
+                    ))
+                }
+            </Box>
+        </Box>
 
           <Box
             sx={{
