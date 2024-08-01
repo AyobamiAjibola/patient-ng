@@ -110,7 +110,7 @@ export default function PatientStories() {
             <Box
                 sx={{
                     height: 'auto',
-                    px: isMobile ? '20px' : '64px', py: isMobile ? 4 : 6,
+                    px: isMobile ? '20px' : '64px', py: isMobile ? 7 : 6,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 8
@@ -121,7 +121,7 @@ export default function PatientStories() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 4, width: '100%',
-                        height: 'auto',
+                        height: isMobile ? 'auto' : '100vh',
                         p: 2
                     }}
                 >
@@ -240,9 +240,13 @@ export default function PatientStories() {
                     sx={{
                         display: 'flex',
                         gap: 3,
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        alignItems: 'center'
+                        overflowX: isMobile ? 'scroll' : 'unset',
+                        whiteSpace: isMobile ? 'nowrap' : 'normal',
+                        '&::-webkit-scrollbar': {
+                        display: 'none',
+                        },
+                        scrollbarWidth: 'none',
+                        flexWrap: isMobile ? 'unset' : 'wrap'
                     }}
                 >
                     {   currentData.length > 0 
@@ -254,7 +258,8 @@ export default function PatientStories() {
                                         border: `1px solid ${theme.palette.secondary.lighter}`,
                                         bgcolor: theme.palette.secondary.lightest,
                                         borderRadius: theme.borderRadius.sm,
-                                        width: '30%',
+                                        width: isMobile ? '100%' : '32%',
+                                        minWidth: '300px',
                                         height: isMobile ? 450 : 400
                                     }} key={index}
                                 >
@@ -264,14 +269,19 @@ export default function PatientStories() {
                                         style={{
                                             width: '100%',
                                             height: '80%',
-                                            borderTopRightRadius: theme.borderRadius.sm
+                                            borderTopRightRadius: theme.borderRadius.sm,
+                                            borderTopLeftRadius: theme.borderRadius.sm
                                         }}
                                         crossOrigin="anonymous"
                                     />
-                                    <Typography variant={isMobile ? 'labelsm' : 'labelxs'} px={2} py={2}>
+                                    <Typography variant={isMobile ? 'labelsm' : 'labelxs'} px={2} py={2}
+                                        sx={{whiteSpace: isMobile ? 'pre-wrap' : 'none'}}
+                                    >
                                         {story.title.length > 45 ? `${characterBreaker(story.title, 45)}...` : story.title}
                                     </Typography>
-                                    <Typography variant={isMobile ? 'labelxs' : 'labelxxs'} className="capitalize" px={2} color={theme.palette.secondary.light}>
+                                    <Typography variant={isMobile ? 'labelxs' : 'labelxxs'} className="capitalize" px={2} color={theme.palette.secondary.light}
+                                        sx={{whiteSpace: isMobile ? 'pre-wrap' : 'none'}}
+                                    >
                                         by {story.user.firstName} {story.user.lastName}
                                     </Typography>
                                     <Typography onClick={() => router.push(`/patient-stories/${story._id}`)} px={2}
@@ -289,7 +299,7 @@ export default function PatientStories() {
                             <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
                                 <HourglassEmpty sx={{fontSize: '2em', color: theme.palette.border.main}}/>
                                 <Typography variant='paragraphlg' color={theme.palette.border.main}>
-                                    No Data
+                                    No Stories
                                 </Typography>
                             </Box>
                         )

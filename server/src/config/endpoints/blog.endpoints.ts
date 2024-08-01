@@ -14,7 +14,7 @@ import {
     fetchBlogsByCategoryHandler, 
     fetchBlogsHandler, fetchUserBlogsHandler, likeBlogCommentHandler, likeBlogHandler, 
     replyBlogCommentHandler, 
-    singleBlogHandler, updateBlogHandler 
+    singleBlogHandler, updateBlogCategoryHandler, updateBlogHandler 
 } from '../../routes/blogRoute';
 
 const blogEndpoints: RouteEndpoint  = [
@@ -23,6 +23,12 @@ const blogEndpoints: RouteEndpoint  = [
         method: 'post',
         path: '/post-blog-category',
         handler: createBlogCategoryHandler
+    },
+    {
+        name: 'update blog category',
+        method: 'put',
+        path: '/update-blog-category/:blogCatId',
+        handler: updateBlogCategoryHandler
     },
     {
         name: 'delete blog category',

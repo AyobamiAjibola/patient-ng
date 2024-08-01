@@ -108,7 +108,8 @@ export default function Webinars() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                py: md ? 4 : 6, px: md ? '20px' : '90px', width: '100%'
+                pb: md ? 4 : 6, px: md ? '20px' : '90px', width: '100%',
+                pt: 8
             }}
         >
             <Typography

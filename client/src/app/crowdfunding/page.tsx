@@ -1,9 +1,8 @@
 'use client'
 
 import Navbar from "@/app/components/Navbar";
-import { Avatar, Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import PButton, { NButton } from "../components/PButton";
-import Image from "next/image";
 import { HourglassEmpty } from "@mui/icons-material";
 import { wordBreaker } from "@/lib/helper";
 import { useRouter } from "next/navigation";
@@ -19,57 +18,72 @@ import CrowdCard from "../components/CrowdCard";
 
 const stories = [
   {
-    title: 'Cancer Survivor',
-    story: `Sarah Johnson, diagnosed with stage 4 cancer, received vital support from our community. Together, we raised NGN50,000, enabling her to access life-saving treatment and inspiring countless others.`,
+    title: 'Amina’s Road to Recovery',
+    story: `Amina, a young mother from Kano, was diagnosed with breast cancer. The cost of chemotherapy and surgery was beyond what her family could afford.
+            Feeling desperate, Amina turned to patient.ng to start a crowdfunding campaign. She shared her story honestly and vulnerably, reaching out to her
+            community for help. Within weeks, donations began pouring in from friends, family, and even strangers. Through the generosity of her supporters, Amina
+            raised enough money for her treatment. Today, she’s in remission and spends her time raising awareness about breast cancer in her community.`,
     image: 'model.png',
-    name: 'Abayomi Olowu'
+    name: 'Amina'
   },
   {
-    title: 'Cancer Survivor',
-    story: `Sarah Johnson, diagnosed with stage 4 cancer, received vital support from our community. Together, we raised NGN50,000, enabling her to access life-saving treatment and inspiring countless others.`,
+    title: 'Tunde’s Dialysis Dream',
+    story: `Tunde, a young Uber driver from Lagos, needed regular dialysis treatments due to kidney failure. The costs were astronomical, and his family’s resources were
+            quickly depleting. With the help of his friends, Tunde launched a crowdfunding campaign on patient.ng. The response was overwhelming. People from all over
+            Nigeria contributed, sharing Tunde’s story on social media and raising awareness about his plight. In just two months, Tunde raised enough funds to cover his
+            dialysis treatments for an entire year.`,
     image: 'model.png',
-    name: 'Abayomi Olowu'
+    name: 'Tunde'
   },
   {
-    title: 'Cancer Survivor',
-    story: `Sarah Johnson, diagnosed with stage 4 cancer, received vital support from our community. Together, we raised NGN50,000, enabling her to access life-saving treatment and inspiring countless others.`,
+    title: 'Fatima’s Fight Against Sickle Cell Disease',
+    story: `Fatima, a university student in Abuja, had been battling sickle cell disease her entire life. When her condition worsened, she needed a bone marrow
+            transplant, which was both risky and expensive. Her friends and family rallied around her, launching a crowdfunding campaign on her behalf on patient.ng.
+            Fatima’s story resonated with many Nigerians in Diaspora, and the donations started flowing in. Local businesses, community leaders, and even her university
+            contributed to her campaign. Fatima raised the necessary funds for her transplant and is currently making travel plans to India for the procedure.`,
     image: 'model.png',
-    name: 'Abayomi Olowu'
+    name: 'Fatima'
   },
   {
-    title: 'Cancer Survivor',
-    story: `Sarah Johnson, diagnosed with stage 4 cancer, received vital support from our community. Together, we raised NGN50,000, enabling her to access life-saving treatment and inspiring countless others.`,
+    title: 'Emeka’s Heart Surgery Miracle',
+    story: `Emeka, a teenager from Enugu who loves to play football, was born with a congenital heart defect that required urgent surgery. His parents couldn’t afford
+            the procedure, but they refused to give up hope. They started a crowdfunding campaign on patient.ng, sharing Emeka’s story with anyone who would listen.
+            The campaign went viral on WhatsApp, with people from all walks of life donating and spreading the word. Within a few months, Emeka’s family raised the
+            full amount needed for his surgery in Lagos, Nigeria. Today, Emeka is healthy and active, enjoying the childhood he almost lost.`,
     image: 'model.png',
-    name: 'Abayomi Olowu'
+    name: 'Emeka'
   },
   {
-    title: 'Cancer Survivor',
-    story: `Sarah Johnson, diagnosed with stage 4 cancer, received vital support from our community. Together, we raised NGN50,000, enabling her to access life-saving treatment and inspiring countless others.`,
+    title: 'Chidi’s Battle with Leukemia',
+    story: `Chidi, a 34 year old father of 3 from Port Harcourt, was recently diagnosed with leukemia. The treatment costs were overwhelming, and his family was at a
+            loss of options. They turned to patient.ng for help, hoping to raise enough money to save Chidi’s life. His wife shared their story, highlighting Chidi’s role as a
+            young, loving father and husband. The community response was incredible. Friends, neighbors, and even strangers contributed to Chidi’s campaign.
+            Fundraising events were organized at his local church which highlighted his story. In the end, Chidi raised more than enough for his treatment and is now in
+            remission.`,
     image: 'model.png',
-    name: 'Abayomi Olowu'
+    name: 'Chidi'
   }
 ];
 
 const crowdFundingWork = [
   {
-    title: 'Choose a Campaign',
-    content: `Explore diverse crowdfunding campaigns on patient.ng to select one
-    that resonates deeply with you.`
+    title: 'Explore',
+    content: `Explore on-going patient crowdfunding campaigns to
+              find one that resonates with you.`
   },
   {
-    title: 'Support a Campaign',
-    content: `Make a financial donation or Give a heart to help the fundraiser
-    reach their goal.`
+    title: 'Support',
+    content: `Make a donation or give a heart to help the
+      fundraiser reach their goal.`
   },
   {
-    title: 'Track Campaign Progress',
-    content: `Follow the campaign in real-time and see how it’s making a
-    difference.`
+    title: 'Monitor',
+    content: `Follow the campaign and track its progress daily.`
   },
   {
-    title: 'Share your impact',
-    content: `Discover the positive results of your contributions and see how they
-    have made a difference through our impact stories.`
+    title: 'Share',
+    content: `Share the success of your contributions and celebrate
+            its impact.`
   }
 ]
 
@@ -106,10 +120,11 @@ export default function CrowdFundings() {
       >
         <Box
           sx={{
-            height: 'auto',
+            height: '100vh',
             background: theme.palette.secondary.lightest,
             display: 'flex',
-            gap: 6, px: isMobile ? '20px' : '90px', py: 6
+            gap: 6, px: isMobile ? '20px' : '90px', py: 6,
+            alignItems: 'center'
           }}
         >
           <Box
@@ -128,7 +143,7 @@ export default function CrowdFundings() {
                 lineHeight: theme.typography.h3.lineHeight
               }}
             >
-              Uniting Hearts, Saving Lives: Together, We Make Miracles Happen
+              Uniting Hearts, Saving Lives!
             </Typography>
             <Typography
               sx={{
@@ -137,8 +152,12 @@ export default function CrowdFundings() {
                 color: theme.palette.secondary.light
               }}
             >
-              Empower patients across Nigeria with a single click. Your support turns challenges into triumphs, making access to quality healthcare a
-                reality for everyone.
+              With no fee to start, you can ask for help, whenever
+              you truly need help. Whether you are raising money
+              for yourself, friends or family, our team of patient
+              advocates can help your fundraiser for medical
+              emergencies, critical surgeries or life-saving
+              medications reach its goal successfully on patient.ng
             </Typography>
             <Box
               sx={{
@@ -153,11 +172,13 @@ export default function CrowdFundings() {
               </PButton>
             </Box>
           </Box>
-          {!isMobile && (<Image
+          {!isMobile && (<img
             src='/crowd.png'
             alt='crowd funding image'
-            width={500}
-            height={450}
+            style={{
+              height: '80%',
+              width: 500
+            }}
           />)}
         </Box>
 
@@ -269,10 +290,10 @@ export default function CrowdFundings() {
             sx={{
               fontSize: theme.typography.h4.fontSize,
               fontWeight: theme.typography.h4.fontWeight,
-              lineHeight: '1px'
+              lineHeight: 1.3
             }}
           >
-            Impact Stories
+            Impact Stories in Nigeria That Will Inspire You
           </Typography>
           <Typography
             sx={{
@@ -281,7 +302,9 @@ export default function CrowdFundings() {
               mb: 2
             }}
           >
-            See how your contributions have made a difference
+            These stories remind us of the incredible impact that community support can have. Crowdfunding not only provides financial relief but also brings people
+            together, fostering a sense of hope and solidarity. If you’re facing medical challenges, consider starting your own crowdfunding campaign on patient.ng. Your
+            story could inspire others and bring you the support you need.
           </Typography>
           
           <Swiper
@@ -318,7 +341,7 @@ export default function CrowdFundings() {
                       backgroundColor: 'white',
                       display: 'flex', gap: 10,
                       flexDirection: 'column',
-                      minWidth: '300px'
+                      minWidth: '400px'
                     }}
                   >
                     <Typography
@@ -335,9 +358,9 @@ export default function CrowdFundings() {
                         color: theme.palette.secondary.light
                       }}
                     >
-                      {isMobile ? wordBreaker(story.story, 20) : wordBreaker(story.story, 40)}...
+                      {story.story}
                     </Typography>
-                    <Box
+                    {/* <Box
                       sx={{
                         display: 'flex',
                         gap: 2,
@@ -360,7 +383,7 @@ export default function CrowdFundings() {
                       >
                         {story.name}
                       </Typography>
-                    </Box>
+                    </Box> */}
                   </SwiperSlide>
                 ))
               }
@@ -383,7 +406,7 @@ export default function CrowdFundings() {
               lineHeight: '1px'
             }}
           >
-            Let’s see how it works
+            See how it works
           </Typography>
           <Typography
             sx={{
@@ -392,7 +415,8 @@ export default function CrowdFundings() {
               mb: 2
             }}
           >
-            Learn how crowdfunding helps support patients critical health issues
+            Learn how crowdfunding on patient.ng helps support patients
+            across Nigeria
           </Typography>
 
           <Box
@@ -518,7 +542,7 @@ export default function CrowdFundings() {
                   color: 'white'
                 }}
               >
-                Start your own campaign
+                Need help urgently?
               </Typography>
               <Typography
                 sx={{
@@ -526,7 +550,7 @@ export default function CrowdFundings() {
                   color: 'white'
                 }}
               >
-                Have a health-related cause? Start your crowdfunding campaign today!
+                Start your patient crowdfunding campaign today
               </Typography>
             </Box>
             <NButton

@@ -330,15 +330,15 @@ export default class Generic {
     let outputPath = basePath ? path.join(basePath, "image.png") : path.join("uploads/photo", "image.png");
     
     try {
-        const image = await Jimp.read(imagePath);
+        // const image = await Jimp.read(imagePath);
 
-        // Resize the image
-        image.resize(700, 620);
+        // // Resize the image
+        // image.resize(700, 620);
 
-        // Save the compressed image
-        await image.quality(80).writeAsync(outputPath);
+        // // Save the compressed image
+        // await image.quality(80).writeAsync(outputPath);
 
-        return outputPath;
+        return imagePath;
     } catch (error) {
         console.error(error);
         throw error; // Rethrow the error to handle it upstream

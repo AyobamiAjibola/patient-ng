@@ -33,8 +33,8 @@ const items = {
             iconName: FavoriteBorderOutlined
         },
         {
-            title: 'Insight',
-            link: '/admin/insight',
+            title: 'Rating and review',
+            link: '/admin/rating-and-review',
             iconName: MedicationOutlined
         },
         {

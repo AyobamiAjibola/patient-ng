@@ -13,6 +13,15 @@ export const useBlogApi = () => {
         return response.data;
     };
 
+    const updateBlogCategory = async (
+        data: any
+    ): Promise<types.ApiResponseSuccess<any>> => {
+        const response = await axiosAuth.put<
+        types.ApiResponseSuccess<any>>
+        (`/update-blog-category/${data.blogCatId}`, {name: data.name});
+        return response.data;
+    };
+
     const deleteBlogCategory = async (
         data: any
     ): Promise<types.ApiResponseSuccess<any>> => {
@@ -205,6 +214,7 @@ export const useBlogApi = () => {
         changeBlogToDraft,
         likeBlogComment,
         replyBlogComment,
-        fetchBlogComments
+        fetchBlogComments,
+        updateBlogCategory
     };
 }

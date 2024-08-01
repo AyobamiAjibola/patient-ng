@@ -1,10 +1,10 @@
 'use client';
 
 import Navbar from '@/app/components/Navbar'
-import PButton, { NButton, PButton2 } from '@/app/components/PButton';
+import { NButton } from '@/app/components/PButton';
 import { characterBreaker, wordBreaker } from '@/lib/helper';
-import { ArrowForward, ArrowRight, DesktopWindows, HourglassEmpty, Mic } from '@mui/icons-material';
-import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Add, ArrowForward, ArrowRight, DesktopWindows, HourglassEmpty, Mic, Remove } from '@mui/icons-material';
+import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -13,13 +13,44 @@ import Footer from './components/Footer';
 import { useGetCrowdfundings } from './admin/hooks/crowdFuncdingHook/useCrowdFunding';
 import moment from 'moment';
 import { useGetBlogs } from './admin/hooks/blogHook/useBlog';
-import HtmlToText from './components/HtmlToText';
-import { useFetchStories } from './admin/hooks/patientStoriesHook/usePatientStories';
+import { HtmlToText2 } from './components/HtmlToText';
 import { useGetPodcasts } from './admin/hooks/podcastHook/usePodcast';
 import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
 import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
 import CrowdCard from './components/CrowdCard';
+
+const faq = [
+  {
+    title: 'What is Patient.ng?',
+    summary: `Patient.ng is a comprehensive platform that empowers patients by providing advocacy
+              services, crowdfunding mechanisms, experience sharing, and hospital reviews.`,
+    id: 0
+  },
+  {
+    title: 'How does the advocacy service work?',
+    summary: `Our advocacy service allows patients to submit complaints about their healthcare
+              experiences. We work to ensure these complaints are addressed and resolved efficiently.`,
+    id: 1
+  },
+  {
+    title: 'Is crowdfunding on Patient.ng secure?',
+    summary: `Yes, our crowdfunding platform is secure, ensuring that funds raised are used
+              appropriately for medical expenses.`,
+    id: 2
+  },
+  {
+    title: 'How can I share my story?',
+    summary: `You can easily share your healthcare journey on Patient.ng, providing hope and guidance
+            to others.`
+  },
+  {
+    title: 'How do hospital ratings and reviews work?',
+    summary: `Patients can rate and review hospitals based on their experiences, helping others make
+              informed decisions about their healthcare providers.`,
+    id: 3
+  }
+]
 
 export default function HomePage() {
   const theme = useTheme();
@@ -29,16 +60,19 @@ export default function HomePage() {
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
   const [blogs, setBlogs] = useState<any>([]);
   const getBlogsMutation = useGetBlogs();
-  const fetchStoriesMutate = useFetchStories();
   const podcastMutation = useGetPodcasts();
   const webinarMutation = useGetWebinars();
-  const [stories, setStories] = useState<any>([]);
   const [podcasts, setPodcasts] = useState<any>([]);
   const [webinar, setWebinar] = useState<any>([]);
   const { status: authStatus } = useSession();
   const [_, setType] = useAtom(openType)
   const [__, setOpen] = useAtom(openModal);
   const [___, setOpen2] = useAtom(openModal2);
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
+  const handleExpand = (index: any) => {
+    setExpandedIndex(index === expandedIndex ? null : index);
+  };
 
   const getHeight = () => {
     if (typeof window !== 'undefined') {
@@ -85,18 +119,9 @@ export default function HomePage() {
     })
   }
 
-  const fetchStories = async () => {
-    await fetchStoriesMutate.mutateAsync({}, {
-      onSuccess: (response: any) => {
-        setStories(response.results)
-      }
-    })
-  }
-
   useEffect(() => {
     fetchCrowedfunding()
     fetchBlogs()
-    fetchStories()
     fetchPodcasts()
     fetchWebinar()
   },[]);
@@ -106,100 +131,423 @@ export default function HomePage() {
       <Navbar />
       <Box
         sx={{
-          display: 'flex',
-          gap: 3,
-          position: 'absolute',
-          pl: isMobile ? '20px' : '90px',
-          top: isMobile ? '13em' : '35em'//'25em'
-        }}
-      >
-        <PButton transBg={false} bg={true}
-          onMouseEnter={()=>setType('contact')}
-          onClick={()=>setOpen2(true)}
-        >
-          <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-            Contact Us
-          </Typography>
-        </PButton>
-        <PButton transBg={true} bg={false}
-          onMouseEnter={()=>setType('about')}
-          onClick={()=>setOpen(true)}
-        >
-          <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-            About Us
-          </Typography>
-        </PButton>
-      </Box>
-      <Box
-        sx={{
           width: '100%',
-          height: isMobile ? imgHeight : '800px',
-          marginTop: '-80px',
-          position: 'relative',
-          mb: isMobile ? '-18rem' : '8rem',//'-4rem' '28rem',
-          zIndex: '-1'
+          height: isMobile ? 'auto' : '100vh',
+          px: isMobile ? '20px' : '90px',
+          backgroundImage: 'url(/home-img.jpg)',
+          display: 'flex',
+          gap: 4,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          flexDirection: 'column',
+          pb: isMobile ? '1em' : '0px'
         }}
       >
-        <Box>
-          <img
-            src='/home-img.jpg'
-            alt='home page image'
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          />
-          <Box
-            sx={{
-              width: '100%',
-              pl: isMobile ? '20px' : '90px',
-              pr: isMobile ? '5px' : '0px',
-              position: 'absolute',
-              display: 'flex',
-              flexDirection: 'column',
-              top: isMobile ? 90 : 300//170
-            }}
-          >
-            <Typography 
-              variant={isMobile ? 'h6' : 'h2'}
-              sx={{
-                color: 'white',
-                mb: isMobile ? 1 : 4,
-                width: isMobile ? '100%' : '80%'
-              }}
-            >
-              Empowering Patients towards Better Health Outcomes
-            </Typography>
-            <Typography
-              variant={isMobile ? 'paragraphxs' : 'paragraphxl'}
-              sx={{
-                color: theme.palette.secondary.lighter,
-                width: isMobile ? '100%' : '80%'
-              }}
-            >
-              We believe in putting patients at the Centre of their healthcare journey. Discover a community-driven platform dedicated to providing support for patients cross Nigeria.
-            </Typography>
-          </Box>
-        </Box>
-
-        {/* <Box
+        <Box
           sx={{
-            height: isMobile ? '250px' : '700px',
-            px: isMobile ? '20px' : '90px',
-            position: 'absolute',
-            top: isMobile ? '17rem' : '30rem',
-            width: '100%'
+            display: 'flex',
+            gap: isMobile ? 2 : 6,
+            pt: isMobile ? '100px' : '80px',
+            alignItems: 'center',
           }}
         >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '50%'
+            }}
+          >
+            <Typography
+              sx={{
+                color: 'black',
+                fontSize: isMobile ? '28px' : '55px',
+                fontWeight: 600,
+                lineHeight: 1
+              }}
+            >
+              Empowering
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: isMobile ? 2 : 3
+              }}
+            >
+              <Typography
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 600,
+                }}
+              >
+                Patients
+              </Typography>
+              <Typography
+                sx={{
+                  color: 'black',
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 600
+                }}
+              >
+                towards
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: isMobile ? 2 : 3
+              }}
+            >
+              <Typography
+                sx={{
+                  color: 'black',
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 600,
+                  lineHeight: 1
+                }}
+              >
+                Better
+              </Typography>
+              <Typography
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 600,
+                  lineHeight: 1
+                }}
+              >
+                Health
+              </Typography>
+            </Box>
+            <Typography 
+              sx={{
+                color: 'black',
+                fontSize: isMobile ? '28px' : '50px',
+                fontWeight: 600
+              }}
+            >
+              Outcomes
+              </Typography>
+            <Typography
+              sx={{
+                color: 'black',
+                fontSize: '16px',
+                fontWeight: 400
+              }}
+            >
+              {`We believe in putting patients at the Centre of their healthcare journey. Discover a community-driven platform dedicated to providing support for
+              patients across Nigeria.`}
+            </Typography>
+
+            {!isMobile && (<Box
+              sx={{
+                display: 'flex',
+                gap: isMobile ? 1 : 3,
+                mt: 5
+              }}
+            >
+              <NButton
+                bkgcolor={theme.palette.primary.main}
+                textcolor='white'
+                onMouseEnter={()=>setType('contact')}
+                onClick={()=>setOpen2(true)}
+                width={isMobile ? '200px' : '150px'}
+              >
+                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+                  Contact us
+                </Typography>
+              </NButton>
+              <NButton transBg={true} bg={false}
+                bordercolor={theme.palette.primary.main}
+                hoverbordercolor={theme.palette.primary.main}
+                onMouseEnter={()=>setType('about')}
+                onClick={()=>setOpen(true)}
+                width={isMobile ? '200px' : '150px'}
+              >
+                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+                  About us
+                </Typography>
+              </NButton>
+            </Box>)}
+          </Box>
           <img
-            src='/home-img2.png'
+            src='/hero-img.png'
             alt='home page image'
             style={{
-              width: '100%',
-              height: '100%',
+              width: '50%',
+              height: isMobile ? '45%' : '75%',
+              marginTop: isMobile ? '0px' : '4rem'
             }}
           />
-        </Box> */}
+        </Box>
+
+        {isMobile && (<Box
+          sx={{
+            display: 'flex',
+            gap: 3,
+            mt: 5
+          }}
+        >
+          <NButton
+            bkgcolor={theme.palette.primary.main}
+            textcolor='white'
+            onMouseEnter={()=>setType('contact')}
+            onClick={()=>setOpen2(true)}
+            width='300px'
+          >
+            <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+              About Us
+            </Typography>
+          </NButton>
+          <NButton transBg={true} bg={false}
+            bordercolor={theme.palette.primary.main}
+            hoverbordercolor={theme.palette.primary.main}
+            onMouseEnter={()=>setType('about')}
+            onClick={()=>setOpen(true)}
+            width='300px'
+          >
+            <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+              Contact Us
+            </Typography>
+          </NButton>
+        </Box>)}
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          gap: isMobile ? 1 : 4,
+          width: '100%',
+          height: 'auto',
+          pt: isMobile ? 4 : 10,
+          flexDirection: isMobile ? 'column' : 'row',
+          pb: isMobile ? 0 : 8
+        }}
+      >
+        {isMobile && (<Typography
+          sx={{
+            fontSize: '30px',
+            fontWeight: 800,
+            lineHeight: 0.7,
+            textAlign: 'center',
+            mb: 4
+          }}
+        >
+          What We Do For You
+        </Typography>)}
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100%',
+            gap: isMobile ? 0 : 4
+          }}
+        >
+        <img
+          src='/left.png'
+          alt='home page image'
+          style={{
+            width: isMobile ? '50%' : '25%',
+            height: isMobile ? '30%' : '60%'
+          }}
+        />
+        {!isMobile && (<Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            flexDirection: 'column',
+            gap: 3,
+            flex: 1,
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '50px',
+              fontWeight: 500,
+              lineHeight: 0.7
+            }}
+          >
+            What We Do For You
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: '16px',
+              textAlign: 'center',
+              fontWeight: 400,
+              mb: 6
+            }}
+          >
+            {`Patient.ng is a public-health enterprise designed to deliver sustainable support systems for patients in Nigeria. We facilitate a patient community
+              where members feel supported, heard and empowered to take control of their own healthcare experience.
+              By providing patient advocacy and crowdfunding services, experience sharing, and hospital ratings & reviews mechanisms, Patient.ng aims to improve patient
+              healthcare outcomes.`}
+          </Typography>
+          <NButton
+            bkgcolor={"white"}
+            textcolor={theme.palette.primary.main}
+            bordercolor={theme.palette.primary.main}
+            hoverbordercolor={theme.palette.primary.main}
+            width='250px'
+          >
+            Learn More
+          </NButton>
+        </Box>)}
+        <img
+          src='/right.png'
+          alt='home page image'
+          style={{
+            width: isMobile ? '50%' : '25%',
+            height: '30%'
+          }}
+        />
+        </Box>
+        {isMobile && (<Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: 3,
+            flex: 1,
+            mb: isMobile ? '1em' : '0px',
+            mt: '1em',
+            px: isMobile ? '20px' : '0px',
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '12px',
+              textAlign: 'center',
+              fontWeight: 400
+            }}
+          >
+            {`Patient.ng is a public-health enterprise designed to deliver sustainable support systems for patients in Nigeria. We facilitate a patient community
+              where members feel supported, heard and empowered to take control of their own healthcare experience.
+              By providing patient advocacy and crowdfunding services, experience sharing, and hospital ratings & reviews mechanisms, Patient.ng aims to improve patient
+              healthcare outcomes.`}
+          </Typography>
+        </Box>)}
+        {isMobile && (<Box
+          sx={{
+            width: '100%',
+            // mt: '-2.5em',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <NButton
+            bordercolor={theme.palette.primary.main}
+            textcolor={theme.palette.primary.main}
+          >
+            Learn More
+          </NButton>
+        </Box>)}
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          px: isMobile ? '0px' : '90px',
+          backgroundColor: theme.palette.secondary.lightest,
+          gap: isMobile ? 2 : 4,
+          height: isMobile ? 'auto' : '100vh',
+          mt: isMobile ? '2em' : '3em',
+          py: isMobile ? '2em' : '2em',
+          alignItems: 'center'
+        }}
+      >
+        <img
+          src='/advocacy-img.png'
+          alt='home page image'
+          style={{
+            width: isMobile ? '30%' : '45%',
+            height: isMobile ? '30%' : '100%'
+          }}
+        />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: isMobile ? '14px' : '50px',
+              fontWeight: 700,
+              lineHeight: isMobile ? 1 : 1
+            }}
+          >
+            Patient Advocacy Service
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: isMobile ? 1 : 2,
+              mt: 1
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: isMobile ? '12px' : '28px',
+                fontWeight: 600
+              }}
+            >
+              Are you facing 
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '12px' : '28px',
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
+              Challenges
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '12px' : '28px',
+                fontWeight: 600
+              }}
+            >
+              with
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '12px' : '28px',
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
+              hospitals?
+            </Typography>
+          </Box>
+          <Typography
+            sx={{
+              fontSize: isMobile ? '11px' : '20px',
+              fontWeight: 400,
+              lineHeight: 1.2,
+              mt: isMobile ? 2 : 4
+            }}
+          >
+            {`Share your experiences and complaints about public or private hospitals. We ensure your voice is heard and your issues are addressed.`}
+          </Typography>
+          <Box
+            width='100%'
+            my={isMobile ? 3 : 5}
+          >
+            <NButton
+              width={isMobile ? '150px' : '250px'}
+              bkgcolor={theme.palette.primary.main}
+              textcolor='white'
+              onClick={()=>router.push('/advocacy')}
+            >
+              Learn More
+            </NButton>
+          </Box>
+        </Box>
       </Box>
 
       <Box
@@ -214,29 +562,19 @@ export default function HomePage() {
       >
         <Typography
           sx={{
-            fontSize: theme.typography.labelsm.fontSize,
-            backgroundColor: theme.palette.secondary.lighter,
-            p: 2, color: theme.palette.primary.darker,
-            borderRadius: theme.borderRadius.sm, width: '120px',
-            textAlign: 'center', alignSelf: 'center', mb: 5
+            fontSize: '40px',
+            borderRadius: theme.borderRadius.sm, width: '100%',
+            textAlign: 'center', alignSelf: 'center', mb: 1,
+            fontWeight: 600
           }}
         >
           Crowdfunding
         </Typography>
         <Typography
-          variant={ isMobile ? 'labellg' : 'h3' }
-          sx={{
-            alignSelf: 'center', mb: 2,
-            textAlign: isMobile ? 'center' : 'left'
-          }}
-        >
-          Simple. Impactful. Trusted
-        </Typography>
-        <Typography
           variant={isMobile ? 'paragraphsm' : 'paragraphlg'}
           sx={{
-            color: theme.palette.secondary.light, textAlign: 'center',
-            alignSelf: 'center', width: isMobile ? '100%' : '80%'
+            textAlign: 'center',
+            alignSelf: 'center', width: isMobile ? '100%' : '60%'
           }}
         >
           Discover patient crowdfunding campaigns that resonate deeply with you. Every donation count, even the hearts you give!
@@ -280,11 +618,85 @@ export default function HomePage() {
             width='250px'
             onClick={() => router.push('/crowdfunding/campaigns')}
           >
-            <Typography sx={{color: 'black'}}>
-              See all crowdfunding <ArrowForward/>
-            </Typography>
+            See all crowdfunding <ArrowForward/>
           </NButton>
         </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          px: isMobile ? '20px' : '90px',
+          backgroundColor: theme.palette.primary.main,
+          gap: 4,
+          height: 'auto',
+          mt: isMobile ? '2em' : '3em',
+          py: isMobile ? '2em' : '3em',
+          alignItems: 'center',
+          flexDirection: isMobile ? 'column' : 'row'
+        }}
+      >
+        {isMobile && (<img
+          src='/patient-story.png'
+          alt='home page image'
+          style={{
+            width: isMobile ? '80%' : '50%',
+            height: isMobile ? '60%' : '70%'
+          }}
+        />)}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4, width: isMobile ? '100%' : '50%'
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: isMobile ? '32px' : '50px',
+              color: 'white',
+              fontWeight: 600,
+              textAlign: isMobile ? 'center' : 'left'
+            }}
+          >
+            Patient Stories
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: isMobile ? '16px'  : '20px',
+              color: 'white',
+              fontWeight: 400,
+              lineHeight: 1.2,
+              my: isMobile ? 1 : 3,
+              textAlign: isMobile ? 'center' : 'left'
+            }}
+          >
+            Explore inspiring patient stories from our community or share your own unique personal experience to encourage and educate others
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: isMobile ? 'center' : 'left'
+            }}
+          >
+            <NButton
+              width='250px'
+              bkgcolor='white'
+              textcolor={theme.palette.primary.main}
+              hovercolor='white'
+            >
+              Read more
+            </NButton>
+          </Box>
+        </Box>
+        {!isMobile && (<img
+          src='/patient-story.png'
+          alt='home page image'
+          style={{
+            width: isMobile ? '50%' : '50%',
+            height: isMobile ? '40%' : '70%'
+          }}
+        />)}
       </Box>
 
       <Box
@@ -298,29 +710,18 @@ export default function HomePage() {
         }}
       >
         <Typography
-          sx={{
-            fontSize: theme.typography.labelsm.fontSize,
-            backgroundColor: theme.palette.secondary.lighter,
-            p: 2, color: theme.palette.primary.darker,
-            borderRadius: theme.borderRadius.sm, width: '120px',
-            textAlign: 'center', alignSelf: 'center', mb: 5
-          }}
-        >
-          Featured blogs
-        </Typography>
-        <Typography
-          variant={ isMobile ? 'labellg' : 'h3' }
+          variant={ isMobile ? 'h5' : 'h3' }
           sx={{
             alignSelf: 'center', mb: 2
           }}
         >
-          Latest Blog Posts
+          Featured Blogs
         </Typography>
         <Typography
           variant={isMobile ? 'paragraphsm' : 'paragraphlg'}
           sx={{
             color: theme.palette.secondary.light, textAlign: 'center',
-            alignSelf: 'center', width: isMobile ? '100%' : '80%', mb: 4
+            alignSelf: 'center', width: isMobile ? '100%' : '60%', mb: 6
           }}
         >
           Here’s a quick glance over our latest blog posts and media articles written by our team members, staff and guest writers.
@@ -338,23 +739,32 @@ export default function HomePage() {
               <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  width: isMobile ? '100%' : '30%'
+                  gap: 4,
+                  overflowX: 'scroll',
+                  whiteSpace: 'nowrap',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                  scrollbarWidth: 'none',
                 }}
               >
                 {
-                  blogs.length > 0 && blogs.slice(0, 2).map((blog: any) => (
+                  blogs.length > 0 && blogs.slice(0, 3).map((blog: any) => (
                     <Box key={blog._id}
                       sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 1,
-                        height: '20rem'
+                        height: '500px',
+                        minWidth: '300px',
+                        width: isMobile ? '100%' : '32%',
+                        border: `1px solid ${theme.palette.secondary.lighter}`,
+                        borderRadius: theme.borderRadius.sm
                       }}
                     >
                       <Box
                         sx={{
-                          height: '60%'
+                          height: '50%'
                         }}
                       >
                         <img
@@ -363,30 +773,38 @@ export default function HomePage() {
                           crossOrigin='anonymous'
                           style={{
                             width: '100%',
-                            height: '100%'
+                            height: '100%',
+                            borderTopLeftRadius: theme.borderRadius.sm,
+                            borderTopRightRadius: theme.borderRadius.sm
                           }}
                         />
                       </Box>
-                      <Typography
+                      <Typography variant='paragraphsm' className='capitalize'
                         sx={{
-                          fontSize: theme.typography.labelxxs.fontSize,
-                          color: theme.palette.secondary.light
+                          color: theme.palette.primary.main, px: 3,
+                          my: 3
                         }}
                       >
-                        {moment(blog.createdAt).format('DD MMM YY')}
+                        {`[${blog.category.name}]`}
                       </Typography>
                       <Typography className='capitalize'
                         sx={{
                           fontSize: theme.typography.labellg.fontSize,
-                          fontWeight: theme.typography.labelxl.fontWeight
+                          fontWeight: theme.typography.labelxl.fontWeight,
+                          whiteSpace: 'pre-wrap', px: 3, lineHeight: 1.3
                         }}
                       >
-                        {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
+                        {blog.title.length > 50 ? `${characterBreaker(blog.title, 50)}...` : blog.title}
                       </Typography>
+                      <HtmlToText2
+                        mx={3}
+                        my={2}
+                        htmlString={isMobile ? wordBreaker(blog.content, 15) : wordBreaker(blog.content, 20)}
+                      />
                       <Typography
                         sx={{
                           fontSize: theme.typography.labelxs.fontSize,
-                          color: theme.palette.primary.main
+                          color: theme.palette.primary.main, px: 3
                         }}
                         onClick={() => router.push(`/blog${blog.urlSlug }`)}
                       >
@@ -396,118 +814,6 @@ export default function HomePage() {
                   ))
                 }
               </Box>
-
-              {!isMobile && blogs.length > 2 && (<Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 1, maxHeight: '40rem', height: 'auto',
-                  width: '40%'
-                }}
-              >
-                <Box
-                  sx={{
-                    height: '70%'
-                  }}
-                >
-                  <img
-                    src={blogs[2]?.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blogs[2]?.titleImage}` : '/logo.png'}
-                    alt='blog image'
-                    crossOrigin='anonymous'
-                    style={{
-                      width: '100%',
-                      height: '100%'
-                    }}
-                  />
-                </Box>
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      color: theme.palette.secondary.light
-                    }}
-                  >
-                    {moment(blogs[2]?.createdAt).format('DD MMM YY')}
-                  </Typography>
-                  <Typography variant='labellg' className='capitalize'>
-                    {blogs[2]?.title.length > 7 ? `${wordBreaker(blogs[2]?.title, 7)}...` : blogs[2]?.title}
-                  </Typography>
-                  <HtmlToText
-                    mx={isMobile ? 2 : 3}
-                    htmlString={isMobile ? wordBreaker(blogs[2]?.content, 20) : wordBreaker(blogs[2]?.content, 40)}
-                  />
-                  <Typography
-                    sx={{
-                      fontSize: theme.typography.labelxs.fontSize,
-                      color: theme.palette.primary.main
-                    }}
-                    onClick={() => router.push(`/blog${blogs[2].urlSlug }`)}
-                  >
-                    Learn more <ArrowForward sx={{fontSize: '16px'}}/>
-                  </Typography>
-              </Box>)}
-
-              {!isMobile && (<Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2, width: '30%'
-                }}
-              >
-                {
-                  blogs.length > 3 &&
-                    blogs.slice(3, 5).map((blog: any) => (
-                        <Box key={blog._id}
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: '20rem', gap: 1
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              height: '60%'
-                            }}
-                          >
-                            <img
-                              src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
-                              alt='blog image'
-                              crossOrigin='anonymous'
-                              style={{
-                                width: '100%',
-                                height: '100%'
-                              }}
-                            />
-                          </Box>
-                          
-                          <Typography
-                            sx={{
-                              fontSize: theme.typography.labelxxs.fontSize,
-                              color: theme.palette.secondary.light
-                            }}
-                          >
-                            {moment(blog.createdAt).format('DD MMM YY')}
-                          </Typography>
-                          <Typography className='capitalize'
-                            sx={{
-                              fontSize: theme.typography.labellg.fontSize,
-                              fontWeight: theme.typography.labelxl.fontWeight
-                            }}
-                          >
-                            {blog.title.length > 7 ? `${wordBreaker(blog.title, 7)}...` : blog.title}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: theme.typography.labelxs.fontSize,
-                              color: theme.palette.primary.main
-                            }}
-                            onClick={() => router.push(`/blog${blog.urlSlug }`)}
-                          >
-                            Learn more <ArrowForward/>
-                          </Typography>
-                        </Box>
-                      ))
-                  }
-              </Box>)}
             </Box>)
           : (
             <Box my={6} width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
@@ -520,17 +826,95 @@ export default function HomePage() {
         <Box 
           sx={{
             display: 'flex', justifyContent: 'center',
-            mb: 4, mt: isMobile ? 0 : 4
+            mb: 5, mt: isMobile ? 4 : 6
           }}
         >
-          <PButton2 transBg={false} bg={false} width='250px'
+          <NButton 
+            width='300px'
             onClick={()=>router.push('/blog')}
+            bkgcolor={theme.palette.primary.main}
+            textcolor='white'
           >
-            <Typography sx={{color: 'black'}}>
-              See all blog posts <ArrowForward/>
-            </Typography>
-          </PButton2>
+              Read more
+          </NButton>
         </Box>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'flex',
+          px: isMobile ? '20px' : '90px',
+          backgroundColor: theme.palette.secondary.lighter,
+          gap: isMobile ? 2 : 4,
+          height: isMobile ? 'auto' : '100vh',
+          mt: isMobile ? '2em' : '3em',
+          py: isMobile ? '2em' : '3em',
+          alignItems: 'center'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2, width: '50%'
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: isMobile ? '40px' : '50px',
+                color: 'black',
+                fontWeight: 600,
+                lineHeight: 1
+              }}
+            >
+              Hospital Rating
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '40px' : '50px',
+                color: 'black',
+                fontWeight: 600,
+                lineHeight: 1
+              }}
+            >
+              and Reviews
+            </Typography>
+          </Box>
+          <Typography
+            sx={{
+              fontSize: '16px',
+              color: 'black',
+              fontWeight: 400,
+              lineHeight: 1.2,
+              my: 3
+            }}
+          >
+            Find data-driven insights based on patient experiences. Your ratings and reviews can help others make informed decisions about their healthcare provider.
+          </Typography>
+          <NButton
+            width='200px'
+            bkgcolor='transparent'
+            textcolor={theme.palette.primary.main}
+            bordercolor={theme.palette.primary.main}
+            hoverbordercolor={theme.palette.primary.main}
+          >
+            Read more
+          </NButton>
+        </Box>
+        <img
+          src='/hospital-review.png'
+          alt='home page image'
+          style={{
+            width: isMobile ? '50%' : '40%',
+            height: isMobile ? '60%' : '80%'
+          }}
+        />
       </Box>
 
       <Box
@@ -869,7 +1253,7 @@ export default function HomePage() {
         </Box>
       </Box>
 
-      <Box
+      {/* <Box
         sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
@@ -1092,9 +1476,9 @@ export default function HomePage() {
               </Box>)}
             </>)}
         </Box>
-      </Box>
+      </Box> */}
 
-      <Box
+      {/* <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
@@ -1176,8 +1560,66 @@ export default function HomePage() {
             />
           </Box>)}
         </Box>
-      </Box>
+      </Box> */}
 
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: isMobile ? 'auto' : '100vh',
+          px: isMobile ? '20px' : '90px',
+          py: 6
+        }}
+      >
+        <Typography variant='h2' textAlign={'center'} mb={4}>
+          FAQ
+        </Typography>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3, mt: 4
+          }}        
+        >
+          {
+            faq.map((item: any, index: number) => (
+              <Box key={index}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: `1px solid ${theme.palette.secondary.lighter}`,
+                    py: 3
+                  }}
+                >
+                  <Typography
+                    variant='labellg'
+                  >
+                    {item.title}
+                  </Typography>
+                  <IconButton onClick={() => handleExpand(item.id)}>
+                    {expandedIndex === item.id ? <Remove /> : <Add />}
+                  </IconButton>
+                </Box>
+                {expandedIndex === item.id && (
+                  <Box sx={{ padding: 2 }}>
+                    <Typography fontSize='16px' color={theme.palette.secondary.light}>
+                      {item.summary}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            ))
+          }
+        </Box>
+      </Box>
       <Footer/>
     </>
   )

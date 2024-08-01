@@ -55,7 +55,8 @@ export default function PatientStory({ params }: any) {
       <Box
         sx={{
           display: 'flex',
-          gap: 4, height: '100vh'
+          gap: 4, height: '100vh',
+          pt: 7
         }}
       >
         {!md && (<img

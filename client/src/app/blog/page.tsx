@@ -1,7 +1,7 @@
 'use client';
 
 import Navbar from '@/app/components/Navbar'
-import { wordBreaker } from '@/lib/helper';
+import { characterBreaker, wordBreaker } from '@/lib/helper';
 import Footer from '@/app/components/Footer';
 import { Box, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { Tag } from 'antd';
@@ -80,7 +80,7 @@ export default function Blog() {
           px: isMobile ? '20px' : '64px'
         }}
       >
-        <Box className="w-[100%] h-auto flex flex-col justify-center items-center" sx={{pt: 8, pb: 5}}>
+        <Box className="w-[100%] flex flex-col justify-center items-center" sx={{pt: 6, pb: 5, height: '80vh'}}>
           <Typography 
             sx={{
               fontSize: theme.typography.labelsm.fontSize,
@@ -248,9 +248,9 @@ export default function Blog() {
                 {currentData.map((blog: any, index: number) => (
                   <Box key={index}
                     sx={{
-                      minWidth: isMobile ? '70%' : '32%',
+                      minWidth: '300px',
                       width: isMobile ? '70%' : '32%',
-                      height: 'auto',
+                      height: '500px',
                       backgroundColor: theme.palette.secondary.lightest,
                       border: `1px solid ${theme.palette.secondary.lighter}`,
                       borderRadius: theme.borderRadius.sm,
@@ -282,14 +282,14 @@ export default function Blog() {
                         mx: isMobile ? 2 : 3,
                         my: 2,
                         fontSize: isMobile ? theme.typography.labelsm : theme.typography.labellg, 
-                        whiteSpace: isMobile ? 'pre-wrap' : 'none',
+                        whiteSpace: isMobile ? 'pre-wrap' : 'none', lineHeight: 1.3
                       }}
                     >
-                      {blog.title}
+                      {blog.title.length > 50 ? `${characterBreaker(blog.title, 50)}...` : blog.title}
                     </Typography>
                     <HtmlToText 
                       mx={isMobile ? 2 : 3}
-                      htmlString={isMobile ? wordBreaker(blog.content, 20) : wordBreaker(blog.content, 40)}
+                      htmlString={isMobile ? wordBreaker(blog.content, 15) : wordBreaker(blog.content, 20)}
                     />
                     <Typography
                       onClick={() => router.push(`/blog${blog.urlSlug }`)}

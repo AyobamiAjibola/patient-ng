@@ -89,7 +89,7 @@ export default function Podcasts() {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    py: 6, width: '100%'
+                    pb: 6, width: '100%', pt: 8
                 }}
             >
                 <Box
@@ -105,7 +105,7 @@ export default function Podcasts() {
                             fontWeight: theme.typography.h2.fontWeight
                         }}
                     >
-                        Find and Listen in your
+                        Find and Listen to your
                     </Typography>
                     <Box
                         sx={{
@@ -120,16 +120,16 @@ export default function Podcasts() {
                                 fontWeight: theme.typography.h2.fontWeight
                             }}
                         >
-                            favorite {isMobile ? 'Podcast' : ''}
+                            favorite podcast
                         </Typography>
-                        {!isMobile && (<img
+                        {/* {!isMobile && (<img
                             src='/podcastImg.png'
                             style={{
                                 width: '220px',
                                 height: '50px'
                             }}
                             alt='podcast'
-                        />)}
+                        />)} */}
                     </Box>
                     <Typography
                         sx={{
@@ -138,7 +138,8 @@ export default function Podcasts() {
                             width: isMobile ? '100%' : '70%', my: 6
                         }}
                     >
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium quasi, cumque exercitationem saepe error eius corporis soluta cupiditate quas ducimus, veniam tempora illum expedita doloremque nobis vel velit deserunt ut?
+                        Explore our collection of Health and Wellbeing podcasts, powered by Patient.ng. Join the conversation to support and empower individuals, families
+                        and their communities towards achieving better health outcomes in Nigeria.
                     </Typography>
 
                     <PButton bg={true} transBg={false} width={isMobile ? '50%' : '20%'}>
@@ -277,7 +278,7 @@ export default function Podcasts() {
                                             backgroundColor: 'white',
                                             p: 4,
                                             borderRadius: theme.borderRadius.sm,
-                                            height: isMobile ? '350px' : '250px',
+                                            height: isMobile ? 'auto' : '250px',
                                             my: 2
                                         }}
                                     >
@@ -379,7 +380,7 @@ export default function Podcasts() {
                                                 <NButton
                                                     bkgcolor={theme.palette.primary.main} 
                                                     textcolor='white'
-                                                    width='20%'
+                                                    width={isMobile ? '80%' : '20%'}
                                                     onClick={()=>{
                                                     authStatus === 'authenticated' 
                                                         ? router.push(`/podcast/${podcast._id}`)

@@ -75,7 +75,8 @@ export default function Award() {
             <Box
                 sx={{
                     width: '100%',
-                    minHeight: '300px'
+                    minHeight: '300px',
+                    pt: 7
                 }}
             >
                 <img

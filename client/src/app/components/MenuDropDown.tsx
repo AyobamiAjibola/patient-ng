@@ -73,7 +73,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                   whiteSpace: 'pre-line'
                 }}
               >
-                The latest industry news, updates and info.
+                The latest posts, articles and news updates.
               </Typography> 
             </Box>
           </Box>
@@ -106,7 +106,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                   whiteSpace: 'pre-line'
                 }}
               >
-                The latest industry news, updates and info.
+                Real-life stories from patient experiences.
               </Typography> 
             </Box>
           </Box>
@@ -136,10 +136,11 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                 sx={{
                   color: theme.palette.secondary.light,
                   fontSize: theme.typography.paragraphsm,
-                  whiteSpace: 'pre-line'
+                  whiteSpace: 'pre-line',
+                  ml: 2
                 }}
               >
-                The latest industry news, updates and info.
+                Live presentations, online trainings and interactive seminars.
               </Typography> 
             </Box>
           </Box>
@@ -169,10 +170,10 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                 sx={{
                   color: theme.palette.secondary.light,
                   fontSize: theme.typography.paragraphsm,
-                  whiteSpace: 'pre-line'
+                  whiteSpace: 'pre-line', ml: 2
                 }}
               >
-                The latest industry news, updates and info.
+                On-demand episodes on health and wellness categories.
               </Typography> 
             </Box>
           </Box>
@@ -205,12 +206,12 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                   whiteSpace: 'pre-line'
                 }}
               >
-                The latest industry news, updates and info.
+                Nominations and Voting.
               </Typography> 
             </Box>
           </Box>
         </MenuItem>
-        <MenuItem onClick={() => handleClose('/insight')}>
+        <MenuItem onClick={() => handleClose('/rating-and-review')}>
           <Box className='flex flex-col'>
             <Box className='flex gap-4 justify-start'>
               <Insights
@@ -226,7 +227,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                   fontWeight: 500
                 }}
               >
-                Insight
+                Ratings and reviews
               </Typography>
             </Box>
             <Box className='flex gap-5 justify-start'>
@@ -235,10 +236,10 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                 sx={{
                   color: theme.palette.secondary.light,
                   fontSize: theme.typography.paragraphsm,
-                  whiteSpace: 'pre-line'
+                  whiteSpace: 'pre-line', ml: 2
                 }}
               >
-                The latest industry news, updates and info.
+                Find top-ranking hospitals by patients for patients.
               </Typography> 
             </Box>
           </Box>

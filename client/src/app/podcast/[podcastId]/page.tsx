@@ -63,7 +63,8 @@ export default function page({params}: any) {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          position: 'relative'
+          position: 'relative',
+          pt: 4
         }}
       >
         <Box

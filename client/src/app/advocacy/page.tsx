@@ -3,7 +3,7 @@
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../components/Navbar";
 import PButton, { NButton } from "../components/PButton";
-import { ArrowDownward, ChatBubbleOutline, CheckCircle } from "@mui/icons-material";
+import { ArrowDownward, ChatBubbleOutline, FiberManualRecord } from "@mui/icons-material";
 import Footer from "@/app/components/Footer";
 import InputField from "../components/InputField";
 import { useForm } from "react-hook-form";
@@ -95,9 +95,9 @@ export default function page() {
       <Box
         sx={{
           display: 'flex',
-          height: 'auto',
-          px: isMobile ? '20px' : '90px', py: 5,
-          gap: 4
+          height: '100vh',
+          px: isMobile ? '20px' : '90px', pb: 5,
+          gap: 4, pt: 8
         }}
       >
         <Box
@@ -107,7 +107,7 @@ export default function page() {
             width: isMobile ? '100%' : '60%',
             justifyContent: 'center',
             gap: 4,
-            py: 6, px: 2
+            px: 2, 
           }}
         >
           <Typography
@@ -116,7 +116,8 @@ export default function page() {
               fontWeight: theme.typography.h3.fontWeight,
             }}
           >
-            Patient Advocacy Service
+            Your trusted partner, advocating for your rights and
+            wellbeing.
           </Typography>
           <Typography
             sx={{
@@ -124,7 +125,7 @@ export default function page() {
               color: theme.palette.secondary.light
             }}
           >
-            Your trusted ally in healthcare, advocating for your rights and well-being. Let us guide you through every step of your healthcare journey with expertise and compassion.
+            Let us guide you through every step of your healthcare journey and help resolve your issue with expertise and compassion.
           </Typography>
           <Box
             sx={{
@@ -203,8 +204,7 @@ export default function page() {
                   alignSelf: 'center'
                 }}
               >
-                Patient.ng advocacy service helped me get a second opinion
-                  with the right diagnosis and treatment, and I felt supported.
+                Patient.ng helped me resolve the issue with my dad’s diagnosis and treatment after getting a second opinion. Now we finally feel heard and validated.
               </Typography>
               <Typography
                 sx={{
@@ -226,7 +226,7 @@ export default function page() {
           display: 'flex',
           flexDirection: 'column',
           height: 'auto',
-          px: isMobile ? '20px' : '90px', py: 5,
+          px: isMobile ? '20px' : '90px', pb: 5,
           width: '100%'
         }}
       >
@@ -236,7 +236,7 @@ export default function page() {
             fontWeight: theme.typography.h3.fontWeight,
           }}
         >
-          Step-by-Step Guide to Making a Complaint
+          Guide to Making a Complaint
         </Typography>
         <Typography
           sx={{
@@ -305,7 +305,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(1)}
               >
-                {'Informal Complaint (step 1)'}
+                {'Informal Complaint'}
               </Typography>
             </Box>
             <Box
@@ -340,7 +340,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(2)}
               >
-                {'Formal Complaint (step 2)'}
+                {'Formal Complaint'}
               </Typography>
             </Box>
             <Box
@@ -375,7 +375,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(3)}
               >
-                {'What to Include in your Complaint (step 3)'}
+                {'What to Include'}
               </Typography>
             </Box>
             <Box
@@ -410,7 +410,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(4)}
               >
-                Step 4
+                Submit your Complaint
               </Typography>
             </Box>
             <Box
@@ -445,7 +445,7 @@ export default function page() {
                 }}
                 onClick={()=>setCurrentStep(5)}
               >
-                Step 5
+                Request Further Review
               </Typography>
             </Box>
           </Box>
@@ -459,14 +459,14 @@ export default function page() {
           >
             <Typography variant={isMobile ? 'h5' : 'h4'}>
               {currentStep === 1 
-                ? 'Informal Complaint (step 1)'
+                ? 'Informal Complaint'
                 : currentStep === 2
-                  ? 'Formal Complaint (step 2)'
+                  ? 'Formal Complaint'
                   : currentStep === 3
-                    ? 'What to Include in your Complaint (step 3)'
+                    ? 'What to Include'
                     : currentStep === 4
-                      ? 'Submit your complaint online (step 4)'
-                      : 'Request the HSE to review the complaint (step 5)'
+                      ? 'Submit your complaint'
+                      : 'Request Further Review'
               }
             </Typography>
             {currentStep === 3 && (<ul
@@ -475,41 +475,80 @@ export default function page() {
                 padding: '10px'
               }}
             >
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Your name</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Phone number</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Email address</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Name of the hospital</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Name of the section in the hospital</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Who was involved, dates and times of the experience</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> An accurate description of what happened.</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> Your complaint should also outline what you have done to resolve the issue to date</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> and what you want to happen now to resolve your issue.</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> You can also attach any documentation to your complaint that you feel is relevant, through the online form or email.</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> In your written complaint, you should grant permission to patient.ng to access your personal confidential information.</li>
-              <li className="text-sm"><CheckCircle sx={{color: theme.palette.primary.main, fontSize: '12px'}}/> If you don’t grant patient.ng permission to access your personal confidential information, we may not be able to effectively process your complaint.</li>
+              <li className="text-sm"><FiberManualRecord sx={{fontSize: '10px'}}/> Your name, Phone number and Email address.</li>
+              <li className="text-sm"><FiberManualRecord sx={{fontSize: '10px'}}/> Name, Address and Department of the hospital.</li>
+              <li className="text-sm"><FiberManualRecord sx={{fontSize: '10px'}}/> Who was involved, dates and times of the
+              experience.</li>
+              <li className="text-sm"><FiberManualRecord sx={{fontSize: '10px'}}/> An accurate description of what happened.</li>
+              <li className="text-sm"><FiberManualRecord sx={{fontSize: '10px'}}/> Your complaint should also outline what you
+                  have done to resolve the issue to date and what
+                  you want to happen now to resolve your issue.</li>
             </ul>)}
+            {currentStep === 3 && (
+              <Typography variant="paragraphsm" ml={'10px'}>
+                {`You can also attach any documentation to your
+                  complaint that you feel is relevant, through the
+                  online form or via email.`}
+              </Typography>
+            )}
+            {currentStep === 3 && (
+              <Typography variant="paragraphsm" ml={'10px'}>
+                {`In your written complaint, you should grant
+                  permission to patient.ng to access your personal
+                  confidential information. If you don’t grant us
+                  permission to access your personal confidential
+                  information, we may not be able to effectively
+                  process or resolve your complaint.`}
+              </Typography>
+            )}
             <Typography variant="paragraphsm">
               {currentStep === 1
-                ? `If you are unhappy with the patient care received in a healthcare institution, you can raise issue by making a verbal complaint
-                with any member of staff at the reception. This issue might be resolved without needing to make a formal, written complaint.`
+                ? `If you are unhappy with the
+                    care you received in a hospital, you can raise your
+                    issue by making a verbal complaint with any
+                    hospital staff you find.`
                 : currentStep === 2
-                  ? ` If you are unhappy with the response you received after raising the issue with the reception at the healthcare institution, you can
-                        make a written complaint to the healthcare institution through patient.ng. You can do this by writing an email or filling out the complaints form on the
-                        patient.ng website here.`
+                  ? `If you are still unhappy with
+                      the response you received after raising the issue
+                      verbally, you can make a written complaint to the
+                      hospital through patient.ng for free.`
                   : currentStep === 3
                     ? ``
                     : currentStep === 4
-                      ? `Submit your complaint online or email to complaints@patient.ng`
-                      : ` If you are unhappy with the response you receive from a healthcare institution after Step 3, you can consider asking our advocates at patient.ng to
-                      review your complaint even further.
-                      To proceed, you should reply to patient.ng within 30 days of the initial response. Your email response should begin with`
+                      ? `You may now proceed to
+                          submit your complaint online through the web
+                          form or via email complaints@patient.ng`
+                      : `If you are still
+                          unsatisfied with the response you received from
+                          the hospital through our service, you may
+                          consider requesting a further review by our
+                          professional patient advocates.`
 
               }
             </Typography>
+            {currentStep === 1 && (
+              <Typography variant="paragraphsm">
+                {`This issue might be resolved without needing to
+                  make a formal, written complaint to us at
+                  patient.ng.`}
+              </Typography>
+            )}
+            {currentStep === 2 && (
+              <Typography variant="paragraphsm">
+                {`You can do this by writing an email to us or filling
+                  out the complaints form here.`}
+              </Typography>
+            )}
             {currentStep === 5 && (
-              <Typography variant="paragraphsm" fontStyle={'italic'}>
-                {`I am unhappy with the response I have received to my complaint/unhappy with how my complaint has been handled by the healthcare institution and
-                      request that a patient.ng advocate undertakes an independent case review of the complaint.`}
+              <Typography variant="paragraphsm">
+                {`To proceed, you should reply to patient.ng within
+                  30 days of the initial hospital response. Your
+                  email response should begin with:
+                  I am still unsatisfied with the response received
+                  from the hospital through patient.ng and request
+                  that a professional patient advocate is assigned
+                  to undertake an independent case review of my
+                  complaint.`}
               </Typography>
             )}
             {currentStep === 2 && (<Box display={'flex'} flexDirection={'column'}>
@@ -517,54 +556,30 @@ export default function page() {
                 Timeframe
               </Typography>
               <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> receive acknowledgement within 5 working days
+                <FiberManualRecord sx={{fontSize: '10px'}}/> Receive official acknowledgement of your
+                complaint within 5 working days.
               </Typography>
               <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> receive response to the complaint within 30 working days
+                <FiberManualRecord sx={{fontSize: '10px'}}/> Receive official response to the complaint
+                within 30 working days.
               </Typography>
             </Box>)}
-            {/* {currentStep === 3 && (<Box display={'flex'} flexDirection={'column'}>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Name and address of the hospital
-              </Typography>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Your complaint should also outline what you have done to resolve the issue to date, and what you want to happen now to resolve your issue.
-              </Typography>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> You can also attach any documentation to your complaint  that you feel is relevant.
-              </Typography>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> In your complaint you should grant permission to the iPatient to access your personal confidential information.
-              </Typography>
-              <Typography variant="paragraphsm">
-                If you don’t grant iPatient permission to access your personal confidential information, they may not be able to effectively process your complaint.
-              </Typography>
-            </Box>)} */}
-            {/* {currentStep === 4 && (<Box display={'flex'} flexDirection={'column'}>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Your name, phone number, email address, name of the hospital, name of the section in the hospital, who was involved, dates and times of the experience, an accurate description of what happened.
-              </Typography>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Email iPatient: You can also send your email to the iPatient complaints inbox
-              </Typography>
-              <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Online: You can just submit your complaint online by filling out the form below
-              </Typography>
-              <Typography variant="paragraphsm">
-                If you don’t grant the HSE permission to access your personal confidential information, they may not be able to effectively process your complaint.
-              </Typography>
-            </Box>)} */}
             {currentStep === 5 && (<Box display={'flex'} flexDirection={'column'}>
               <Typography variant="labelsm" mb={2}>
                 Timeframe
               </Typography>
               <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Respond to patient.ng within 30 working days of the initial response
+                <FiberManualRecord sx={{fontSize: '10px'}}/> Respond to patient.ng via email within 30
+                  working days of the initial response received
+                  from the hospital.
               </Typography>
               <Typography variant="paragraphsm">
-                <CheckCircle sx={{color: theme.palette.primary.main}}/> Patient.ng will then have 20 working days to review the complaint in case you are eligible for compensation.
+                <FiberManualRecord sx={{fontSize: '10px'}}/> Patient.ng will then have 20 working days
+                  to review the complaint, in case you are
+                  eligible for proper compensation.
               </Typography>
             </Box>)}
+            
           </Box>
         </Box>
       </Box>
@@ -616,7 +631,9 @@ export default function page() {
                 color: theme.palette.secondary.light, my: 2
               }}
             >
-              If you need assistance making a complaint about an experience you had in a Public Acute Hospital.
+              Use this form to make a complaint about a negative
+              experience you may have had in a public or private hospital in
+              Nigeria.
             </Typography>
             <InputField
               label="Hospital Name"
@@ -684,11 +701,12 @@ export default function page() {
         >
           <Typography variant={isMobile ? "h5" : "h4"} color={'white'} textAlign={'center'}>
             {/* {session?.user ? 'Not an advocate? Become an advocate today' : 'Sign up as an advocate today'} */}
-            Interested in becoming a patient advocate?
+            Want to become a professional patient advocate?
           </Typography>
           <Typography variant="paragraphbase" mb={4} color={'white'}>
             {/* Just {session?.user ? 'one click' : 'a few clicks'} can make a difference. {session?.user && 'Sign up now'}. */}
-            Join our community today
+            You can make a difference. Join us to get started
+            today
           </Typography>
           <NButton
             bkgcolor={theme.palette.primary.main}

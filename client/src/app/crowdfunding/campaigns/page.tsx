@@ -53,9 +53,13 @@ export default function page() {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                py: 6, px: isMobile ? '20px' : '90px'
+                pb: 6, px: isMobile ? '20px' : '90px',
+                pt: 8
             }}
         >
+            <Typography variant="h4">
+                Campaigns
+            </Typography>
             <Box sx={{width: isMobile ? '100%' : '30%', alignSelf: 'flex-end', mb: 5, mr: '3%'}}>
                 <Search
                     placeholder="Search campaigns"

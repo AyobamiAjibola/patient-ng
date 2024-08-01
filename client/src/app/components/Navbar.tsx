@@ -76,8 +76,8 @@ const resources = [
     link: "/award"
   },
   {
-    name: 'Insight',
-    link: '/insight',
+    name: 'Ratings and reviews',
+    link: '/rating-and-review',
   }
 ]
 
@@ -141,7 +141,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       setIndx(0)
     } else if (pathname.includes('/crowdfunding')) {
       setIndx(1)
-    } else if (pathname.includes('/insight')) {
+    } else if (pathname.includes('/rating-and-review')) {
       setIndx(2)
     } else if(pathname === '/') {
       setIndx(-1)
@@ -177,8 +177,13 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
   return (
     <Box 
       sx={{ 
-        backgroundColor: pathname === '/' ? 'rgba(0, 0, 0, 0.5)' : theme.palette.background.white, 
-        borderBottom: pathname === '/' ? 'none' : '2px solid #F3F3F3', position: 'relative'
+        backgroundImage: pathname === '/' ? 'url(/home-img.jpg)' : 'none',
+        backgroundColor: pathname === '/' ? 'transparent' : theme.palette.background.white, 
+        borderBottom: pathname === '/' ? 'none' : '2px solid #F3F3F3',
+        position: 'fixed', width: '100%', zIndex: 1,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       <Container>
@@ -197,20 +202,20 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
           <Box className='flex flex-row items-center gap-4 cursor-pointer'
             onClick={() => router.push('/')}
           >
-              <Image
-                src='/logo.png'
-                alt='logo'
-                height={isMobile ? 30 : 40}
-                width={isMobile ? 30 : 40}
-              />
-            <Typography variant={isMobile ? 'h6' : 'h5'}
+            <Image
+              src='/logo.png'
+              alt='logo'
+              height={isMobile ? 30 : 50}
+              width={isMobile ? 30 : 50}
+            />
+            {isMobile && (<Typography variant={isMobile ? 'h6' : 'h5'}
               fontFamily={theme.fonts}
               sx={{
-                color: pathname === '/' ? 'white' : theme.palette.primary.darker
+                color: pathname === '/' ? 'black' : theme.palette.primary.darker
               }}
             >
               Patient.ng
-            </Typography>
+            </Typography>)}
           </Box>
 
           {showSearchBar && !isMobile && (
@@ -245,7 +250,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               {toggle ? (
                 <CloseIcon sx={{ fontSize: 20 }} />
               ) : (
-                <MenuIcon sx={{ fontSize: 20, color: pathname === '/' ? 'white' : 'black' }} />
+                <MenuIcon sx={{ fontSize: 20, color: pathname === '/' ? 'black' : 'black' }} />
               )}
             </IconButton>
           ) : null}
@@ -262,7 +267,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                       color={index === indx 
                               ? theme.palette.primary.main 
                               : pathname === '/' 
-                                ? 'white'
+                                ? 'black'
                                 : theme.palette.secondary.main
                             }
                       fontWeight={theme.typography.labelxl.fontWeight}
@@ -272,7 +277,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                     >
                       {item.name}
                     </Typography>
-                    {item.name === "Resources" && (<ExpandMoreIcon sx={{color: pathname === '/' ? 'white' : theme.palette.secondary.main}}/>)}
+                    {item.name === "Resources" && (<ExpandMoreIcon sx={{color: pathname === '/' ? 'black' : theme.palette.secondary.main}}/>)}
                   </Link>
                 </li>
               ))}
@@ -327,7 +332,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                 sx={{
                   fontSize: theme.typography.labelxs.fontSize,
                   fontWeight: theme.typography.labelxs.fontWeight,
-                  color: pathname === '/' ? 'white' : 'black'
+                  color: pathname === '/' ? 'black' : 'black'
                 }}
               >
                 {capitalize.words(session?.user?.fullName)}
@@ -335,7 +340,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
               <Typography
                 sx={{
                   fontSize: theme.typography.labelxs.fontSize,
-                  color: pathname === '/' ? 'white' : theme.palette.secondary.light, 
+                  color: pathname === '/' ? 'black' : theme.palette.secondary.light, 
                   mt: -1
                 }}
               >
@@ -344,7 +349,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             </Box>
 
             <IconButton onClick={(e: any) => handleClick2(e)}>
-              {open2 ? <KeyboardArrowUp sx={{color: 'white'}}/> : <KeyboardArrowDown sx={{color: pathname === '/' ? 'white' : 'black'}}/>}
+              {open2 ? <KeyboardArrowUp sx={{color: 'black'}}/> : <KeyboardArrowDown sx={{color: pathname === '/' ? 'black' : 'black'}}/>}
             </IconButton>
           </Box>)}
         </Toolbar>

@@ -23,4 +23,27 @@ const HtmlToText = ({ htmlString, mx }: any) => {
     >{textContent}</Typography>)
 };
 
+export const HtmlToText2 = ({ htmlString, mx, my }: any) => {
+  const [textContent, setTextContent] = useState('');
+  const theme = useTheme();
+  const isMobile = useMediaQuery('(max-width: 900px)');
+
+  useEffect(() => {
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = htmlString;
+    setTextContent(tempElement.textContent || tempElement.innerText || '');
+  }, [htmlString]);
+
+  return (
+    <Typography
+        sx={{
+          mx: mx,
+          color: theme.palette.secondary.light,
+          fontSize: theme.typography.labelsm.fontSize,
+          whiteSpace: 'pre-wrap',
+          my: my
+        }}
+    >{textContent}</Typography>)
+};
+
 export default HtmlToText;

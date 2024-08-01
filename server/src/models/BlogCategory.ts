@@ -10,6 +10,6 @@ const ipatientSocialsSchema = new Schema<IBlogCategory>({
 
 export interface IBlogCategoryModel extends Document, IBlogCategory {}
 
-const BlogCategory = mongoose.model<IBlogCategoryModel>('BlogCategory', ipatientSocialsSchema as any);
+const BlogCategory: any = mongoose.model<IBlogCategoryModel>('BlogCategory', ipatientSocialsSchema as any);
 
 export default BlogCategory;

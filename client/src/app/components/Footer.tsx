@@ -1,6 +1,6 @@
 'user client'
 
-import { Copyright, FacebookRounded, FiberManualRecord, Instagram, LinkedIn, LocationOn, Mail, Phone } from "@mui/icons-material";
+import { Copyright, X, FiberManualRecord, Instagram, LinkedIn, LocationOn, Mail, Phone } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Dropdown } from "antd";
 import Image from "next/image";
@@ -229,13 +229,20 @@ export default function Footer() {
                             ml: isMobile ? -2 : 0
                         }}
                     >
-                        <IconButton>
-                            <FacebookRounded/>
+                        <IconButton 
+                            component="a"
+                            href="https://x.com/patientdotng?s=11&t=WDXKro3kSag6ImoNjJ85tw"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <X/>
                         </IconButton>
-                        <IconButton>
-                            <LinkedIn/>
-                        </IconButton>
-                        <IconButton>
+                        <IconButton
+                            component="a"
+                            href="https://www.instagram.com/patientdotng?igsh=eGgxbWN4Z3ZhaHZn&utm_source=qr"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             <Instagram/>
                         </IconButton>
                     </Box>
@@ -404,7 +411,7 @@ export default function Footer() {
                                         Get in touch by emailing
                                     </Typography>
                                     <Typography variant="paragraphxs" color={theme.palette.border.main}>
-                                        info@ipatient.com
+                                        info@patient.com
                                     </Typography>
                                 </Box>
                             </Box>

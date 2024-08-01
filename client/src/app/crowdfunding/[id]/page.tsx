@@ -200,7 +200,8 @@ export default function CrowdFunding({params}: any) {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            px: isMobile ? '20px' : '64px', py: 4, gap: 4
+            px: isMobile ? '20px' : '64px', pb: 4, gap: 4,
+            pt: 8
           }}
         >
           <Box display={'flex'} alignItems={'center'} gap={3}>

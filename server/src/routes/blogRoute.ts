@@ -10,6 +10,12 @@ export const createBlogCategoryHandler = authenticateRouteWrapper(async (req, re
     res.status(response.code).json(response);
 });
 
+export const updateBlogCategoryHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await blogController.updateBlogCategory(req);
+
+    res.status(response.code).json(response);
+});
+
 export const deleteBlogCategoryHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await blogController.deleteBlogCategory(req);
 

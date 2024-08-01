@@ -3,24 +3,45 @@ import { types } from '../../../../../types/models';
 import { useBlogApi } from './useBlogApi';
 
 export const useCreateBlogCategory = () => {
-    const api = useBlogApi();
-    const queryClient = useQueryClient();
-  
-    return useMutation<
-      types.ApiResponseSuccess<any>,
-      Error,
-      any
-    >({
-      mutationFn: (requestParameters: any) => {
-        return api.createBlogCategory(requestParameters);
-      },
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: ['create_blog_cat'] });
-      },
-      onError: (error: Error) => {
-        console.error('Error creating user:', error);
-      },
-    });
+  const api = useBlogApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.createBlogCategory(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['create_blog_cat'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
+};
+
+export const useUpdateBlogCategory = () => {
+  const api = useBlogApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.updateBlogCategory(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['update_blog_cat'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
 };
 
 export const useDeleteBlogCategory = () => {

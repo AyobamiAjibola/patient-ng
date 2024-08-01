@@ -1217,7 +1217,7 @@ export default function page({ params }: any) {
                                                         const reviewData = review.review;
                                                         return (
                                                             <Box key={index}
-                                                                // onClick={()=>router.push(`/insight/${reviewData._id}`)}
+                                                                // onClick={()=>router.push(`/rating-and-review/${reviewData._id}`)}
                                                                 sx={{
                                                                     borderRadius: theme.borderRadius.sm,
                                                                     border: `1px solid ${theme.palette.secondary.lighter}`,

@@ -59,11 +59,55 @@ export default class BlogController {
         if(!blogCat)
             return Promise.reject(CustomAPIError.response("Blog category not found.", HttpStatus.NOT_FOUND.code));
 
+        const blogs = await datasources.blogDAOService.findAll({});
+        for (const blog of blogs) {
+            if (blog.category._id.toString() === blogCat._id.toString()) {
+                return Promise.reject(CustomAPIError.response(
+                    "This blog category cannot be deleted as it is currently assigned to one or more blogs.",
+                    HttpStatus.NOT_FOUND.code
+              ));
+            }
+        }
+
         await BlogCategory.findByIdAndDelete(blogCat._id);
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: 'Successfully deleted blog category.'
+        };
+
+        return Promise.resolve(response);
+
+    }
+
+    @TryCatch
+    public async updateBlogCategory (req: Request) {
+        const loggedInUser = req.user._id;
+        const blogCatId = req.params.blogCatId;
+
+        const { error, value } = Joi.object<any>({
+            name: Joi.string().label('Name')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const category = await BlogCategory.findById(blogCatId); 
+
+        const user = await datasources.userDAOService.findById(loggedInUser);
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        if (value.name && value.name !== category.name) {
+            const existingCategory = await BlogCategory.findOne({ name: value.name.toLowerCase() });
+            if (existingCategory) {
+                return Promise.reject(CustomAPIError.response("A category with this name already exists.", HttpStatus.FORBIDDEN.code));
+            }
+        }
+        
+        await BlogCategory.findOneAndUpdate({_id: category._id}, {name: value.name.toLowerCase()});
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully updated blog category.'
         };
 
         return Promise.resolve(response);
