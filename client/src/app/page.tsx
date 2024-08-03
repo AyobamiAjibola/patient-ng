@@ -129,6 +129,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
+      {/* <Box maxWidth={'1216px'}> */}
       <Box
         sx={{
           width: '100%',
@@ -136,27 +137,28 @@ export default function HomePage() {
           px: isMobile ? '20px' : '90px',
           backgroundImage: 'url(/home-img.jpg)',
           display: 'flex',
-          gap: 4,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           flexDirection: 'column',
-          pb: isMobile ? '1em' : '0px'
+          // pb: isMobile ? '1em' : '0px'
+          py: '50px'
         }}
       >
         <Box
           sx={{
             display: 'flex',
-            gap: isMobile ? 2 : 6,
+            gap: isMobile ? 4 : 6,
             pt: isMobile ? '100px' : '80px',
             alignItems: 'center',
+            flexDirection: isMobile ? 'column' : 'row'
           }}
         >
           <Box
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              width: '50%'
+              width: isMobile ? '100%' : '50%'
             }}
           >
             <Typography
@@ -241,7 +243,7 @@ export default function HomePage() {
               patients across Nigeria.`}
             </Typography>
 
-            {!isMobile && (<Box
+            <Box
               sx={{
                 display: 'flex',
                 gap: isMobile ? 1 : 3,
@@ -253,7 +255,7 @@ export default function HomePage() {
                 textcolor='white'
                 onMouseEnter={()=>setType('contact')}
                 onClick={()=>setOpen2(true)}
-                width={isMobile ? '200px' : '150px'}
+                width='200px'
               >
                 <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
                   Contact us
@@ -264,26 +266,26 @@ export default function HomePage() {
                 hoverbordercolor={theme.palette.primary.main}
                 onMouseEnter={()=>setType('about')}
                 onClick={()=>setOpen(true)}
-                width={isMobile ? '200px' : '150px'}
+                width='200px'
               >
                 <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
                   About us
                 </Typography>
               </NButton>
-            </Box>)}
+            </Box>
           </Box>
           <img
             src='/hero-img.png'
             alt='home page image'
             style={{
-              width: '50%',
-              height: isMobile ? '45%' : '75%',
+              width: '500px', //'50%',
+              height: 'auto',//isMobile ? '45%' : '75%',
               marginTop: isMobile ? '0px' : '4rem'
             }}
           />
         </Box>
 
-        {isMobile && (<Box
+        {/* {isMobile && (<Box
           sx={{
             display: 'flex',
             gap: 3,
@@ -312,7 +314,7 @@ export default function HomePage() {
               Contact Us
             </Typography>
           </NButton>
-        </Box>)}
+        </Box>)} */}
       </Box>
 
       <Box
@@ -321,22 +323,12 @@ export default function HomePage() {
           gap: isMobile ? 1 : 4,
           width: '100%',
           height: 'auto',
-          pt: isMobile ? 4 : 10,
+          // pt: isMobile ? 4 : 10,
           flexDirection: isMobile ? 'column' : 'row',
-          pb: isMobile ? 0 : 8
+          py: '50px'
+          //pb: isMobile ? 0 : 8
         }}
       >
-        {isMobile && (<Typography
-          sx={{
-            fontSize: '30px',
-            fontWeight: 800,
-            lineHeight: 0.7,
-            textAlign: 'center',
-            mb: 4
-          }}
-        >
-          What We Do For You
-        </Typography>)}
         <Box
           sx={{
             display: 'flex',
@@ -344,27 +336,27 @@ export default function HomePage() {
             gap: isMobile ? 0 : 4
           }}
         >
-        <img
+        {!isMobile && (<img
           src='/left.png'
           alt='home page image'
           style={{
-            width: isMobile ? '50%' : '25%',
-            height: isMobile ? '30%' : '60%'
+            width: '300px',//isMobile ? '50%' : '25%',
+            height: 'auto'//isMobile ? '30%' : '60%'
           }}
-        />
-        {!isMobile && (<Box
+        />)}
+        <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-start',
             flexDirection: 'column',
             gap: 3,
-            flex: 1,
+            flex: 1
           }}
         >
           <Typography
             sx={{
-              fontSize: '50px',
+              fontSize: isMobile ? '32px' : '50px',
               fontWeight: 500,
               lineHeight: 0.7
             }}
@@ -376,7 +368,7 @@ export default function HomePage() {
               fontSize: '16px',
               textAlign: 'center',
               fontWeight: 400,
-              mb: 6
+              px: '20px'
             }}
           >
             {`Patient.ng is a public-health enterprise designed to deliver sustainable support systems for patients in Nigeria. We facilitate a patient community
@@ -393,91 +385,57 @@ export default function HomePage() {
           >
             Learn More
           </NButton>
-        </Box>)}
-        <img
+        </Box>
+        {!isMobile && (<img
           src='/right.png'
           alt='home page image'
           style={{
-            width: isMobile ? '50%' : '25%',
-            height: '30%'
+            width: '300px',//isMobile ? '50%' : '25%',
+            height: 'auto'//'30%'
           }}
-        />
+        />)}
         </Box>
-        {isMobile && (<Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            gap: 3,
-            flex: 1,
-            mb: isMobile ? '1em' : '0px',
-            mt: '1em',
-            px: isMobile ? '20px' : '0px',
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: '12px',
-              textAlign: 'center',
-              fontWeight: 400
-            }}
-          >
-            {`Patient.ng is a public-health enterprise designed to deliver sustainable support systems for patients in Nigeria. We facilitate a patient community
-              where members feel supported, heard and empowered to take control of their own healthcare experience.
-              By providing patient advocacy and crowdfunding services, experience sharing, and hospital ratings & reviews mechanisms, Patient.ng aims to improve patient
-              healthcare outcomes.`}
-          </Typography>
-        </Box>)}
-        {isMobile && (<Box
-          sx={{
-            width: '100%',
-            // mt: '-2.5em',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <NButton
-            bordercolor={theme.palette.primary.main}
-            textcolor={theme.palette.primary.main}
-          >
-            Learn More
-          </NButton>
-        </Box>)}
       </Box>
 
       <Box
         sx={{
           display: 'flex',
-          px: isMobile ? '0px' : '90px',
+          px: isMobile ? '20px' : '90px',
           backgroundColor: theme.palette.secondary.lightest,
-          gap: isMobile ? 2 : 4,
+          // gap: isMobile ? 2 : 4,
           height: isMobile ? 'auto' : '100vh',
-          mt: isMobile ? '2em' : '3em',
-          py: isMobile ? '2em' : '2em',
-          alignItems: 'center'
+          alignItems: 'center',
+          py: '50px',
+          flexDirection: isMobile ? 'column' : 'row'
         }}
       >
-        <img
-          src='/advocacy-img.png'
-          alt='home page image'
-          style={{
-            width: isMobile ? '30%' : '45%',
-            height: isMobile ? '30%' : '100%'
+        <Box
+          sx={{
+            flex: 1
           }}
-        />
+        >
+          <img
+            src='/advocacy-img.png'
+            alt='home page image'
+            style={{
+              width: '400px',//isMobile ? '30%' : '45%',
+              height: 'auto'//isMobile ? '30%' : '100%'
+            }}
+          />
+        </Box>
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            flex: 1
           }}
         >
           <Typography
             sx={{
-              fontSize: isMobile ? '14px' : '50px',
+              fontSize: isMobile ? '32px' : '50px',
               fontWeight: 700,
-              lineHeight: isMobile ? 1 : 1
+              lineHeight: isMobile ? 1 : 1,
+              mt: isMobile ? 3 : 0
             }}
           >
             Patient Advocacy Service
@@ -485,48 +443,51 @@ export default function HomePage() {
           <Box
             sx={{
               display: 'flex',
-              gap: isMobile ? 1 : 2,
-              mt: 1
+              mt: 1,
+              flexDirection: isMobile ? 'column' : 'row'
             }}
           >
             <Typography
               sx={{
-                fontSize: isMobile ? '12px' : '28px',
+                fontSize: isMobile ? '20px' : '32px',
                 fontWeight: 600
               }}
             >
-              Are you facing 
+              Are you facing
             </Typography>
-            <Typography
-              sx={{
-                fontSize: isMobile ? '12px' : '28px',
-                fontWeight: 600,
-                color: theme.palette.primary.main
-              }}
-            >
-              Challenges
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: isMobile ? '12px' : '28px',
-                fontWeight: 600
-              }}
-            >
-              with
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: isMobile ? '12px' : '28px',
-                fontWeight: 600,
-                color: theme.palette.primary.main
-              }}
-            >
-              hospitals?
-            </Typography>
+            <Box display={'flex'} gap={isMobile ? 1 : 2}>
+              <Typography
+                sx={{
+                  fontSize: isMobile ? '20px' : '32px',
+                  fontWeight: 600,
+                  color: theme.palette.primary.main
+                }}
+              >
+                Challenges
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: isMobile ? '20px' : '32px',
+                  fontWeight: 600
+                }}
+              >
+                with
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: isMobile ? '20px' : '32px',
+                  fontWeight: 600,
+                  color: theme.palette.primary.main
+                }}
+              >
+                hospitals?
+              </Typography>
+            </Box>
+            
           </Box>
           <Typography
             sx={{
-              fontSize: isMobile ? '11px' : '20px',
+              fontSize: '16px',
               fontWeight: 400,
               lineHeight: 1.2,
               mt: isMobile ? 2 : 4
@@ -539,7 +500,7 @@ export default function HomePage() {
             my={isMobile ? 3 : 5}
           >
             <NButton
-              width={isMobile ? '150px' : '250px'}
+              width='250'
               bkgcolor={theme.palette.primary.main}
               textcolor='white'
               onClick={()=>router.push('/advocacy')}
@@ -557,7 +518,7 @@ export default function HomePage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          pt: '60px'
+          py: '50px'
         }}
       >
         <Typography
@@ -630,25 +591,16 @@ export default function HomePage() {
           backgroundColor: theme.palette.primary.main,
           gap: 4,
           height: 'auto',
-          mt: isMobile ? '2em' : '3em',
-          py: isMobile ? '2em' : '3em',
+          py: '50px',
           alignItems: 'center',
           flexDirection: isMobile ? 'column' : 'row'
         }}
       >
-        {isMobile && (<img
-          src='/patient-story.png'
-          alt='home page image'
-          style={{
-            width: isMobile ? '80%' : '50%',
-            height: isMobile ? '60%' : '70%'
-          }}
-        />)}
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 4, width: isMobile ? '100%' : '50%'
+            flex: 1
           }}
         >
           <Typography
@@ -663,12 +615,12 @@ export default function HomePage() {
           </Typography>
           <Typography
             sx={{
-              fontSize: isMobile ? '16px'  : '20px',
+              fontSize: '16px',
               color: 'white',
               fontWeight: 400,
               lineHeight: 1.2,
-              my: isMobile ? 1 : 3,
-              textAlign: isMobile ? 'center' : 'left'
+              textAlign: isMobile ? 'center' : 'left',
+              mb: 4, mt: 2
             }}
           >
             Explore inspiring patient stories from our community or share your own unique personal experience to encourage and educate others
@@ -689,14 +641,16 @@ export default function HomePage() {
             </NButton>
           </Box>
         </Box>
-        {!isMobile && (<img
-          src='/patient-story.png'
-          alt='home page image'
-          style={{
-            width: isMobile ? '50%' : '50%',
-            height: isMobile ? '40%' : '70%'
-          }}
-        />)}
+        <Box flex={1}>
+          <img
+            src='/patient-story.png'
+            alt='home page image'
+            style={{
+              width: '500px',
+              height: 'auto'
+            }}
+          />
+        </Box>
       </Box>
 
       <Box
@@ -706,7 +660,7 @@ export default function HomePage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          pt: '60px'
+          py: '50px'
         }}
       >
         <Typography
@@ -845,18 +799,19 @@ export default function HomePage() {
           display: 'flex',
           px: isMobile ? '20px' : '90px',
           backgroundColor: theme.palette.secondary.lighter,
-          gap: isMobile ? 2 : 4,
+          gap: isMobile ? 4 : 4,
           height: isMobile ? 'auto' : '100vh',
           mt: isMobile ? '2em' : '3em',
-          py: isMobile ? '2em' : '3em',
-          alignItems: 'center'
+          py: '50px',
+          alignItems: 'center',
+          flexDirection: isMobile ? 'column' : 'row'
         }}
       >
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 2, width: '50%'
+            gap: 2, flex: 1
           }}
         >
           <Box
@@ -907,14 +862,16 @@ export default function HomePage() {
             Read more
           </NButton>
         </Box>
-        <img
-          src='/hospital-review.png'
-          alt='home page image'
-          style={{
-            width: isMobile ? '50%' : '40%',
-            height: isMobile ? '60%' : '80%'
-          }}
-        />
+        <Box flex={1}>
+          <img
+            src='/hospital-review.png'
+            alt='home page image'
+            style={{
+              width: '400px',//isMobile ? '50%' : '40%',
+              height: 'auto'//isMobile ? '60%' : '80%'
+            }}
+          />
+        </Box>
       </Box>
 
       <Box
@@ -924,7 +881,7 @@ export default function HomePage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          pt: '60px',
+          py: '50px',
           backgroundColor: theme.palette.primary.darker
         }}
       >
@@ -1253,322 +1210,14 @@ export default function HomePage() {
         </Box>
       </Box>
 
-      {/* <Box
-        sx={{
-          height: 'auto',
-          px: isMobile ? '20px' : '90px',
-          pt: '60px'
-        }}
-      >
-        <Box
-          sx={{
-            py: 6, px: 4,
-            backgroundColor: theme.palette.secondary.lightest,
-            border: `1px solid ${theme.palette.secondary.lighter}`,
-            height: 'auto',
-            borderRadius: theme.borderRadius.sm,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: theme.typography.labelsm.fontSize,
-              backgroundColor: 'white',
-              p: 1, color: theme.palette.primary.darker,
-              borderRadius: theme.borderRadius.sm, width: '150px',
-              textAlign: 'center', alignSelf: 'center', mb: 5
-            }}
-          >
-            Patient stories
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: isMobile ? theme.typography.h5.fontSize : theme.typography.h4.fontSize,
-              color: theme.palette.primary.darker, alignSelf: 'center', textAlign: 'center'
-            }}
-          >
-            Inspiring patient stories from our community.
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: theme.typography.labelsm.fontSize, mb: 4,
-              color: theme.palette.secondary.light, alignSelf: 'center', textAlign: 'center'
-            }}
-          >
-            Read inspiring stories from fellow patients or share your own to inspire others
-          </Typography>
-
-            {stories.length > 0 && (<>
-              {stories.length && (<Box
-                sx={{
-                  display: 'flex',
-                  gap: 4, mt: 4,
-                  overflowX: 'scroll',
-                  whiteSpace: 'nowrap',
-                  '&::-webkit-scrollbar': {
-                    display: 'none',
-                  },
-                  scrollbarWidth: 'none',
-                }}
-              >
-                {
-                  stories.slice(0, 3).map((story: any) => (
-                    <Box key={story._id}
-                      sx={{
-                        minWidth: isMobile ? '70%' : '32%',
-                        minHeight: '150px',
-                        height: 'auto',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                        justifyContent: 'space-evenly'
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelsm.fontSize,
-                          color: theme.palette.secondary.light,
-                          whiteSpace: 'pre-wrap'
-                        }}
-                      >
-                        {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
-                      </Typography>
-                      <Typography className='capitalize'
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight,
-                          whiteSpace: 'pre-wrap'
-                        }}
-                      >
-                        -{story.user.firstName} {story.user.lastName}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight,
-                          color: theme.palette.primary.main
-                        }}
-                        onClick={() => router.push(`/patient-stories/${story._id}`)}
-                      >
-                        Read full story <ArrowForward sx={{fontSize: '13px'}}/>
-                      </Typography>
-                    </Box> 
-                  ))
-                }
-              </Box>)}
-
-              {(!isMobile && stories.length > 7) && (<Box
-                sx={{
-                  display: 'flex',
-                  gap: 4, mt: 4,
-                  overflowX: 'scroll',
-                  whiteSpace: 'nowrap',
-                  '&::-webkit-scrollbar': {
-                    display: 'none',
-                  },
-                  scrollbarWidth: 'none',
-                }}
-              >
-                {
-                  stories.slice(4, 7).map((story: any) => (
-                    <Box key={story._id}
-                      sx={{
-                        minWidth: '32%',
-                        minHeight: '150px',
-                        height: 'auto',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                        justifyContent: 'space-evenly'
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelsm.fontSize,
-                          color: theme.palette.secondary.light,
-                          whiteSpace: 'pre-wrap'
-                        }}
-                      >
-                        {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
-                      </Typography>
-                      <Typography className='capitalize'
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight,
-                          whiteSpace: 'pre-wrap'
-                        }}
-                      >
-                        -{story.user.firstName} {story.user.lastName}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight,
-                          color: theme.palette.primary.main
-                        }}
-                        onClick={() => router.push(`/patient-stories/${story._id}`)}
-                      >
-                        Read full story <ArrowForward sx={{fontSize: '13px'}}/>
-                      </Typography>
-                    </Box> 
-                  ))
-                }
-              </Box>)}
-
-              {(!isMobile && stories.length > 10) && (<Box
-                sx={{
-                  display: 'flex',
-                  gap: 4, mt: 4,
-                  overflowX: 'scroll',
-                  whiteSpace: 'nowrap',
-                  '&::-webkit-scrollbar': {
-                    display: 'none',
-                  },
-                  scrollbarWidth: 'none',
-                }}
-              >
-                {
-                  stories.slice(7, 10).map((story: any) => (
-                    <Box key={story._id}
-                      sx={{
-                        minWidth: '32%',
-                        minHeight: '150px',
-                        height: 'auto',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                        justifyContent: 'space-evenly'
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelsm.fontSize,
-                          color: theme.palette.secondary.light,
-                          whiteSpace: 'pre-wrap'
-                        }}
-                      >
-                        {story.content.length > 20 ? `"${wordBreaker(story.content, 20)}..."` : story.content}
-                      </Typography>
-                      <Typography className='capitalize'
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight,
-                          whiteSpace: 'pre-wrap'
-                        }}
-                      >
-                        -{story.user.firstName} {story.user.lastName}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight,
-                          color: theme.palette.primary.main
-                        }}
-                        onClick={() => router.push(`/patient-stories/${story._id}`)}
-                      >
-                        Read full story <ArrowForward sx={{fontSize: '13px'}}/>
-                      </Typography>
-                    </Box>  
-                  ))
-                }
-              </Box>)}
-            </>)}
-        </Box>
-      </Box> */}
-
-      {/* <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          px: isMobile ? '20px' : '150px',
-          my: 8
-        }}
-      >
-        <Box
-          sx={{
-            width: isMobile ? '100%' : '80%',
-            minHeight: '300px',
-            py: isMobile ? 4 : 0, 
-            px: 4,
-            backgroundColor: '#06FF9D',
-            borderRadius: theme.borderRadius.lg,
-            display: 'flex', gap: 2
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: isMobile ? '100%' : '60%',
-              justifyContent: 'center',
-              gap: 3
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: theme.typography.h4.fontSize,
-                color: theme.palette.primary.darker
-              }}
-            >
-              Get the Care You Deserve
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: theme.typography.labellg.fontSize,
-                color: theme.palette.secondary.light
-              }}
-            >
-              Have you had a negative experience at a hospital? Report it to us and help create a safer, more compassionate healthcare system. Your voice matters!
-            </Typography>
-            <Button onClick={()=> router.push('/advocacy')}
-              sx={{
-                textTransform: 'none',
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: 'white',
-                color: theme.palette.primary.darker,
-                width: '200px',
-                border: `none`,
-                '&:hover': {
-                  color: theme.palette.primary.main,
-                  border: `1px solid ${theme.palette.primary.main}`,
-                },
-                px: theme.spacing(3),
-              }}
-            >
-              Make a complaint
-            </Button>
-          </Box>
-
-          {!isMobile && (<Box
-            sx={{
-              width: '40%',
-              height: '100%',
-              display: 'flex',
-              my: 4
-            }}
-          >
-            <img
-              src='/speaker.png'
-              alt='complaint'
-              style={{
-                width: '100%',
-                height: '100%'
-              }}
-            />
-          </Box>)}
-        </Box>
-      </Box> */}
-
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           height: isMobile ? 'auto' : '100vh',
           px: isMobile ? '20px' : '90px',
-          py: 6
+          py: '50px',
+          minWidth: '768px'
         }}
       >
         <Typography variant='h2' textAlign={'center'} mb={4}>
@@ -1620,6 +1269,7 @@ export default function HomePage() {
           }
         </Box>
       </Box>
+      {/* </Box> */}
       <Footer/>
     </>
   )

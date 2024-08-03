@@ -1,6 +1,6 @@
 'user client'
 
-import { Copyright, X, FiberManualRecord, Instagram, LinkedIn, LocationOn, Mail, Phone } from "@mui/icons-material";
+import { Copyright, X, FiberManualRecord, Instagram, LinkedIn, LocationOn, Mail, Phone, Facebook } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { Dropdown } from "antd";
 import Image from "next/image";
@@ -231,6 +231,22 @@ export default function Footer() {
                     >
                         <IconButton 
                             component="a"
+                            href="https://web.facebook.com/profile.php?id=61563453420792&mibextid=LQQJ4d&_rdc=1&_rdr"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Facebook/>
+                        </IconButton>
+                        <IconButton 
+                            component="a"
+                            href="https://www.linkedin.com/company/patientdotng"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <LinkedIn/>
+                        </IconButton>
+                        <IconButton 
+                            component="a"
                             href="https://x.com/patientdotng?s=11&t=WDXKro3kSag6ImoNjJ85tw"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -330,7 +346,7 @@ export default function Footer() {
                 onClose={handleClose2}
                 open={open2}
                 width={isMobile ? '95%' : '70%'}
-                height='90vh'
+                height='auto'
                 showCloseIcon={false}
             >
                 <Box
@@ -339,28 +355,27 @@ export default function Footer() {
                         gap: 4,
                         flexDirection: isMobile ? 'column' : 'row',
                         p: 3,
-                        height: '100%'
+                        flex: 1,
+                        overflow: 'hidden'
                     }}
                 >
                     {!isMobile && (<Box
                         sx={{
-                            position: 'relative',
-                            width: '30%'
+                            width: '30%',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundImage: 'url(/contactus.png)',
+                            borderRadius: theme.borderRadius.sm,
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                            pb: 3
                         }}
                     >
-                        <img
-                            alt='contact-us'
-                            src='/contactus.png'
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: theme.borderRadius.sm
-                            }}
-                        />
 
                         <Box
                             sx={{
-                                position: 'absolute',
                                 mx: 3,
                                 height: 'auto',
                                 p: 2,
