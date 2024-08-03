@@ -123,17 +123,17 @@ export default function CrowdFundings() {
             height: '100vh',
             background: theme.palette.secondary.lightest,
             display: 'flex',
-            gap: 6, px: isMobile ? '20px' : '90px', py: 6,
+            gap: 4, px: isMobile ? '20px' : '90px', py: 6,
             alignItems: 'center'
           }}
         >
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-start',
               flexDirection: 'column',
-              gap: 5
+              gap: 5, flex: 1
             }}
           >
             <Typography
@@ -147,7 +147,7 @@ export default function CrowdFundings() {
             </Typography>
             <Typography
               sx={{
-                fontSize: theme.typography.labelsm.fontSize,
+                fontSize: theme.typography.labelbase.fontSize,
                 lineHeight: theme.typography.labelxs.lineHeight,
                 color: theme.palette.secondary.light
               }}

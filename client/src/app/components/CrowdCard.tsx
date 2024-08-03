@@ -68,13 +68,13 @@ export default function CrowdCard({fundraiser, percent}: any) {
                             <LocationOn
                                 sx={{
                                     color: theme.palette.primary.main, 
-                                    fontSize: '16px'
+                                    fontSize: '14px'
                                 }}
                             /> { `${fundraiser.location.lga ? fundraiser.location.lga : 'Ikeja'}, ${fundraiser.location.state ? fundraiser.location.state : 'Lagos'}` }
                         </Typography>
                         <Typography
                             sx={{
-                                fontSize: theme.typography.labelsm.fontSize,
+                                fontSize: theme.typography.labelxl.fontSize,
                                 fontWeight: theme.typography.labelxs.fontWeight,
                                 my: 1
                             }}
@@ -86,7 +86,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
 
                     <Typography
                         sx={{
-                            fontSize: theme.typography.labelxs.fontSize,
+                            fontSize: theme.typography.labelbase.fontSize,
                             lineHeight: theme.typography.labelxs.lineHeight,
                             color: theme.palette.secondary.light,
                             whiteSpace: 'pre-wrap'
@@ -106,7 +106,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                 <Typography
                                     sx={{
                                         color: theme.palette.secondary.light,
-                                        fontSize: theme.typography.labelxs.fontSize
+                                        fontSize: theme.typography.labelsm.fontSize
                                     }}
                                 >
                                     Last donation
@@ -114,14 +114,14 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                 <Typography
                                     sx={{
                                         fontSize: theme.typography.labelxs.fontSize,
-                                        fontWeight: theme.typography.labelxs.fontWeight
+                                        fontWeight: theme.typography.labelsm.fontWeight
                                     }}
                                 >
                                     { moment(fundraiser.donations[0].date).fromNow() }
                                 </Typography>
                                 {fundraiser.likes.length > 0 && (<Box display={'flex'} alignItems={'center'}>
-                                    <Favorite sx={{color: 'red', fontSize: '12px'}}/> 
-                                    <Typography variant="paragraphxxs">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
+                                    <Favorite sx={{color: 'red', fontSize: '14px'}}/> 
+                                    <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
                                 </Box>)}
                             </Box>
                             ) : (
@@ -134,7 +134,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                     <Typography
                                         sx={{
                                             color: theme.palette.secondary.light,
-                                            fontSize: theme.typography.labelxs.fontSize
+                                            fontSize: theme.typography.labelsm.fontSize
                                         }}
                                     >
                                         No donations yet.
@@ -152,14 +152,14 @@ export default function CrowdCard({fundraiser, percent}: any) {
                     >
                         <Typography
                         sx={{
-                            fontSize: theme.typography.labelxxs.fontSize
+                            fontSize: theme.typography.labelsm.fontSize
                         }}
                         >
                         {formAmount(+fundraiser.amountRaised)} raised
                         </Typography>
                         <Typography
                         sx={{
-                            fontSize: theme.typography.labelxxs.fontSize,
+                            fontSize: theme.typography.labelsm.fontSize,
                             color: theme.palette.secondary.light
                         }}
                         >
@@ -189,7 +189,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                             sx={{
                             cursor: 'pointer',
                             color: theme.palette.primary.main,
-                            fontSize: theme.typography.labelxs.fontSize,
+                            fontSize: theme.typography.labelbase.fontSize,
                             fontWeight: theme.typography.labelxs.fontWeight,
                             }}
                         >
