@@ -14,6 +14,8 @@ import { useSession } from "next-auth/react";
 import { useCreateComplain } from "../admin/hooks/advocacyHook/useAdvocacy";
 import Toastify from "../components/ToastifySnack";
 import { useRouter } from "next/navigation";
+import FramerMotion from "../components/FramerMotion";
+import { motion } from "framer-motion";
 
 const advocacy = [
   "Informal Complaint (Step 1)",
@@ -43,6 +45,7 @@ export default function page() {
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const MotionBox = motion(Box);
 
   const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
       setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
@@ -92,7 +95,10 @@ export default function page() {
   return (
     <>
       <Navbar/>
-      <Box
+      <MotionBox
+        initial={{ x: '100vw' }}
+        animate={{ x: 0 }}
+        transition={{ type: 'spring' }}
         sx={{
           display: 'flex',
           height: '100vh',
@@ -218,9 +224,9 @@ export default function page() {
             </Box>
           </Box>
         </Box>)}
-      </Box>
+      </MotionBox>
 
-      <Box
+      <FramerMotion
         ref={targetRef}
         sx={{
           display: 'flex',
@@ -582,9 +588,9 @@ export default function page() {
             
           </Box>
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -678,9 +684,9 @@ export default function page() {
             </PButton>
           </form>
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           pb: '4em',
           px: isMobile ? '20px' : '90px',
@@ -718,7 +724,7 @@ export default function page() {
             Sign up
           </NButton>
         </Box>
-      </Box>
+      </FramerMotion>
 
       <Toastify
         open={open}

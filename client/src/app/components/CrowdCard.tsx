@@ -92,7 +92,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                             whiteSpace: 'pre-wrap'
                         }}
                     >
-                        { wordBreaker(fundraiser.description, 10) }...
+                        {wordBreaker(fundraiser.description, 10) }...
                     </Typography>
                 
                     <Box>
@@ -119,10 +119,6 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                 >
                                     { moment(fundraiser.donations[0].date).fromNow() }
                                 </Typography>
-                                {fundraiser.likes.length > 0 && (<Box display={'flex'} alignItems={'center'}>
-                                    <Favorite sx={{color: 'red', fontSize: '14px'}}/> 
-                                    <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
-                                </Box>)}
                             </Box>
                             ) : (
                                 <Box
@@ -142,30 +138,36 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                 </Box>
                             )
                         }
-                    <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
-                    <Box
-                        sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1
-                        }}
-                    >
-                        <Typography
-                        sx={{
-                            fontSize: theme.typography.labelsm.fontSize
-                        }}
+                        <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                            }}
                         >
-                        {formAmount(+fundraiser.amountRaised)} raised
-                        </Typography>
-                        <Typography
-                        sx={{
-                            fontSize: theme.typography.labelsm.fontSize,
-                            color: theme.palette.secondary.light
-                        }}
-                        >
-                        of {formAmount(+fundraiser.amountNeeded)}
-                        </Typography>
-                    </Box>
+                            <Box width={'90%'} display={'flex'}>
+                                <Typography
+                                    sx={{
+                                        fontSize: theme.typography.labelsm.fontSize
+                                    }}
+                                >
+                                    {formAmount(+fundraiser.amountRaised)} raised
+                                </Typography>
+                                <Typography
+                                    sx={{
+                                        fontSize: theme.typography.labelsm.fontSize,
+                                        color: theme.palette.secondary.light
+                                    }}
+                                >
+                                    of {formAmount(+fundraiser.amountNeeded)}
+                                </Typography>
+                            </Box>
+                            {fundraiser.likes.length > 0 && (<Box display={'flex'} alignItems={'center'} width={'10%'}>
+                                <Favorite sx={{color: 'red', fontSize: '14px'}}/> 
+                                <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
+                            </Box>)}
+                        </Box>
                     </Box>
                 </Box>
                 <Box

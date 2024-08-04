@@ -13,6 +13,7 @@ import { HourglassEmpty } from '@mui/icons-material';
 import { useGetBlogCategories, useGetBlogs } from '../admin/hooks/blogHook/useBlog';
 import { useSession } from 'next-auth/react';
 import HtmlToText from '../components/HtmlToText';
+import { motion } from 'framer-motion';
 
 export default function Blog() {
   const theme = useTheme();
@@ -25,6 +26,8 @@ export default function Blog() {
   const getBlogsMutation = useGetBlogs();
   const getBLogsCategory = useGetBlogCategories();
   const {data: session} = useSession();
+
+  const MotionBox = motion(Box);
 
   const filteredData =
   blogs &&
@@ -73,11 +76,14 @@ export default function Blog() {
   return (
     <>
       <Navbar />
-      <Box 
+      <MotionBox 
+        initial={{ x: '100vw' }}
+        animate={{ x: 0 }}
+        transition={{ type: 'spring' }}
         sx={{
           height: 'auto', 
           width: '100%',
-          px: isMobile ? '20px' : '64px'
+          px: isMobile ? '20px' : '90px'
         }}
       >
         <Box className="w-[100%] flex flex-col justify-center items-center" sx={{pt: 6, pb: 5, height: '80vh'}}>
@@ -331,7 +337,7 @@ export default function Blog() {
             onPageChange={handlePageChange}
           />)}
         </Box>
-      </Box>
+      </MotionBox>
       <Footer/>
     </>
   )

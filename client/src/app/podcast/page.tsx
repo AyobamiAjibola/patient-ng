@@ -13,6 +13,8 @@ import Footer from "@/app/components/Footer";
 import { useGetPodcastCategories, useGetPodcasts } from "../admin/hooks/podcastHook/usePodcast";
 import moment from "moment";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
+import FramerMotion from "../components/FramerMotion";
 
 const channels = [
     '/apple-pod.png',
@@ -29,6 +31,18 @@ const channels = [
     '/icon4.png'
   ]
 
+     const containerVariants = {
+        hidden: {
+        opacity: 0,
+        x: '100vw'
+        },
+        visible: {
+        opacity: 1,
+        x: 0,
+        transition: { type: 'spring', stiffness: 120 }
+        }
+    }
+
 export default function Podcasts() {
     const theme = useTheme();
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -41,6 +55,8 @@ export default function Podcasts() {
     const [podcasts, setPodcasts] = useState<any>([]);
     const [podcastCategories, setPodcastCategories] = useState<any>([]);
     const {status: authStatus} = useSession();
+
+    const MotionBox = motion(Box);
 
     const filteredData = podcasts.filter((item: any) => {
         if(value === 'All') {
@@ -85,7 +101,10 @@ export default function Podcasts() {
     return (
         <>
             <Navbar/>
-            <Box
+            <MotionBox
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -183,7 +202,8 @@ export default function Podcasts() {
                     </Box>
                 </Box>
 
-                <Box
+                <FramerMotion
+                    threshold={0.1}
                     sx={{
                         display: 'flex',
                         backgroundColor: theme.palette.secondary.lightest,
@@ -431,7 +451,7 @@ export default function Podcasts() {
                         </Box>
                         
                     </Box>
-                </Box>
+                </FramerMotion>
 
                 <Box
                     sx={{
@@ -448,7 +468,7 @@ export default function Podcasts() {
                         onPageChange={handlePageChange}
                     />)}
                 </Box>
-            </Box>
+            </MotionBox>
 
             <Footer/>
         </>

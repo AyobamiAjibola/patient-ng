@@ -19,6 +19,8 @@ import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
 import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
 import CrowdCard from './components/CrowdCard';
+import FramerMotion from './components/FramerMotion';
+import { motion } from 'framer-motion';
 
 const faq = [
   {
@@ -52,6 +54,28 @@ const faq = [
   }
 ]
 
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    x: '100vw'
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { type: 'spring', stiffness: 120 }
+  }
+}
+
+const nextVariant = {
+  hidden: {
+    x: '-100vw'
+  },
+  visible: {
+    x: 0,
+    transition: { type: "spring", stiffness: 120, delay: 0.5 }
+  }
+}
+
 export default function HomePage() {
   const theme = useTheme();
   const router = useRouter();
@@ -70,19 +94,11 @@ export default function HomePage() {
   const [___, setOpen2] = useAtom(openModal2);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
+  const MotionBox = motion(Box);
+
   const handleExpand = (index: any) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
-
-  const getHeight = () => {
-    if (typeof window !== 'undefined') {
-      return window.innerHeight;
-    }
-      return 0;
-  };
-
-  const screenHeight = getHeight();
-  const imgHeight = Math.floor((80/100) * screenHeight);
 
   const fetchPodcasts = async () => {
     await podcastMutation.mutateAsync({}, {
@@ -129,7 +145,6 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      {/* <Box maxWidth={'1216px'}> */}
       <Box
         sx={{
           width: '100%',
@@ -140,25 +155,23 @@ export default function HomePage() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          flexDirection: 'column',
-          // pb: isMobile ? '1em' : '0px'
-          py: '50px'
+          flexDirection: isMobile ? 'column' : 'row',
+          pb: '50px', pt: '120px'
         }}
       >
         <Box
           sx={{
             display: 'flex',
-            gap: isMobile ? 4 : 6,
-            pt: isMobile ? '100px' : '80px',
-            alignItems: 'center',
-            flexDirection: isMobile ? 'column' : 'row'
+            flexDirection: 'column',
+            width: isMobile ? '100%' : '50%'
           }}
         >
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'column',
-              width: isMobile ? '100%' : '50%'
+              gap: isMobile ? 2 : 3,
+              alignItems: 'center',
+              flexWrap: 'wrap'
             }}
           >
             <Typography
@@ -171,162 +184,129 @@ export default function HomePage() {
             >
               Empowering
             </Typography>
-            <Box
+            <Typography
               sx={{
-                display: 'flex',
-                gap: isMobile ? 2 : 3
+                color: theme.palette.primary.main,
+                fontSize: isMobile ? '28px' : '50px',
+                fontWeight: 600,
+                lineHeight: 1.3
               }}
             >
-              <Typography
-                sx={{
-                  color: theme.palette.primary.main,
-                  fontSize: isMobile ? '28px' : '50px',
-                  fontWeight: 600,
-                }}
-              >
-                Patients
-              </Typography>
-              <Typography
-                sx={{
-                  color: 'black',
-                  fontSize: isMobile ? '28px' : '50px',
-                  fontWeight: 600
-                }}
-              >
-                towards
-              </Typography>
-            </Box>
-            <Box
+              Patients
+            </Typography>
+            <Typography
               sx={{
-                display: 'flex',
-                gap: isMobile ? 2 : 3
+                color: 'black',
+                fontSize: isMobile ? '28px' : '50px',
+                fontWeight: 600, lineHeight: 1.3
               }}
             >
-              <Typography
-                sx={{
-                  color: 'black',
-                  fontSize: isMobile ? '28px' : '50px',
-                  fontWeight: 600,
-                  lineHeight: 1
-                }}
-              >
-                Better
-              </Typography>
-              <Typography
-                sx={{
-                  color: theme.palette.primary.main,
-                  fontSize: isMobile ? '28px' : '50px',
-                  fontWeight: 600,
-                  lineHeight: 1
-                }}
-              >
-                Health
-              </Typography>
-            </Box>
+              towards
+            </Typography>
+            <Typography
+              sx={{
+                color: 'black',
+                fontSize: isMobile ? '28px' : '50px',
+                fontWeight: 600,
+                lineHeight: 1.3
+              }}
+            >
+              Better
+            </Typography>
+            <Typography
+              sx={{
+                color: theme.palette.primary.main,
+                fontSize: isMobile ? '28px' : '50px',
+                fontWeight: 600,
+                lineHeight: 1.3
+              }}
+            >
+              Health
+            </Typography>
             <Typography 
               sx={{
                 color: 'black',
                 fontSize: isMobile ? '28px' : '50px',
-                fontWeight: 600
+                fontWeight: 600, lineHeight: 1.3
               }}
             >
               Outcomes
-              </Typography>
-            <Typography
-              sx={{
-                color: 'black',
-                fontSize: '16px',
-                fontWeight: 400
-              }}
-            >
-              {`We believe in putting patients at the Centre of their healthcare journey. Discover a community-driven platform dedicated to providing support for
-              patients across Nigeria.`}
             </Typography>
-
-            <Box
-              sx={{
-                display: 'flex',
-                gap: isMobile ? 1 : 3,
-                mt: 5
-              }}
-            >
-              <NButton
-                bkgcolor={theme.palette.primary.main}
-                textcolor='white'
-                onMouseEnter={()=>setType('contact')}
-                onClick={()=>setOpen2(true)}
-                width='200px'
-              >
-                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-                  Contact us
-                </Typography>
-              </NButton>
-              <NButton transBg={true} bg={false}
-                bordercolor={theme.palette.primary.main}
-                hoverbordercolor={theme.palette.primary.main}
-                onMouseEnter={()=>setType('about')}
-                onClick={()=>setOpen(true)}
-                width='200px'
-              >
-                <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-                  About us
-                </Typography>
-              </NButton>
-            </Box>
           </Box>
+          <Typography
+            sx={{
+              color: 'black',
+              fontSize: '16px',
+              fontWeight: 400
+            }}
+          >
+            {`We believe in putting patients at the Centre of their healthcare journey. Discover a community-driven platform dedicated to providing support for
+            patients across Nigeria.`}
+          </Typography>
+
+          <MotionBox
+            variants={nextVariant}
+            initial="hidden"
+            animate="visible"
+            sx={{
+              display: 'flex',
+              gap: isMobile ? 1 : 3,
+              mt: 5,
+              justifyContent: isMobile ? 'center' : 'flex-start'
+            }}
+          >
+            <NButton
+              bkgcolor={theme.palette.primary.main}
+              textcolor='white'
+              onMouseEnter={()=>setType('contact')}
+              onClick={()=>setOpen2(true)}
+              width='200px'
+            >
+              <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+                Contact us
+              </Typography>
+            </NButton>
+            <NButton transBg={true} bg={false}
+              bordercolor={theme.palette.primary.main}
+              hoverbordercolor={theme.palette.primary.main}
+              onMouseEnter={()=>setType('about')}
+              onClick={()=>setOpen(true)}
+              width='200px'
+            >
+              <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+                About us
+              </Typography>
+            </NButton>
+          </MotionBox>
+        </Box>
+        <MotionBox 
+          initial={{ x: '100vw' }}
+          animate={{ x: 0 }}
+          transition={{ type: 'spring' }}
+          width={isMobile ? '100%' : '50%'} 
+          mt={isMobile ? 5 : 0} 
+          display={'flex'} justifyContent={isMobile ? 'center' : 'flex-end'} 
+          alignItems={isMobile ? 'center' : 'flex-end'}
+        >
           <img
             src='/hero-img.png'
             alt='home page image'
             style={{
               width: '500px', //'50%',
-              height: 'auto',//isMobile ? '45%' : '75%',
-              marginTop: isMobile ? '0px' : '4rem'
+              height: 'auto',//isMobile ? '45%' : '75%'
             }}
           />
-        </Box>
-
-        {/* {isMobile && (<Box
-          sx={{
-            display: 'flex',
-            gap: 3,
-            mt: 5
-          }}
-        >
-          <NButton
-            bkgcolor={theme.palette.primary.main}
-            textcolor='white'
-            onMouseEnter={()=>setType('contact')}
-            onClick={()=>setOpen2(true)}
-            width='300px'
-          >
-            <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-              About Us
-            </Typography>
-          </NButton>
-          <NButton transBg={true} bg={false}
-            bordercolor={theme.palette.primary.main}
-            hoverbordercolor={theme.palette.primary.main}
-            onMouseEnter={()=>setType('about')}
-            onClick={()=>setOpen(true)}
-            width='300px'
-          >
-            <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
-              Contact Us
-            </Typography>
-          </NButton>
-        </Box>)} */}
+        </MotionBox>
       </Box>
 
-      <Box
+      <FramerMotion
         sx={{
           display: 'flex',
           gap: isMobile ? 1 : 4,
           width: '100%',
           height: 'auto',
-          // pt: isMobile ? 4 : 10,
           flexDirection: isMobile ? 'column' : 'row',
           py: '50px'
-          //pb: isMobile ? 0 : 8
         }}
       >
         <Box
@@ -395,14 +375,13 @@ export default function HomePage() {
           }}
         />)}
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           display: 'flex',
           px: isMobile ? '20px' : '90px',
           backgroundColor: theme.palette.secondary.lightest,
-          // gap: isMobile ? 2 : 4,
           height: isMobile ? 'auto' : '100vh',
           alignItems: 'center',
           py: '50px',
@@ -411,7 +390,9 @@ export default function HomePage() {
       >
         <Box
           sx={{
-            flex: 1
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end'
           }}
         >
           <img
@@ -435,7 +416,7 @@ export default function HomePage() {
               fontSize: isMobile ? '32px' : '50px',
               fontWeight: 700,
               lineHeight: isMobile ? 1 : 1,
-              mt: isMobile ? 3 : 0
+              mt: isMobile ? 5 : 0
             }}
           >
             Patient Advocacy Service
@@ -444,7 +425,7 @@ export default function HomePage() {
             sx={{
               display: 'flex',
               mt: 1,
-              flexDirection: isMobile ? 'column' : 'row'
+              flexWrap: 'wrap', gap: 2
             }}
           >
             <Typography
@@ -455,49 +436,47 @@ export default function HomePage() {
             >
               Are you facing
             </Typography>
-            <Box display={'flex'} gap={isMobile ? 1 : 2}>
-              <Typography
-                sx={{
-                  fontSize: isMobile ? '20px' : '32px',
-                  fontWeight: 600,
-                  color: theme.palette.primary.main
-                }}
-              >
-                Challenges
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: isMobile ? '20px' : '32px',
-                  fontWeight: 600
-                }}
-              >
-                with
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: isMobile ? '20px' : '32px',
-                  fontWeight: 600,
-                  color: theme.palette.primary.main
-                }}
-              >
-                hospitals?
-              </Typography>
-            </Box>
-            
+            <Typography
+              sx={{
+                fontSize: isMobile ? '20px' : '32px',
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
+              Challenges
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '20px' : '32px',
+                fontWeight: 600
+              }}
+            >
+              with
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '20px' : '32px',
+                fontWeight: 600,
+                color: theme.palette.primary.main,
+                lineHeight: 1
+              }}
+            >
+              hospitals?
+            </Typography>
           </Box>
           <Typography
             sx={{
               fontSize: '16px',
               fontWeight: 400,
               lineHeight: 1.2,
-              mt: isMobile ? 2 : 4
+              mt: isMobile ? 4 : 4
             }}
           >
             {`Share your experiences and complaints about public or private hospitals. We ensure your voice is heard and your issues are addressed.`}
           </Typography>
           <Box
             width='100%'
-            my={isMobile ? 3 : 5}
+            my={isMobile ? 5 : 5}
           >
             <NButton
               width='250'
@@ -509,9 +488,9 @@ export default function HomePage() {
             </NButton>
           </Box>
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
@@ -582,9 +561,9 @@ export default function HomePage() {
             See all crowdfunding <ArrowForward/>
           </NButton>
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           display: 'flex',
           px: isMobile ? '20px' : '90px',
@@ -651,9 +630,9 @@ export default function HomePage() {
             }}
           />
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
@@ -664,9 +643,10 @@ export default function HomePage() {
         }}
       >
         <Typography
-          variant={ isMobile ? 'h5' : 'h3' }
           sx={{
-            alignSelf: 'center', mb: 2
+            alignSelf: 'center', mb: 2,
+            fontSize: isMobile ? '32px' : '50px',
+            fontWeight: 600
           }}
         >
           Featured Blogs
@@ -792,9 +772,9 @@ export default function HomePage() {
               Read more
           </NButton>
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           display: 'flex',
           px: isMobile ? '20px' : '90px',
@@ -872,9 +852,9 @@ export default function HomePage() {
             }}
           />
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
@@ -1057,9 +1037,9 @@ export default function HomePage() {
             ))
           }
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
@@ -1208,16 +1188,16 @@ export default function HomePage() {
             ))
           }
         </Box>
-      </Box>
+      </FramerMotion>
 
-      <Box
+      <FramerMotion
         sx={{
           display: 'flex',
           flexDirection: 'column',
           height: isMobile ? 'auto' : '100vh',
           px: isMobile ? '20px' : '90px',
           py: '50px',
-          minWidth: '768px'
+          maxWidth: isMobile ? '768px' : '100%'
         }}
       >
         <Typography variant='h2' textAlign={'center'} mb={4}>
@@ -1268,8 +1248,7 @@ export default function HomePage() {
             ))
           }
         </Box>
-      </Box>
-      {/* </Box> */}
+      </FramerMotion>
       <Footer/>
     </>
   )

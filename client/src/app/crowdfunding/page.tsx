@@ -15,6 +15,7 @@ import { useGetCrowdfundings } from "../admin/hooks/crowdFuncdingHook/useCrowdFu
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import CrowdCard from "../components/CrowdCard";
+import { motion } from "framer-motion";
 
 const stories = [
   {
@@ -95,6 +96,8 @@ export default function CrowdFundings() {
   const {data: session} = useSession();
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
 
+  const MotionBox = motion(Box);
+
   useEffect(() => {
     const handleFetchData = async () => {
       await campaignsMutation.mutateAsync({},{
@@ -111,7 +114,10 @@ export default function CrowdFundings() {
   return (
     <>
       <Navbar/>
-      <Box
+      <MotionBox
+        initial={{ x: '100vw' }}
+        animate={{ x: 0 }}
+        transition={{ type: 'spring' }}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -573,7 +579,7 @@ export default function CrowdFundings() {
             </NButton>
           </Box>
         </Box>
-      </Box>
+      </MotionBox>
 
       <Footer/>
     </>

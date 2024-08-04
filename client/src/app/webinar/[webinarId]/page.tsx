@@ -5,26 +5,28 @@ import { useGetSingleWebinar } from "@/app/admin/hooks/webinarHook/useWebinar";
 import InputField from "@/app/components/InputField";
 import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
-import PButton, { NButton } from "@/app/components/PButton";
+import { NButton } from "@/app/components/PButton";
 import PodcastEmbed from "@/app/components/PodcastEmbed";
 import Toastify from "@/app/components/ToastifySnack";
 import { getFirstLetters } from "@/lib/helper";
 import { Close } from "@mui/icons-material";
 import { Avatar, Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import capitalize from 'capitalize'
+import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-const speakers = [
-  {
-    name: "abayomi olowu",
-    designation: "ceo"
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    y: 50
   },
-  {
-    name: "Adekunle Taiwp",
-    designation: "UX Designer @ Microsoft"
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1 }
   }
-]
+}
 
 export default function Webinar({ params }: any) {
   const isMobile = useMediaQuery('(max-width: 959px)');
@@ -38,6 +40,8 @@ export default function Webinar({ params }: any) {
   const [firstName, setFirstName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
+
+  const MotionBox = motion(Box);
 
   const [message, setMessage] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
@@ -101,7 +105,10 @@ export default function Webinar({ params }: any) {
   return (
     <>
       <Navbar/>
-      <Box
+      <MotionBox
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
         sx={{
           display: 'flex',
           gap: 4, py: 10, px: isMobile ? '20px' : '90px'
@@ -295,7 +302,7 @@ export default function Webinar({ params }: any) {
             </NButton>
           </Box>
         </Box>
-      </Box>
+      </MotionBox>
 
       <MModal
         onClose={()=>setOpen(false)}

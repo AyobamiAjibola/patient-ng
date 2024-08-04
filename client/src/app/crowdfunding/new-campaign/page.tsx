@@ -23,6 +23,7 @@ import Toastify from "@/app/components/ToastifySnack";
 import { useCreateCrowdfunding } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
 import { useSession } from "next-auth/react";
 import { useFetchSingleUser } from "@/app/admin/hooks/userHook/useUser";
+import { motion } from "framer-motion";
 
 interface IProps {
     title: string;
@@ -37,6 +38,18 @@ interface IProps {
     amount: string;
     bankCode: string;
     address: string;
+}
+
+const containerVariants = {
+    hidden: {
+      opacity: 0,
+      y: 50
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 1 }
+    }
 }
 
 export default function page() {
@@ -55,6 +68,8 @@ export default function page() {
     const { data: session } = useSession();
     const singleUserMutation = useFetchSingleUser();
     const [userImg, setUserImg] = useState<string>('');
+
+    const MotionBox = motion(Box);
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -299,7 +314,10 @@ export default function page() {
     return (
         <>
             <Navbar/>
-            <Box
+            <MotionBox
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 sx={{
                     display: 'flex',
                     height: screenHeight
@@ -1408,7 +1426,7 @@ export default function page() {
                         )}
                     </Box>
                 </Box>
-            </Box>
+            </MotionBox>
 
             <Toastify
                 open={open}

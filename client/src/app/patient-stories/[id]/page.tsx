@@ -4,6 +4,7 @@ import { useGetSingleStory } from "@/app/admin/hooks/patientStoriesHook/usePatie
 import Navbar from "@/app/components/Navbar";
 import { Reply } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -25,7 +26,19 @@ const socials = [
       logo: '/linkedIn.png',
       link: ''
   }
-]
+];
+
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    y: 50
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1 }
+  }
+}
 
 export default function PatientStory({ params }: any) {
   const theme = useTheme();
@@ -34,6 +47,8 @@ export default function PatientStory({ params }: any) {
   const [image, setImage] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+
+  const MotionBox = motion(Box);
 
   const fetchData = async (id: string) => {
     await getSingleStoryMuatation.mutateAsync(id, {
@@ -52,7 +67,10 @@ export default function PatientStory({ params }: any) {
   return (
     <>
       <Navbar/>
-      <Box
+      <MotionBox
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
         sx={{
           display: 'flex',
           gap: 4, height: '100vh',
@@ -130,7 +148,7 @@ export default function PatientStory({ params }: any) {
             <Reply sx={{ mb: 1}}/> Share
           </Button>
         </Box>
-      </Box>
+      </MotionBox>
     </>
   )
 }

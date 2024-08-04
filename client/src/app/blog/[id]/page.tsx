@@ -15,6 +15,7 @@ import { NButton } from '@/app/components/PButton';
 import MModal from '@/app/components/Modal';
 import HtmlToText from '@/app/components/HtmlToText';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const socials = [
     {
@@ -34,6 +35,18 @@ const socials = [
         link: ''
     }
 ]
+
+const containerVariants = {
+    hidden: {
+      opacity: 0,
+      y: 50
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 1 }
+    }
+  }
 
 export default function Blog({ params }: any) {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -55,6 +68,7 @@ export default function Blog({ params }: any) {
     const [hotBlog, setHotBlog] = useState<any>({});
     const getBlogsMutation = useGetBlogs();
     const router = useRouter();
+    const MotionBox = motion(Box);
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -165,10 +179,14 @@ export default function Blog({ params }: any) {
     return (
         <>
             <Navbar/>
-            <Box
+            <MotionBox 
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 sx={{
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    pt: 8
                 }}
             >
                 <Box
@@ -719,7 +737,7 @@ export default function Blog({ params }: any) {
                         </Box>)}
                     </Box>
                 </Box>
-            </Box>
+            </MotionBox>
 
             <MModal
                 onClose={() => setOpenModal(false)}

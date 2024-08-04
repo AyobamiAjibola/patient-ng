@@ -20,13 +20,26 @@ import { useCreateInsight, useGetInsights } from "../admin/hooks/insightHook/use
 import Toastify from "../components/ToastifySnack";
 import { useSession } from "next-auth/react";
 import { useGetHospitals } from "../admin/hooks/userHook/useUser";
+import { motion } from "framer-motion";
 
 const rates = [
     "All",
     "3.0",
     "4.4",
     "4.5"
-]
+];
+
+const containerVariants = {
+    hidden: {
+    opacity: 0,
+    x: '100vw'
+    },
+    visible: {
+        opacity: 1,
+        x: 0,
+        transition: { type: 'spring', stiffness: 120 }
+    }
+}
 
 export default function Insight() {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -48,6 +61,8 @@ export default function Insight() {
     const { data: session } = useSession();
     const getHospitalMutation = useGetHospitals();
     const [rate, setRate] = useState<string>('All');
+
+    const MotionBox = motion(Box);
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -165,7 +180,10 @@ export default function Insight() {
     return (
         <>
             <Navbar/>
-            <Box
+            <MotionBox
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -182,9 +200,12 @@ export default function Insight() {
                     insights towards patient experiences for better
                     health outcomes
                 </Typography>
-            </Box>
+            </MotionBox>
 
-            <Box
+            <MotionBox
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
                 sx={{
                     display: 'flex',
                     height: 'auto',
@@ -564,7 +585,7 @@ export default function Insight() {
                             )
                     }
                 </Box>
-            </Box>
+            </MotionBox>
             <Box
                 sx={{
                     width: '100%',

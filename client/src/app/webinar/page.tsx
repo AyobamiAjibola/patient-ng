@@ -14,18 +14,19 @@ import Footer from "@/app/components/Footer";
 import { useGetWebinarCategories, useGetWebinars } from "../admin/hooks/webinarHook/useWebinar";
 import Pagination from "../components/Pagination";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 
-const topics = [
-    "Nutrition and Diet",
-    "Physical Fitness and Exercise",
-    "Mental Health and Wellbeing",
-    "Chronic Disease Management",
-    "Women's Health",
-    "Men's Health",
-    "Healthy Aging",
-    "Preventative Health",
-    "Community Health and Wellness"
-];
+const containerVariants = {
+    hidden: {
+      opacity: 0,
+      x: '100vw'
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { type: 'spring', stiffness: 120 }
+    }
+}
 
 export default function Webinars() {
     const theme = useTheme();
@@ -39,6 +40,8 @@ export default function Webinars() {
     const {data: session} = useSession();
     const webinarCategoriesMutation = useGetWebinarCategories();
     const [webinarCategories, setWebinarCategories] = useState<any>([]);
+
+    const MotionBox = motion(Box);
 
     const filteredData = webinars && webinars.filter((item: any) => {
         if (checkedTopics.length === 0 && !searchQuery) {
@@ -104,7 +107,10 @@ export default function Webinars() {
     return (
       <>
         <Navbar/>
-        <Box
+        <MotionBox
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -341,7 +347,7 @@ export default function Webinars() {
                 </Box>
             </Box>
             
-        </Box>
+        </MotionBox>
         <Footer/>
       </>
     )

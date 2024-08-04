@@ -11,6 +11,7 @@ import { formAmount } from "@/lib/helper";
 import { Favorite, FavoriteBorder, Person, Reply } from "@mui/icons-material";
 import { Avatar, Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { Tag } from "antd";
+import { motion } from "framer-motion";
 import moment from "moment";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -19,6 +20,18 @@ import { useEffect, useState } from "react";
 const amounts = [
   "500", "1000", "5000", "10000", "20000"
 ]
+
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    y: 50
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1 }
+  }
+}
 
 export default function CrowdFunding({params}: any) {
   const theme = useTheme();
@@ -38,6 +51,8 @@ export default function CrowdFunding({params}: any) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const likeCrowdfundingMutation = useLikeCrowdfunding();
+
+  const MotionBox = motion(Box);
 
   const [openNotification, setOpenNotification] = useState(false);
   const [message, setMessage] = useState('');
@@ -196,7 +211,10 @@ export default function CrowdFunding({params}: any) {
   return (
     <>
         <Navbar/>
-        <Box
+        <MotionBox
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -707,7 +725,7 @@ export default function CrowdFunding({params}: any) {
             error={isError}
             success={isSuccess}
           />
-        </Box>
+        </MotionBox>
     </>
   )
 }

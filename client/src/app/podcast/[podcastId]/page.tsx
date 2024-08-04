@@ -8,12 +8,19 @@ import { useGetSinglePodcast } from '@/app/admin/hooks/podcastHook/usePodcast';
 import { NButton } from '@/app/components/PButton';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
-const sources = [
-  "Youtube",
-  "Sportify",
-  "Apple"
-]
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+    y: 50
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1 }
+  }
+}
 
 export default function page({params}: any) {
   const theme = useTheme();
@@ -26,6 +33,8 @@ export default function page({params}: any) {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const { status: authStatus } = useSession();
   const router = useRouter();
+
+  const MotionBox = motion(Box);
 
   const handlegetSinglePodcast = async () => {
     await getSinglePodcastMutation.mutateAsync(params.podcastId, {
@@ -56,7 +65,10 @@ export default function page({params}: any) {
   return (
     <>
       <Navbar/>
-      <Box
+      <MotionBox
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
         sx={{
           height: 'auto',
           display: 'flex',
@@ -168,7 +180,7 @@ export default function page({params}: any) {
           </Box>
         </Box>
         <Box sx={{height: 5, width: '100%', mt: '30rem', }}/>
-      </Box>
+      </MotionBox>
     </>
   )
 }
