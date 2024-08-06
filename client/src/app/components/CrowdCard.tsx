@@ -146,7 +146,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                 gap: 1,
                             }}
                         >
-                            <Box width={'90%'} display={'flex'}>
+                            <Box width={'90%'} display={'flex'} gap={1}>
                                 <Typography
                                     sx={{
                                         fontSize: theme.typography.labelsm.fontSize

@@ -9,19 +9,7 @@ import { Button } from "antd";
 import Search from "antd/es/input/Search";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-
-const containerVariants = {
-    hidden: {
-      opacity: 0,
-      y: 50
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1 }
-    }
-}
+import { FramerMotion3 } from "@/app/components/FramerMotion";
 
 export default function page() {
   const theme = useTheme();
@@ -30,8 +18,6 @@ export default function page() {
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
   const campaignsMutation = useGetCrowdfundings();
   const {data: session} = useSession();
-
-  const MotionBox = motion(Box);
 
   const handleSearchChange = (e: any) => {
     const inputValue = e.target.value;
@@ -63,10 +49,7 @@ export default function page() {
   return (
     <>
         <Navbar/>
-        <MotionBox
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+        <FramerMotion3
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -116,7 +99,7 @@ export default function page() {
                     )
                 }
             </Box>
-        </MotionBox>
+        </FramerMotion3>
     </>
   )
 }

@@ -76,7 +76,7 @@ const resources = [
     link: "/award"
   },
   {
-    name: 'Ratings and reviews',
+    name: 'Ratings and Reviews',
     link: '/rating-and-review',
   }
 ]
@@ -416,7 +416,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             {isMobile && showResources && (
               <Box
                 sx={{
-                  width: '40%',
+                  width: '50%',
                   bgcolor: theme.palette.secondary.lightest,
                   border: `1px solid ${theme.palette.secondary.lighter}`,
                   borderRadius: theme.borderRadius.sm,

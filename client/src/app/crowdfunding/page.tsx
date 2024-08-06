@@ -1,10 +1,9 @@
 'use client'
 
 import Navbar from "@/app/components/Navbar";
-import { Avatar, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import PButton, { NButton } from "../components/PButton";
 import { HourglassEmpty } from "@mui/icons-material";
-import { wordBreaker } from "@/lib/helper";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Mousewheel, Keyboard } from "swiper/modules";
@@ -15,7 +14,7 @@ import { useGetCrowdfundings } from "../admin/hooks/crowdFuncdingHook/useCrowdFu
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import CrowdCard from "../components/CrowdCard";
-import { motion } from "framer-motion";
+import FramerMotion, { FramerMotion2 } from "../components/FramerMotion";
 
 const stories = [
   {
@@ -96,8 +95,6 @@ export default function CrowdFundings() {
   const {data: session} = useSession();
   const [crowdCampaign, setCrowdCampaign] = useState<any>([]);
 
-  const MotionBox = motion(Box);
-
   useEffect(() => {
     const handleFetchData = async () => {
       await campaignsMutation.mutateAsync({},{
@@ -114,17 +111,14 @@ export default function CrowdFundings() {
   return (
     <>
       <Navbar/>
-      <MotionBox
-        initial={{ x: '100vw' }}
-        animate={{ x: 0 }}
-        transition={{ type: 'spring' }}
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           height: 'auto'
         }}
       >
-        <Box
+        <FramerMotion2
           sx={{
             height: '100vh',
             background: theme.palette.secondary.lightest,
@@ -163,7 +157,7 @@ export default function CrowdFundings() {
               for yourself, friends or family, our team of patient
               advocates can help your fundraiser for medical
               emergencies, critical surgeries or life-saving
-              medications reach its goal successfully on patient.ng
+              medications reach its goal.
             </Typography>
             <Box
               sx={{
@@ -186,9 +180,9 @@ export default function CrowdFundings() {
               width: 500
             }}
           />)}
-        </Box>
+        </FramerMotion2>
 
-        <Box
+        <FramerMotion
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -280,9 +274,9 @@ export default function CrowdFundings() {
             }
           </Box>
 
-        </Box>
+        </FramerMotion>
 
-        <Box
+        <FramerMotion
           sx={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -394,9 +388,9 @@ export default function CrowdFundings() {
                 ))
               }
           </Swiper>
-        </Box>
+        </FramerMotion>
 
-        <Box
+        <FramerMotion
           sx={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -525,9 +519,9 @@ export default function CrowdFundings() {
               </Box>)}
             </Box>
           </Box>
-        </Box>
+        </FramerMotion>
 
-        <Box sx={{px: isMobile ? '20px' : '90px', py: 6}}>
+        <FramerMotion sx={{px: isMobile ? '20px' : '90px', py: 6}}>
           <Box
             sx={{
               display: 'flex',
@@ -578,8 +572,8 @@ export default function CrowdFundings() {
               </Typography>
             </NButton>
           </Box>
-        </Box>
-      </MotionBox>
+        </FramerMotion>
+      </Box>
 
       <Footer/>
     </>

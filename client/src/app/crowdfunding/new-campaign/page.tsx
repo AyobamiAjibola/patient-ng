@@ -24,6 +24,7 @@ import { useCreateCrowdfunding } from "@/app/admin/hooks/crowdFuncdingHook/useCr
 import { useSession } from "next-auth/react";
 import { useFetchSingleUser } from "@/app/admin/hooks/userHook/useUser";
 import { motion } from "framer-motion";
+import { FramerMotion3 } from "@/app/components/FramerMotion";
 
 interface IProps {
     title: string;
@@ -314,13 +315,11 @@ export default function page() {
     return (
         <>
             <Navbar/>
-            <MotionBox
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+            <Box
                 sx={{
                     display: 'flex',
-                    height: screenHeight
+                    height: screenHeight,
+                    pt: 8
                 }}
             >
                 {!isMobile && (<Box
@@ -377,7 +376,7 @@ export default function page() {
                         </Typography>
                     </Box>)}
                     
-                    {steps && steps === '0' && (<Box
+                    {steps && steps === '0' && (<FramerMotion3
                         sx={{
                             display: 'flex',
                             height: '70vh', //isMobile ? 'auto' : '70%',
@@ -433,10 +432,10 @@ export default function page() {
                                     )}
                             </Box>
                         </Box>
-                    </Box>)}
+                    </FramerMotion3>)}
 
                     {steps && steps === '1' &&(
-                        <Box
+                        <FramerMotion3
                             sx={{
                                 display: 'flex',
                                 height: isMobile ? 'auto' : '70%',
@@ -602,11 +601,11 @@ export default function page() {
                                 </Box>
 
                             </Box>
-                        </Box>
+                        </FramerMotion3>
                     )}
 
                     {steps && steps === '2' &&(
-                        <Box
+                        <FramerMotion3
                             sx={{
                                 display: 'flex',
                                 height: isMobile ? 'auto' : '70%',
@@ -846,11 +845,11 @@ export default function page() {
                                 </Box>
                                 
                             </Box>
-                        </Box>
+                        </FramerMotion3>
                     )}
 
                     {steps && steps === '3' &&(
-                        <Box
+                        <FramerMotion3
                             sx={{
                                 display: 'flex',
                                 height: isMobile ? 'auto' : '70%',
@@ -996,11 +995,11 @@ export default function page() {
                                     )}
                                 />
                             </Box>
-                        </Box>
+                        </FramerMotion3>
                     )}
 
                     {steps && steps === '4' &&(
-                        <Box
+                        <FramerMotion3
                             sx={{
                                 display: 'flex',
                                 height: isMobile ? 'auto' : '100%',
@@ -1370,7 +1369,7 @@ export default function page() {
                                 </Typography>
                             </Box> 
                             
-                        </Box>
+                        </FramerMotion3>
                     )}
 
                     <Box
@@ -1426,7 +1425,7 @@ export default function page() {
                         )}
                     </Box>
                 </Box>
-            </MotionBox>
+            </Box>
 
             <Toastify
                 open={open}

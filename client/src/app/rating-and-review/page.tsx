@@ -20,7 +20,7 @@ import { useCreateInsight, useGetInsights } from "../admin/hooks/insightHook/use
 import Toastify from "../components/ToastifySnack";
 import { useSession } from "next-auth/react";
 import { useGetHospitals } from "../admin/hooks/userHook/useUser";
-import { motion } from "framer-motion";
+import { FramerMotion3 } from "../components/FramerMotion";
 
 const rates = [
     "All",
@@ -28,18 +28,6 @@ const rates = [
     "4.4",
     "4.5"
 ];
-
-const containerVariants = {
-    hidden: {
-    opacity: 0,
-    x: '100vw'
-    },
-    visible: {
-        opacity: 1,
-        x: 0,
-        transition: { type: 'spring', stiffness: 120 }
-    }
-}
 
 export default function Insight() {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -61,8 +49,6 @@ export default function Insight() {
     const { data: session } = useSession();
     const getHospitalMutation = useGetHospitals();
     const [rate, setRate] = useState<string>('All');
-
-    const MotionBox = motion(Box);
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
@@ -180,10 +166,7 @@ export default function Insight() {
     return (
         <>
             <Navbar/>
-            <MotionBox
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+            <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -200,12 +183,9 @@ export default function Insight() {
                     insights towards patient experiences for better
                     health outcomes
                 </Typography>
-            </MotionBox>
+            </Box>
 
-            <MotionBox
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+            <Box
                 sx={{
                     display: 'flex',
                     height: 'auto',
@@ -368,13 +348,12 @@ export default function Insight() {
                             enterButton={<Button disabled style={{ backgroundColor: theme.palette.primary.main, color: 'white' }}>Search</Button>}
                             size="large"
                             onChange={handleSearchChange}
-                            // onMouseEnter={()=>setRate('All')}
                         />
                     </Box>
                     {
                         currentData.length > 0
                             ?   (currentData.map((review: any, index: number) => (
-                                    <Box key={index}
+                                    <FramerMotion3 key={index}
                                         sx={{
                                             border: `1px solid ${theme.palette.secondary.lighter}`,
                                             p: 2,
@@ -573,7 +552,7 @@ export default function Insight() {
                                             </Typography>
 
                                         </Box>
-                                    </Box>
+                                    </FramerMotion3>
                                 ))
                             ) : (
                                 <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
@@ -585,7 +564,8 @@ export default function Insight() {
                             )
                     }
                 </Box>
-            </MotionBox>
+            </Box>
+
             <Box
                 sx={{
                     width: '100%',

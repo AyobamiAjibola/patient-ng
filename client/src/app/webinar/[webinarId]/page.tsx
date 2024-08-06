@@ -2,6 +2,7 @@
 
 import { useCreateWebinarWaitlist } from "@/app/admin/hooks/webinarHook/useWebinar";
 import { useGetSingleWebinar } from "@/app/admin/hooks/webinarHook/useWebinar";
+import { FramerMotion3 } from "@/app/components/FramerMotion";
 import InputField from "@/app/components/InputField";
 import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
@@ -11,22 +12,9 @@ import Toastify from "@/app/components/ToastifySnack";
 import { getFirstLetters } from "@/lib/helper";
 import { Close } from "@mui/icons-material";
 import { Avatar, Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
-import capitalize from 'capitalize'
-import { motion } from "framer-motion";
+import capitalize from 'capitalize';
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-const containerVariants = {
-  hidden: {
-    opacity: 0,
-    y: 50
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1 }
-  }
-}
 
 export default function Webinar({ params }: any) {
   const isMobile = useMediaQuery('(max-width: 959px)');
@@ -40,8 +28,6 @@ export default function Webinar({ params }: any) {
   const [firstName, setFirstName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
-
-  const MotionBox = motion(Box);
 
   const [message, setMessage] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
@@ -105,10 +91,7 @@ export default function Webinar({ params }: any) {
   return (
     <>
       <Navbar/>
-      <MotionBox
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <FramerMotion3
         sx={{
           display: 'flex',
           gap: 4, py: 10, px: isMobile ? '20px' : '90px'
@@ -302,7 +285,7 @@ export default function Webinar({ params }: any) {
             </NButton>
           </Box>
         </Box>
-      </MotionBox>
+      </FramerMotion3>
 
       <MModal
         onClose={()=>setOpen(false)}

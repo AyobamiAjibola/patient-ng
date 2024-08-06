@@ -9,37 +9,13 @@ import { useEffect, useState } from "react";
 import MModal from "../components/Modal";
 import { useGetAwards } from "../admin/hooks/userHook/useUser";
 import { HourglassEmpty } from "@mui/icons-material";
-import { motion } from "framer-motion";
+import { FramerMotion2, FramerMotion3 } from "../components/FramerMotion";
 
 const awardCategories = [
     "Hospital",
     "Facility",
     "Health"
 ];
-
-const containerVariants = {
-    hidden: {
-    opacity: 0,
-    x: '100vw'
-    },
-    visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: 'spring', stiffness: 120 }
-    }
-}
-
-const containerVariants2 = {
-    hidden: {
-    opacity: 0,
-    x: '100vw'
-    },
-    visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: 'spring', stiffness: 120, delay: 0.5 }
-    }
-}
 
 export default function Award() {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -53,8 +29,6 @@ export default function Award() {
     const [openModal, setModalOpen] = useState<boolean>(false);
     const [awards, setAwards] = useState<any[]>([]);
     const fetchAwardsMutation = useGetAwards();
-
-    const MotionBox = motion(Box);
 
     const handleFetchAwards = async () => {
         await fetchAwardsMutation.mutateAsync({}, {
@@ -114,10 +88,7 @@ export default function Award() {
                         width: '100%'
                     }}
                 />
-                <MotionBox
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
+                <FramerMotion2
                     sx={{
                         position: 'absolute',
                         mt: isMobile ? '-5rem' : '-15rem',
@@ -147,12 +118,9 @@ export default function Award() {
                     >
                         Wellness Awards
                     </Typography>
-                </MotionBox>
+                </FramerMotion2>
             </Box>
-            <MotionBox
-                variants={containerVariants2}
-                initial="hidden"
-                animate="visible"
+            <FramerMotion3
                 sx={{
                     height: 'auto',
                     px: isMobile ? '20px' : '90px',
@@ -374,7 +342,7 @@ export default function Award() {
                             )
                     }
                 </Box>
-            </MotionBox>
+            </FramerMotion3>
             <Box
                 sx={{
                     width: '100%',

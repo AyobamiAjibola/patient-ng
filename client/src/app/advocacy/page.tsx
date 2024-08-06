@@ -14,16 +14,7 @@ import { useSession } from "next-auth/react";
 import { useCreateComplain } from "../admin/hooks/advocacyHook/useAdvocacy";
 import Toastify from "../components/ToastifySnack";
 import { useRouter } from "next/navigation";
-import FramerMotion from "../components/FramerMotion";
-import { motion } from "framer-motion";
-
-const advocacy = [
-  "Informal Complaint (Step 1)",
-  "Formal Complaint (Step 2)",
-  "What to Include in your Complaint",
-  "Submit your complaint online",
-  "Request the HSE to review the complaint"
-];
+import FramerMotion, { FramerMotion2 } from "../components/FramerMotion";
 
 type FormValues = {
   nameOfHospital: string;
@@ -45,7 +36,6 @@ export default function page() {
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-  const MotionBox = motion(Box);
 
   const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
       setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
@@ -95,7 +85,7 @@ export default function page() {
   return (
     <>
       <Navbar/>
-      <MotionBox
+      <FramerMotion2
         initial={{ x: '100vw' }}
         animate={{ x: 0 }}
         transition={{ type: 'spring' }}
@@ -224,7 +214,7 @@ export default function page() {
             </Box>
           </Box>
         </Box>)}
-      </MotionBox>
+      </FramerMotion2>
 
       <FramerMotion
         ref={targetRef}

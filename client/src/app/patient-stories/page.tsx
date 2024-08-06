@@ -19,20 +19,7 @@ import { useAtom } from "jotai";
 import { selectedImageArrayAtom } from "@/lib/atoms";
 import Pagination from "../components/Pagination";
 import { useSession } from "next-auth/react";
-import { motion } from "framer-motion";
-import FramerMotion from "../components/FramerMotion";
-
-const containerVariants = {
-    hidden: {
-      opacity: 0,
-      x: '100vw'
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: 'spring', stiffness: 120 }
-    }
-}
+import FramerMotion, { FramerMotion2 } from "../components/FramerMotion";
 
 export default function PatientStories() {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -48,8 +35,6 @@ export default function PatientStories() {
     const storiesRef = useRef<any>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const {data: session} = useSession();
-
-    const MotionBox = motion(Box);
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -132,10 +117,8 @@ export default function PatientStories() {
                     gap: 8
                 }}
             >
-                <MotionBox
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
+                <FramerMotion2
+                    direction={true}
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
@@ -253,7 +236,7 @@ export default function PatientStories() {
                             </Box>
                         </Box>
                     </Box>
-                </MotionBox>
+                </FramerMotion2>
 
                 <FramerMotion ref={storiesRef}
                     sx={{

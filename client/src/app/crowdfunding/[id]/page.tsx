@@ -1,6 +1,7 @@
 'use client'
 
 import { useActivateCrowdfunding, useGetSingleCrowdfunding, useLikeCrowdfunding, useMarkCrowdfundingDone } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
+import { FramerMotion3 } from "@/app/components/FramerMotion";
 import InputField from "@/app/components/InputField";
 import MModal from "@/app/components/Modal";
 import Navbar from "@/app/components/Navbar";
@@ -11,7 +12,6 @@ import { formAmount } from "@/lib/helper";
 import { Favorite, FavoriteBorder, Person, Reply } from "@mui/icons-material";
 import { Avatar, Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { Tag } from "antd";
-import { motion } from "framer-motion";
 import moment from "moment";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -51,8 +51,6 @@ export default function CrowdFunding({params}: any) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const likeCrowdfundingMutation = useLikeCrowdfunding();
-
-  const MotionBox = motion(Box);
 
   const [openNotification, setOpenNotification] = useState(false);
   const [message, setMessage] = useState('');
@@ -211,10 +209,7 @@ export default function CrowdFunding({params}: any) {
   return (
     <>
         <Navbar/>
-        <MotionBox
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+        <FramerMotion3
           sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -725,7 +720,7 @@ export default function CrowdFunding({params}: any) {
             error={isError}
             success={isSuccess}
           />
-        </MotionBox>
+        </FramerMotion3>
     </>
   )
 }

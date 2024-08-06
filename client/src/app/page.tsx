@@ -4,7 +4,7 @@ import Navbar from '@/app/components/Navbar'
 import { NButton } from '@/app/components/PButton';
 import { characterBreaker, wordBreaker } from '@/lib/helper';
 import { Add, ArrowForward, ArrowRight, DesktopWindows, HourglassEmpty, Mic, Remove } from '@mui/icons-material';
-import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -19,8 +19,7 @@ import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
 import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
 import CrowdCard from './components/CrowdCard';
-import FramerMotion from './components/FramerMotion';
-import { motion } from 'framer-motion';
+import FramerMotion, { FramerMotion2 } from './components/FramerMotion';
 
 const faq = [
   {
@@ -54,28 +53,6 @@ const faq = [
   }
 ]
 
-const containerVariants = {
-  hidden: {
-    opacity: 0,
-    x: '100vw'
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { type: 'spring', stiffness: 120 }
-  }
-}
-
-const nextVariant = {
-  hidden: {
-    x: '-100vw'
-  },
-  visible: {
-    x: 0,
-    transition: { type: "spring", stiffness: 120, delay: 0.5 }
-  }
-}
-
 export default function HomePage() {
   const theme = useTheme();
   const router = useRouter();
@@ -94,8 +71,6 @@ export default function HomePage() {
   const [___, setOpen2] = useAtom(openModal2);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
-  const MotionBox = motion(Box);
-
   const handleExpand = (index: any) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
@@ -107,7 +82,7 @@ export default function HomePage() {
         setPodcasts(podcasts)
       }
     })
-  }
+  };
 
   const fetchWebinar = async () => {
     await webinarMutation.mutateAsync({}, {
@@ -156,7 +131,8 @@ export default function HomePage() {
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           flexDirection: isMobile ? 'column' : 'row',
-          pb: '50px', pt: '120px'
+          pb: '50px', pt: '120px',
+          alignItems: 'center'
         }}
       >
         <Box
@@ -244,10 +220,8 @@ export default function HomePage() {
             patients across Nigeria.`}
           </Typography>
 
-          <MotionBox
-            variants={nextVariant}
-            initial="hidden"
-            animate="visible"
+          <FramerMotion2
+            direction={true}
             sx={{
               display: 'flex',
               gap: isMobile ? 1 : 3,
@@ -262,7 +236,7 @@ export default function HomePage() {
               onClick={()=>setOpen2(true)}
               width='200px'
             >
-              <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+              <Typography variant='paragraphbase'>
                 Contact us
               </Typography>
             </NButton>
@@ -273,16 +247,13 @@ export default function HomePage() {
               onClick={()=>setOpen(true)}
               width='200px'
             >
-              <Typography variant={isMobile ? 'paragraphxxs' : 'paragraphbase'}>
+              <Typography variant='paragraphbase'>
                 About us
               </Typography>
             </NButton>
-          </MotionBox>
+          </FramerMotion2>
         </Box>
-        <MotionBox 
-          initial={{ x: '100vw' }}
-          animate={{ x: 0 }}
-          transition={{ type: 'spring' }}
+        <FramerMotion2
           width={isMobile ? '100%' : '50%'} 
           mt={isMobile ? 5 : 0} 
           display={'flex'} justifyContent={isMobile ? 'center' : 'flex-end'} 
@@ -296,7 +267,7 @@ export default function HomePage() {
               height: 'auto',//isMobile ? '45%' : '75%'
             }}
           />
-        </MotionBox>
+        </FramerMotion2>
       </Box>
 
       <FramerMotion
@@ -391,8 +362,10 @@ export default function HomePage() {
         <Box
           sx={{
             flex: 1,
-            justifyContent: 'flex-end',
-            alignItems: 'flex-end'
+            display: 'flex',
+            justifyContent: isMobile ? 'center' : 'flex-end',
+            alignItems: isMobile ? 'center' : 'flex-end',
+            mr: isMobile ? 0 : 6
           }}
         >
           <img
@@ -558,7 +531,7 @@ export default function HomePage() {
             width='250px'
             onClick={() => router.push('/crowdfunding/campaigns')}
           >
-            See all crowdfunding <ArrowForward/>
+            See all campaigns <ArrowForward/>
           </NButton>
         </Box>
       </FramerMotion>
@@ -808,7 +781,7 @@ export default function HomePage() {
                 lineHeight: 1
               }}
             >
-              Hospital Rating
+              Hospital Ratings
             </Typography>
             <Typography
               sx={{

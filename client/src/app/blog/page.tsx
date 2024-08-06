@@ -13,7 +13,7 @@ import { HourglassEmpty } from '@mui/icons-material';
 import { useGetBlogCategories, useGetBlogs } from '../admin/hooks/blogHook/useBlog';
 import { useSession } from 'next-auth/react';
 import HtmlToText from '../components/HtmlToText';
-import { motion } from 'framer-motion';
+import FramerMotion, { FramerMotion2 } from '../components/FramerMotion';
 
 export default function Blog() {
   const theme = useTheme();
@@ -26,8 +26,6 @@ export default function Blog() {
   const getBlogsMutation = useGetBlogs();
   const getBLogsCategory = useGetBlogCategories();
   const {data: session} = useSession();
-
-  const MotionBox = motion(Box);
 
   const filteredData =
   blogs &&
@@ -76,10 +74,7 @@ export default function Blog() {
   return (
     <>
       <Navbar />
-      <MotionBox 
-        initial={{ x: '100vw' }}
-        animate={{ x: 0 }}
-        transition={{ type: 'spring' }}
+      <FramerMotion2
         sx={{
           height: 'auto', 
           width: '100%',
@@ -131,26 +126,13 @@ export default function Blog() {
           sx={{
             mx: isMobile ? '20px' : '60px', mt: 5,
             display: 'flex',
-            justifyContent: 'flex-start',
+            justifyContent: 'space-between',
             flexDirection: isMobile ? 'column' : 'row', 
             alignItems: 'center',
-            gap: isMobile ? 4 : 0 
+            gap: 4
           }}
         >
-          <Box 
-            sx={{
-              width: isMobile ? '100%' : '75%', 
-              display: 'flex', 
-              flexDirection: 'row', 
-              gap: 5,
-              overflowX: 'scroll',
-              whiteSpace: 'nowrap',
-              '&::-webkit-scrollbar': {
-                display: 'none',
-              },
-              scrollbarWidth: 'none',
-            }}
-          >
+          <Box display={'flex'} width={isMobile ? '100%' : '70%'} gap={3}>
             <Typography
               sx={{
                 fontWeight: theme.typography.labelxl.fontWeight
@@ -158,31 +140,23 @@ export default function Blog() {
             >
               Tags:
             </Typography>
-            <Box display={'flex'} alignItems={'center'} gap={2}>
-              <Box 
-                sx={{
-                  minWidth: 70, 
-                  width: 'auto',
-                  height: 'auto', 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  flexDirection: 'row',
-                  cursor: 'pointer',
-                  backgroundColor: theme.palette.secondary.lighter,
-                  borderRadius: theme.borderRadius.md,
-                  '&:hover': {
-                    backgroundColor: theme.palette.secondary.light,
-                    color: 'white'
-                  }
-                }}
-                onClick={() => setSearchQuery('')}
-              >
-                <Typography variant='paragraphsm' className='capitalize'>
-                  All
-                </Typography>
-              </Box>
-              {blogCategories.map((category: any, index: number) => (
-                <Box sx={{
+            <Box 
+              sx={{
+                width: '100%', 
+                display: 'flex', 
+                flexDirection: 'row', 
+                gap: 5,
+                overflowX: 'scroll',
+                whiteSpace: 'nowrap',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+                scrollbarWidth: 'none',
+              }}
+            >
+              <Box display={'flex'} alignItems={'center'} gap={2}>
+                <Box 
+                  sx={{
                     minWidth: 70, 
                     width: 'auto',
                     height: 'auto', 
@@ -197,18 +171,41 @@ export default function Blog() {
                       color: 'white'
                     }
                   }}
-                  onClick={() => setSearchQuery(category.name)}
-                  key={index}
+                  onClick={() => setSearchQuery('')}
                 >
                   <Typography variant='paragraphsm' className='capitalize'>
-                    { category.name }
+                    All
                   </Typography>
                 </Box>
-              ))}
+                {blogCategories.map((category: any, index: number) => (
+                  <Box sx={{
+                      minWidth: 70, 
+                      width: 'auto',
+                      height: 'auto', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      flexDirection: 'row',
+                      cursor: 'pointer',
+                      backgroundColor: theme.palette.secondary.lighter,
+                      borderRadius: theme.borderRadius.md,
+                      '&:hover': {
+                        backgroundColor: theme.palette.secondary.light,
+                        color: 'white'
+                      }
+                    }}
+                    onClick={() => setSearchQuery(category.name)}
+                    key={index}
+                  >
+                    <Typography variant='paragraphsm' className='capitalize'>
+                      { category.name }
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </Box>
 
-          <Box sx={{width: isMobile ? '100%' : '25%'}}>
+          <Box sx={{width: isMobile ? '100%' : '30%'}}>
             <Search
               placeholder="Search"
               allowClear
@@ -218,7 +215,8 @@ export default function Blog() {
           </Box>
         </Grid>
 
-        <Grid
+        <FramerMotion
+          threshold={0.1}
           sx={{
             width: '100%',
             height: 'auto',
@@ -321,7 +319,7 @@ export default function Blog() {
               </Box>
             )
           }
-        </Grid>
+        </FramerMotion>
         <Box
           sx={{
               width: '100%',
@@ -337,7 +335,7 @@ export default function Blog() {
             onPageChange={handlePageChange}
           />)}
         </Box>
-      </MotionBox>
+      </FramerMotion2>
       <Footer/>
     </>
   )

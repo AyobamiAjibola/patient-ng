@@ -14,19 +14,7 @@ import Footer from "@/app/components/Footer";
 import { useGetWebinarCategories, useGetWebinars } from "../admin/hooks/webinarHook/useWebinar";
 import Pagination from "../components/Pagination";
 import { useSession } from "next-auth/react";
-import { motion } from "framer-motion";
-
-const containerVariants = {
-    hidden: {
-      opacity: 0,
-      x: '100vw'
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: 'spring', stiffness: 120 }
-    }
-}
+import { FramerMotion3 } from "../components/FramerMotion";
 
 export default function Webinars() {
     const theme = useTheme();
@@ -40,8 +28,6 @@ export default function Webinars() {
     const {data: session} = useSession();
     const webinarCategoriesMutation = useGetWebinarCategories();
     const [webinarCategories, setWebinarCategories] = useState<any>([]);
-
-    const MotionBox = motion(Box);
 
     const filteredData = webinars && webinars.filter((item: any) => {
         if (checkedTopics.length === 0 && !searchQuery) {
@@ -107,10 +93,7 @@ export default function Webinars() {
     return (
       <>
         <Navbar/>
-        <MotionBox
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
+        <Box
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -243,7 +226,7 @@ export default function Webinars() {
                     >
                         {   currentData.length > 0 
                             ?   (currentData.map((webinar: any, index: number) => (
-                                    <Box key={webinar._id}
+                                    <FramerMotion3 key={webinar._id}
                                         sx={{
                                             width: md ? '100%' : '280px',
                                             height: '400px',
@@ -317,7 +300,7 @@ export default function Webinars() {
                                                 )
                                             }
                                         </Box>
-                                    </Box>
+                                    </FramerMotion3>
                                 ))
                             ) : (
                                 <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>
@@ -347,7 +330,7 @@ export default function Webinars() {
                 </Box>
             </Box>
             
-        </MotionBox>
+        </Box>
         <Footer/>
       </>
     )

@@ -15,7 +15,7 @@ import { NButton } from '@/app/components/PButton';
 import MModal from '@/app/components/Modal';
 import HtmlToText from '@/app/components/HtmlToText';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { FramerMotion3 } from '@/app/components/FramerMotion';
 
 const socials = [
     {
@@ -34,19 +34,7 @@ const socials = [
         logo: '/linkedIn.png',
         link: ''
     }
-]
-
-const containerVariants = {
-    hidden: {
-      opacity: 0,
-      y: 50
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1 }
-    }
-  }
+];
 
 export default function Blog({ params }: any) {
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -68,7 +56,6 @@ export default function Blog({ params }: any) {
     const [hotBlog, setHotBlog] = useState<any>({});
     const getBlogsMutation = useGetBlogs();
     const router = useRouter();
-    const MotionBox = motion(Box);
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -179,10 +166,7 @@ export default function Blog({ params }: any) {
     return (
         <>
             <Navbar/>
-            <MotionBox 
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+            <FramerMotion3
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -737,7 +721,7 @@ export default function Blog({ params }: any) {
                         </Box>)}
                     </Box>
                 </Box>
-            </MotionBox>
+            </FramerMotion3>
 
             <MModal
                 onClose={() => setOpenModal(false)}

@@ -13,19 +13,7 @@ import { useSession } from "next-auth/react";
 import capitalize from "capitalize";
 import Toastify from "@/app/components/ToastifySnack";
 import { useFetchSingleUser, useInsightsRatingsReports } from "@/app/admin/hooks/userHook/useUser";
-import { motion } from "framer-motion";
-
-const containerVariants = {
-  hidden: {
-    opacity: 0,
-    y: 50
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1 }
-  }
-}
+import { FramerMotion3 } from "@/app/components/FramerMotion";
 
 export default function page({ params }: any) {
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -44,8 +32,6 @@ export default function page({ params }: any) {
   const rating = localStorage.getItem('rating');
   const [totalRatings, setTotalRatings] = useState<number>(0);
   const [hospitalData, setHospitalData] = useState<any>({});
-
-  const MotionBox = motion(Box);
  
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -123,10 +109,7 @@ export default function page({ params }: any) {
   return (
     <>
       <Navbar/>
-      <MotionBox
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <FramerMotion3
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -436,7 +419,7 @@ export default function page({ params }: any) {
           }
           
         </Box>
-      </MotionBox>
+      </FramerMotion3>
       
       <MModal
         onClose={handleCloseModal}
