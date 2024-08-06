@@ -96,11 +96,12 @@ export default function CrowdCard({fundraiser, percent}: any) {
                     </Typography>
                 
                     <Box>
-                        {fundraiser.donations.length > 0
+                        {/* {fundraiser.donations.length > 0
                             ? (<Box
                                 sx={{
                                     display: 'flex',
-                                    gap: 1, mt: 3
+                                    gap: 1, mt: 3,
+                                    alignItems: 'center'
                                 }}
                             >
                                 <Typography
@@ -137,7 +138,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                     </Typography>
                                 </Box>
                             )
-                        }
+                        } */}
                         <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
                         <Box
                             sx={{
@@ -164,7 +165,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                 </Typography>
                             </Box>
                             {fundraiser.likes.length > 0 && (<Box display={'flex'} alignItems={'center'} width={'10%'}>
-                                <Favorite sx={{color: 'red', fontSize: '14px'}}/> 
+                                <Favorite sx={{color: theme.palette.primary.main, fontSize: '16px'}}/> 
                                 <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
                             </Box>)}
                         </Box>
@@ -195,7 +196,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                             fontWeight: theme.typography.labelxs.fontWeight,
                             }}
                         >
-                            See More Information
+                            See Details
                         </Typography>
                     </Box>
                 </Box>

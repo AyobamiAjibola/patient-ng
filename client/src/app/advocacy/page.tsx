@@ -200,7 +200,7 @@ export default function page() {
                   alignSelf: 'center'
                 }}
               >
-                Patient.ng helped me resolve the issue with my dad’s diagnosis and treatment after getting a second opinion. Now we finally feel heard and validated.
+                {`Patient.ng helped me get a second opinion regarding my dad’s cancer treatment plan. We finally feel heard and understood!.`}
               </Typography>
               <Typography
                 sx={{
@@ -209,7 +209,7 @@ export default function page() {
                   color: theme.palette.secondary.light
                 }}
               >
-                Sarah Thompson
+                Bukola
               </Typography>
             </Box>
           </Box>
@@ -217,7 +217,6 @@ export default function page() {
       </FramerMotion2>
 
       <FramerMotion
-        ref={targetRef}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -232,7 +231,7 @@ export default function page() {
             fontWeight: theme.typography.h3.fontWeight,
           }}
         >
-          Guide to Making a Complaint
+          Guide to Submit a Complaint.
         </Typography>
         <Typography
           sx={{
@@ -580,7 +579,8 @@ export default function page() {
         </Box>
       </FramerMotion>
 
-      <FramerMotion
+      <Box
+        ref={targetRef}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -670,11 +670,11 @@ export default function page() {
               rows={10}
             />
             <PButton transBg={false} bg={true} width="100%" type="submit">
-              {createComplainMutation.isLoading ? 'Sending...' : 'Send your complaints'}
+              {createComplainMutation.isLoading ? 'Submitting...' : 'Submit Complaint'}
             </PButton>
           </form>
         </Box>
-      </FramerMotion>
+      </Box>
 
       <FramerMotion
         sx={{

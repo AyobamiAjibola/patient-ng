@@ -299,7 +299,7 @@ export default function HomePage() {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
             flexDirection: 'column',
             gap: 3,
             flex: 1
@@ -308,7 +308,7 @@ export default function HomePage() {
           <Typography
             sx={{
               fontSize: isMobile ? '32px' : '50px',
-              fontWeight: 500,
+              fontWeight: 600,
               lineHeight: 0.7
             }}
           >
@@ -333,6 +333,7 @@ export default function HomePage() {
             bordercolor={theme.palette.primary.main}
             hoverbordercolor={theme.palette.primary.main}
             width='250px'
+            onClick={()=>console.log('hello')}
           >
             Learn More
           </NButton>
@@ -416,7 +417,7 @@ export default function HomePage() {
                 color: theme.palette.primary.main
               }}
             >
-              Challenges
+              any challenge
             </Typography>
             <Typography
               sx={{
@@ -430,11 +431,10 @@ export default function HomePage() {
               sx={{
                 fontSize: isMobile ? '20px' : '32px',
                 fontWeight: 600,
-                color: theme.palette.primary.main,
-                lineHeight: 1
+                color: theme.palette.primary.main
               }}
             >
-              hospitals?
+              your hospital?
             </Typography>
           </Box>
           <Typography
@@ -445,7 +445,7 @@ export default function HomePage() {
               mt: isMobile ? 4 : 4
             }}
           >
-            {`Share your experiences and complaints about public or private hospitals. We ensure your voice is heard and your issues are addressed.`}
+            {`Submit your patient complaints about any public or private hospital in Nigeria to make your voice heard and get your issues resolved.`}
           </Typography>
           <Box
             width='100%'
@@ -457,7 +457,7 @@ export default function HomePage() {
               textcolor='white'
               onClick={()=>router.push('/advocacy')}
             >
-              Learn More
+              Submit complaints
             </NButton>
           </Box>
         </Box>
@@ -490,7 +490,7 @@ export default function HomePage() {
             alignSelf: 'center', width: isMobile ? '100%' : '60%'
           }}
         >
-          Discover patient crowdfunding campaigns that resonate deeply with you. Every donation count, even the hearts you give!
+          {`Discover patient crowdfunding campaigns that inspire you! Every donation counts, even the green hearts you give!`}
         </Typography>
 
         <Box
@@ -563,7 +563,7 @@ export default function HomePage() {
               textAlign: isMobile ? 'center' : 'left'
             }}
           >
-            Patient Stories
+            Every Patient has a Story
           </Typography>
           <Typography
             sx={{
@@ -575,7 +575,7 @@ export default function HomePage() {
               mb: 4, mt: 2
             }}
           >
-            Explore inspiring patient stories from our community or share your own unique personal experience to encourage and educate others
+            {`Discover inspiring patient stories from our community or share your own patient experience to encourage and educate others.`}
           </Typography>
           <Box
             sx={{
@@ -588,6 +588,7 @@ export default function HomePage() {
               bkgcolor='white'
               textcolor={theme.palette.primary.main}
               hovercolor='white'
+              onClick={()=>router.push('/patient-stories')}
             >
               Read more
             </NButton>
@@ -811,8 +812,9 @@ export default function HomePage() {
             textcolor={theme.palette.primary.main}
             bordercolor={theme.palette.primary.main}
             hoverbordercolor={theme.palette.primary.main}
+            onClick={()=>router.push('/rating-and-review')}
           >
-            Read more
+            Rate more
           </NButton>
         </Box>
         <Box flex={1}>

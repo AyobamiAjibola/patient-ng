@@ -57,6 +57,24 @@ export default function CrowdFunding({params}: any) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState<boolean>(false);
 
+  const shareData = {
+    url: `${process.env.NEXT_PUBLIC_CLIENT_URL}${pathname}`
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.error('Error sharing content:', error);
+        handleOpenNotification('error', '', 'Error sharing content')
+      }
+    } else {
+      handleOpenNotification('error', '', 'Web Share API not supported in your browser')
+    }
+  };
+
+
   const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
     setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
     setIsError(type === 'error');
@@ -467,6 +485,7 @@ export default function CrowdFunding({params}: any) {
                     bkgcolor="white"
                     width={isMobile ? "100%" : "50%"}
                     hoverbordercolor={theme.palette.border.main}
+                    onClick={handleShare}
                   >
                     <Reply sx={{color: 'black', fontSize: '16px'}}/> Share
                   </NButton>

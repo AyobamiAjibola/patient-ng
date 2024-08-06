@@ -275,7 +275,7 @@ export default function page() {
                             }}
                         />
                         <Typography variant='labelxs' ml={2}>
-                            Sign in with Google
+                            Sign up with Google
                         </Typography>
                     </NButton>
                     {/* <NButton

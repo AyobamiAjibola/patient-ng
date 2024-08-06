@@ -69,11 +69,11 @@ const crowdFundingWork = [
   {
     title: 'Explore',
     content: `Explore on-going patient crowdfunding campaigns to
-              find one that resonates with you.`
+              find one that inspires you.`
   },
   {
     title: 'Support',
-    content: `Make a donation or give a heart to help the
+    content: `Make a donation or give a green heart to help the
       fundraiser reach their goal.`
   },
   {
@@ -276,7 +276,7 @@ export default function CrowdFundings() {
 
         </FramerMotion>
 
-        <FramerMotion
+        {/* <FramerMotion
           sx={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -360,7 +360,7 @@ export default function CrowdFundings() {
                     >
                       {story.story}
                     </Typography>
-                    {/* <Box
+                    <Box
                       sx={{
                         display: 'flex',
                         gap: 2,
@@ -383,12 +383,12 @@ export default function CrowdFundings() {
                       >
                         {story.name}
                       </Typography>
-                    </Box> */}
+                    </Box>
                   </SwiperSlide>
                 ))
               }
           </Swiper>
-        </FramerMotion>
+        </FramerMotion> */}
 
         <FramerMotion
           sx={{

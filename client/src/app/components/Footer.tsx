@@ -388,9 +388,6 @@ export default function Footer() {
                                 width: '90%'
                             }}
                         >
-                            <Typography variant="paragraphsm" color={'white'}>
-                                You can reach us at:
-                            </Typography>
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -471,13 +468,45 @@ export default function Footer() {
                             <Box
                                 sx={{
                                     display: 'flex',
-                                    gap: 3,
-                                    alignItems: 'flex-start',
-                                    justifyContent: 'flex-start',
-                                    mt: 3
+                                    gap: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    mt: 3, flexWrap: 'wrap'
                                 }}
                             >
-                                <Box
+                                <IconButton 
+                                    component="a"
+                                    href="https://web.facebook.com/profile.php?id=61563453420792&mibextid=LQQJ4d&_rdc=1&_rdr"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Facebook sx={{color: 'white'}}/>
+                                </IconButton>
+                                <IconButton 
+                                    component="a"
+                                    href="https://www.linkedin.com/company/patientdotng"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <LinkedIn sx={{color: 'white'}}/>
+                                </IconButton>
+                                <IconButton 
+                                    component="a"
+                                    href="https://x.com/patientdotng?s=11&t=WDXKro3kSag6ImoNjJ85tw"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <X sx={{color: 'white'}}/>
+                                </IconButton>
+                                <IconButton
+                                    component="a"
+                                    href="https://www.instagram.com/patientdotng?igsh=eGgxbWN4Z3ZhaHZn&utm_source=qr"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Instagram sx={{color: 'white'}}/>
+                                </IconButton>
+                                {/* <Box
                                     sx={{
                                         bgcolor: 'white',
                                         p: 2,
@@ -505,7 +534,7 @@ export default function Footer() {
                                     <Typography variant="paragraphxs" color={theme.palette.border.main}>
                                         CO 80012
                                     </Typography>
-                                </Box>
+                                </Box> */}
                             </Box>
                             
                         </Box>
@@ -521,12 +550,12 @@ export default function Footer() {
                         }}
                     >
                         <Typography variant="h5" textAlign={'left'} width='100%'>
-                            Get in touch with us
+                            Contact us
                         </Typography>
                         <Typography variant="paragraphsm" color={theme.palette.secondary.light}
                             textAlign={'left'} width='100%' mb={3}
                         >
-                            Let's connect and see how we can help you achieve ypur goals.
+                            We love to hear from you.
                         </Typography>
 
                         <Box 
@@ -622,7 +651,7 @@ export default function Footer() {
                             textcolor="white"
                             width="100%"
                         >
-                            {contactusMutation.isLoading ? 'Submitting...' : 'Contact us'}
+                            {contactusMutation.isLoading ? 'Sending...' : 'Send'}
                         </NButton>
                     </Box>
                 </Box>
