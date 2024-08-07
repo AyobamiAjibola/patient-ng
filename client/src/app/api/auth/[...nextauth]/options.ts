@@ -150,7 +150,7 @@ export const options: NextAuthOptions = {
       if (url.startsWith('/')) {
         // Allows relative URLs
         return `${baseUrl}${url}`;
-      } else if (url.startsWith('http')) {
+      } else if (url.startsWith(`${process.env.NEXT_PUBLIC_CLIENT_INITIAL}`)) {
         // Allows absolute URLs
         return url;
       }
