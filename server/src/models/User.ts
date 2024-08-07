@@ -24,11 +24,13 @@ interface IUser {
     isPasswordDefault: boolean,
     state: string,
     lga: string,
-    createdAt?: any
+    createdAt?: any,
+    googleId?: string
 }
 
 const userSchema = new Schema<IUser>({
   email: { type: String },
+  googleId: { type: String },
   firstName: { type: String },
   lastName: { type: String },
   age: { type: String },

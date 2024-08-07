@@ -24,6 +24,18 @@ export const signUpHandler = async (req: Request, res: Response) =>  {
     res.status(response.code).json(response);
 };
 
+export const googleSignUpHandler = async (req: Request, res: Response) =>  {
+    const response = await authController.googleSignUpUser(req);
+
+    res.status(response.code).json(response);
+};
+
+export const googleSignInHandler = async (req: Request, res: Response) =>  {
+    const response = await authController.googleSignIn(req);
+
+    res.status(response.code).json(response);
+};
+
 export const signInHandler = async (req: Request, res: Response) =>  {
     const response = await authController.signInUser(req);
 

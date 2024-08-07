@@ -39,6 +39,7 @@ export default class AuthenticationController {
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
+
         const userEmail = await datasources.userDAOService.findByAny({email: value.email.toLowerCase()})
         if (userEmail) {
             return Promise.reject(CustomAPIError.response("The email address is already in use by another account.", HttpStatus.BAD_REQUEST.code));
@@ -208,6 +209,71 @@ export default class AuthenticationController {
     }
 
     @TryCatch
+    public async googleSignUpUser (req: Request) {
+        const { error, value } = Joi.object<any>({
+            email: Joi.string().required().label('Email'),
+            firstName: Joi.string().required().label('First Name'),
+            lastName: Joi.string().required().label('Last Name'),
+            googleId: Joi.string().required().label('Google ID')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const payload: Partial<IUserModel> = {
+            ...value,
+            email: value.email,
+            userType: [ 'user' ],
+        }
+
+        const user = await datasources.userDAOService.create(payload as IUserModel);
+
+        const { accessToken, refreshToken }: TokenTypes = await Generic.generateJWT({
+            userId: user._id,
+            level: 1,
+            isAdmin: user.isAdmin,
+            userType: user.userType,
+            fullName: `${user.firstName} ${user.lastName}`
+        });
+
+        const response: HttpResponse<IUserModel> = {
+            message: `User created successfully.`,
+            code: HttpStatus.OK.code,
+            result: user,
+            tokens: {accessToken, refreshToken}
+          };
+    
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async googleSignIn (req: Request) {
+        const { error, value } = Joi.object<any>({
+            email: Joi.string().required().label('Email')
+        }).validate(req.body);
+        if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
+
+        const user = await datasources.userDAOService.findByAny({ email: value.email });
+        if(!user) 
+            return Promise.reject(CustomAPIError.response("User with this email does not exist.", HttpStatus.NOT_FOUND.code))
+        
+        const { accessToken, refreshToken }: TokenTypes = await Generic.generateJWT({
+            userId: user._id,
+            level: user.level,
+            isAdmin: user.isAdmin,
+            userType: user.userType,
+            fullName: `${user.firstName} ${user.lastName}`
+        });
+
+        const response: HttpResponse<IUserModel> = {
+            message: `User created successfully.`,
+            code: HttpStatus.OK.code,
+            result: user,
+            tokens: {accessToken, refreshToken}
+          };
+    
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
     public async createUser (req: Request) {
         const loggedInUser = req.user._id;
 
@@ -266,7 +332,7 @@ export default class AuthenticationController {
         const user = await datasources.userDAOService.findByAny({email: value.email});
         if(!user) return Promise.reject(CustomAPIError.response("User with this email does not exist.", HttpStatus.BAD_REQUEST.code));
 
-        // if(user && user.isAdmin) return Promise.reject(CustomAPIError.response("Admin can not log in here, please use the admin portal.", HttpStatus.UNAUTHORIZED.code));
+        if(user && user.googleId) return Promise.reject(CustomAPIError.response("You tried signing in with a different authentication method than the one you used during signup.", HttpStatus.UNAUTHORIZED.code));
 
         const hash = user.password as string;
         const password = value.password as string;

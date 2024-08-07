@@ -2,6 +2,8 @@ import { NextAuthOptions } from 'next-auth';
 import { decode } from 'jsonwebtoken';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from '@/app/Client';
+import GoogleProvider from 'next-auth/providers/google';
+import { redirect } from 'next/navigation';
 
 interface IProps {
   email: string;
@@ -28,9 +30,9 @@ interface Payload {
 }
 
 export const options: NextAuthOptions = {
-  pages: {
-    signIn: '/signin',
-  },
+  // pages: {
+  //   signIn: '/signin',
+  // },
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -67,18 +69,102 @@ export const options: NextAuthOptions = {
         }
       },
     }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    jwt: async ({ token, user, trigger, session }) => {
-      if (trigger === 'update') {
-        return { ...token, ...session.user };
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      idToken: true,
+      async profile(profile) {
+        try {
+            const response = await axios.post('/sign-in-google', {
+              email: profile.email
+            });
+
+            let payload;
+            if(response.data.code === 200) {
+              const { tokens } = response.data
+              const decodedToken = decode(tokens.accessToken) as Payload;
+
+              payload = {
+                email: profile.email,
+                level: decodedToken?.level,
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                isAdmin: decodedToken?.isAdmin,
+                userType: decodedToken?.userType,
+                fullName: decodedToken?.fullName,
+                userId: decodedToken?.userId,
+              };
+            }
+
+            return {...payload, id: profile.sub};
+        } catch (error: any) {
+          
+          const response = await axios.post('/sign-up-google', {
+            email: profile.email,
+            lastName: profile.family_name,
+            firstName: profile.given_name,
+            googleId: profile.sub
+          });
+          const { tokens } = response.data
+          const decodedToken = decode(tokens.accessToken) as Payload;
+
+          const payload: IProps = {
+            email: profile.email,
+            level: decodedToken?.level,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            isAdmin: decodedToken?.isAdmin,
+            userType: decodedToken?.userType,
+            fullName: decodedToken?.fullName,
+            userId: decodedToken?.userId,
+          };
+          return {...payload, id: profile.sub};
+        }
       }
-      return { ...token, ...user };
+    }),
+  ],
+  secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+  callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      const isAllowedToSignIn = true;
+      let uri = '';
+      if (isAllowedToSignIn) {
+        try {
+          const res = await axios.post('/find-user', {
+            email: user.email
+          });
+          
+          return `/signin?success=true`;
+          // return true;
+        } catch (error: any) {
+          // Redirect to the sign-in page with an error message
+          return `/signin?error=Authentication Failed`;
+        }
+      } else {
+        console.log('falsy');
+        return false;
+      }
+    },
+    async redirect({ url, baseUrl }) {
+      // Handle the redirection logic
+      if (url.startsWith('/')) {
+        // Allows relative URLs
+        return `${baseUrl}${url}`;
+      } else if (url.startsWith('http')) {
+        // Allows absolute URLs
+        return url;
+      }
+      return baseUrl;
     },
     session: async ({ session, token }: any) => {
       session.user = token;
       return session;
+    },
+    jwt: async ({ token, user, trigger, session, account }) => {
+      if (trigger === 'update') {
+        return { ...token, ...session.user };
+      }
+      return { ...token, ...user };
     },
   },
 };

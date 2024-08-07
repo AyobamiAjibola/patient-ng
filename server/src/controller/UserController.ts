@@ -24,6 +24,23 @@ form.setMaxListeners(15);
 export default class UserController {
 
     @TryCatch
+    public async findUser(req: Request) {
+        const user = await datasources.userDAOService.findByAny({
+            email: req.body.email
+        });
+
+        if(!user) 
+            return Promise.reject(CustomAPIError.response("User with this email does not exist.", HttpStatus.NOT_FOUND.code))
+        
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successful'
+        };
+      
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
     public async dashboardData(req: Request) {
         const users = await datasources.userDAOService.findAll({
             isAdmin: false

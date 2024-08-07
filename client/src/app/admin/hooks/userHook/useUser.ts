@@ -23,6 +23,27 @@ export const useCreateUser = () => {
   });
 };
 
+export const useFindUser = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<types.CreateUserResponse>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.findUser(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['find_user'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error finding user:', error);
+    },
+  });
+};
+
 export const useFetchUsers = () => {
   const api = useUserApi();
   const queryClient = useQueryClient();

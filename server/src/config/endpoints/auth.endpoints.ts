@@ -5,6 +5,8 @@ import {
     contactUsHandler,
     createUserHandler,
     getAccessTokenHandler,
+    googleSignInHandler,
+    googleSignUpHandler,
     resetPasswordHandler,
     resetUserPasswordHandler,
     sendPasswordResetLinkHandler,
@@ -33,6 +35,18 @@ const authEndpoints: RouteEndpoint  = [
         method: 'post',
         path: '/sign-up',
         handler: signUpHandler
+    },
+    {
+        name: 'sign-up-google',
+        method: 'post',
+        path: '/sign-up-google',
+        handler: googleSignUpHandler
+    },
+    {
+        name: 'sign-in-google',
+        method: 'post',
+        path: '/sign-in-google',
+        handler: googleSignInHandler
     },
     {
         name: 'sign-in',

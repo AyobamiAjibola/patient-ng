@@ -53,6 +53,10 @@ export default function page() {
     }
   };
 
+  const handleSignInGoogle = async () => {
+    await signIn('google')
+  }
+
   useEffect(() => {
     if(isLoggedAsAdmin && session?.user?.isAdmin) {
       router.push('/admin');
@@ -183,6 +187,7 @@ export default function page() {
             bordercolor={theme.palette.border.main}
             hoverbordercolor={theme.palette.primary.main}
             width={'100%'}
+            onClick={handleSignInGoogle}
           >
             <img
               src="/googleLogo.png"

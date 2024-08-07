@@ -285,23 +285,24 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
           )}
 
           {!isMobile && !session?.user && (<Box className='flex flex-row gap-1 items-center'>
-                <NButton 
-                  bkgcolor='transparent'
-                  textcolor={theme.palette.primary.main}
-                  bordercolor={theme.palette.primary.main}
-                  onClick={()=>router.push('/signup')}
-                  hoverbordercolor={theme.palette.primary.main}
-                >
-                  Sign Up
-                </NButton>
-                <NButton 
-                  bkgcolor={theme.palette.primary.main}
-                  textcolor='white'
-                  width='100px'
-                  onClick={()=>router.push('/signin')}
-                >
-                  Sign In
-                </NButton>
+              <NButton 
+                bkgcolor={theme.palette.primary.main}
+                textcolor='white'
+                width='100px'
+                onClick={()=>router.push('/signin')}
+              >
+                Login
+              </NButton>
+              <NButton 
+                bkgcolor='transparent'
+                textcolor={theme.palette.primary.main}
+                bordercolor={theme.palette.primary.main}
+                onClick={()=>router.push('/signup')}
+                hoverbordercolor={theme.palette.primary.main}
+              >
+                Sign Up
+              </NButton>
+                
               </Box>
           )}
           {!isMobile && session?.user && (<Box

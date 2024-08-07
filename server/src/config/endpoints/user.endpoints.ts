@@ -15,6 +15,7 @@ import {
     deleteHospitalHandler, 
     deleteInsightHandler, 
     fetchFilesHandler, 
+    findUserHandler, 
     getAllAdvocaciesHandler, 
     getAllInsightsHandler, 
     getAllReviewsHandler, 
@@ -286,6 +287,12 @@ const userEndpoints: RouteEndpoint  = [
         method: 'put',
         path: '/change-review-status/:reviewId',
         handler: changeReviewStatusHandler
+    },
+    {
+        name: 'find user',
+        method: 'post',
+        path: '/find-user',
+        handler: findUserHandler
     }
 ]
 

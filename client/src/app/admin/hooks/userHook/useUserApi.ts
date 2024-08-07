@@ -17,6 +17,16 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const findUser = async (
+    requestParameters: any
+  ): Promise<types.ApiResponseSuccess<types.CreateUserResponse>> => {
+
+    const response = await axiosAuth.post<
+      types.ApiResponseSuccess<types.CreateUserResponse>>
+      ('/find-user', requestParameters);
+    return response.data;
+  };
+
   const getUsers = async (): Promise<types.ApiResponseSuccess<any>> => {
 
     const response = await axiosAuth.get<
@@ -381,5 +391,6 @@ export const useUserApi = () => {
     getSingleUser,
     getUsers,
     createUser,
+    findUser
   };
 };

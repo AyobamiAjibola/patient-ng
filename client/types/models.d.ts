@@ -6,9 +6,7 @@ export declare namespace types {
         userType: string[] 
     }
 
-    interface CreateUserResponse {
-        
-    }
+    interface CreateUserResponse {}
 
     interface ApiResponseSuccess<T> {
         message: string;

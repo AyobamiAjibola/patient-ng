@@ -247,3 +247,9 @@ export const changeReviewStatusHandler = async (req: Request, res: Response) => 
 
     res.status(response.code).json(response);
 };
+
+export const findUserHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.findUser(req);
+
+    res.status(response.code).json(response);
+};
