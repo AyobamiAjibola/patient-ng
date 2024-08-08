@@ -17,7 +17,11 @@ export default function page() {
   const {data: session, status: authStatus} = useSession();
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 900px)');
-  const isLoggedIn = localStorage.getItem("isLoggedIn")
+  let isLoggedIn: any;
+
+  if (typeof window !== "undefined") {
+    isLoggedIn = localStorage.getItem("isLoggedIn");
+  }
 
   const [message, setMessage] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);

@@ -8,7 +8,6 @@ import InputField from "../components/InputField";
 import { useEffect, useState } from "react";
 import { useSendSignUpOtp, useSignUp, useUpdateUserOnboarding, useValidateSignUpOtp } from "../admin/hooks/userHook/useUser";
 import Toastify from "../components/ToastifySnack";
-import { useLocalStorage } from "@uidotdev/usehooks";
 import { useRouter } from "next/navigation";
 import MModal from "../components/Modal";
 import OtpInputField from "../components/OtpInputField";
@@ -27,7 +26,6 @@ export default function page() {
     const [password, setPassword] = useState<string>('');
     const [checked, setChecked] = useState<boolean>(false);
     const sendSignUpTokenMutation = useSendSignUpOtp();
-    // const [userDetails, setUserDetails] = useLocalStorage('userInfo', {});
     const [openAccountVerifyModal, setOpenAccountVerifyModal] = useState<boolean>(false);
     const router = useRouter();
     const isMobile = useMediaQuery('(max-width: 900px)');
@@ -43,7 +41,11 @@ export default function page() {
     const [address, setAddress] = useState<string>('');
     const [selectedGender, setSelectedGender] = useState<string>('');
     const updateUserOnboardingMutation = useUpdateUserOnboarding();
-    const isLoggedIn = localStorage.getItem("isLoggedIn")
+    let isLoggedIn: any;
+
+    if (typeof window !== "undefined") {
+        isLoggedIn = localStorage.getItem("isLoggedIn");
+    }
 
     const [message, setMessage] = useState<string>('');
     const [isError, setIsError] = useState<boolean>(false);
