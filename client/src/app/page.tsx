@@ -511,10 +511,12 @@ export default function HomePage() {
                                 : (0/+fundraiser.amountNeeded) * 100;
 
               return ( 
-                <CrowdCard
-                  fundraiser={fundraiser}
-                  percent={percent}
-                />
+                <Box key={fundraiser._id}>
+                  <CrowdCard
+                    fundraiser={fundraiser}
+                    percent={percent}
+                  />
+                </Box>
               )})
             }
         </Box>

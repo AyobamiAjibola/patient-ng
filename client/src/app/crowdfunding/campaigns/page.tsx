@@ -84,10 +84,12 @@ export default function page() {
                                     : (0/+fundraiser.amountNeeded) * 100;
 
                         return (
-                            <CrowdCard
-                                fundraiser={fundraiser}
-                                percent={percent}
-                            />
+                            <Box key={fundraiser._id}>
+                                <CrowdCard
+                                    fundraiser={fundraiser}
+                                    percent={percent}
+                                />
+                            </Box>
                         )})
                     ) : (
                         <Box width={'100%'} justifyContent={'center'} alignItems={'center'} display={'flex'} flexDirection={'column'}>

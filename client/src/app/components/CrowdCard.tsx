@@ -25,7 +25,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
     return (
         <>
             
-            <Box key={fundraiser}
+            <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',

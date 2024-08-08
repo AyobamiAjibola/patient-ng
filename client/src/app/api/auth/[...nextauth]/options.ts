@@ -62,10 +62,8 @@ export const options: NextAuthOptions = {
           } else {
             return null;
           }
-        } catch (error) {
-          console.error('Authentication error:', error);
-          // Return a specific error response to the client
-          throw new Error('Authentication failed');
+        } catch (error: any) {
+          throw new Error(error.response.data.message);
         }
       },
     }),
@@ -103,7 +101,8 @@ export const options: NextAuthOptions = {
             email: profile.email,
             lastName: profile.family_name,
             firstName: profile.given_name,
-            googleId: profile.sub
+            googleId: profile.sub,
+            image: profile.picture
           });
           const { tokens } = response.data
           const decodedToken = decode(tokens.accessToken) as Payload;
@@ -130,12 +129,12 @@ export const options: NextAuthOptions = {
       let uri = '';
       if (isAllowedToSignIn) {
         try {
-          const res = await axios.post('/find-user', {
+          await axios.post('/find-user', {
             email: user.email
           });
           
-          return `/signin?success=true`;
-          // return true;
+          // return `/signin?success=true`;
+          return true;
         } catch (error: any) {
           // Redirect to the sign-in page with an error message
           return `/signin?error=Authentication Failed`;

@@ -313,7 +313,11 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
             }}
           >
             <img
-              src={image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` : '/person.png'}
+              src={image
+                    ? image.includes('uploads/photo')
+                      ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` 
+                      : image
+                    : '/person.png'}
               alt='profile image'
               style={{
                 width: '40px',
@@ -479,7 +483,11 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                 }}
               >
                 <img
-                  src={image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` : '/person.png'}
+                  src={image
+                        ? image.includes('uploads/photo')
+                          ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${image}` 
+                          : image
+                        : '/person.png'}
                   alt='profile image'
                   style={{
                     width: '30px',

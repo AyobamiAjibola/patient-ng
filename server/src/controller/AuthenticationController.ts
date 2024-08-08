@@ -214,7 +214,8 @@ export default class AuthenticationController {
             email: Joi.string().required().label('Email'),
             firstName: Joi.string().required().label('First Name'),
             lastName: Joi.string().required().label('Last Name'),
-            googleId: Joi.string().required().label('Google ID')
+            googleId: Joi.string().required().label('Google ID'),
+            image:  Joi.string().optional().allow('').label('Image'),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 

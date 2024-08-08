@@ -43,6 +43,7 @@ export default function page() {
     const [address, setAddress] = useState<string>('');
     const [selectedGender, setSelectedGender] = useState<string>('');
     const updateUserOnboardingMutation = useUpdateUserOnboarding();
+    const isLoggedIn = localStorage.getItem("isLoggedIn")
 
     const [message, setMessage] = useState<string>('');
     const [isError, setIsError] = useState<boolean>(false);
@@ -155,6 +156,11 @@ export default function page() {
     const handleResendSignOtp = async () => {
         await sendSignUpTokenMutation.mutateAsync(email)
     }
+
+    const handleSignUpGoogle = async () => {
+        localStorage.setItem("isLoggedIn", "true")
+        await signIn('google')
+    }
     
     const handleSendSignUpOtp = async () => {
         const regex = /^\d+$/;
@@ -218,6 +224,16 @@ export default function page() {
         });
         setState(stateArray);
     }, []);
+
+    useEffect(() => {
+        if(isLoggedIn === "true" && !session?.user?.isAdmin) {
+          router.push('/');
+        }
+    
+        return () => {
+          localStorage.removeItem("isLoggedIn")
+        }
+    },[isLoggedIn, session]);
     
     return (
         <Box
@@ -265,6 +281,7 @@ export default function page() {
                         bordercolor={theme.palette.border.main}
                         hoverbordercolor={theme.palette.primary.main}
                         width={'100%'}
+                        onClick={handleSignUpGoogle}
                     >
                         <img
                             src="/googleLogo.png"

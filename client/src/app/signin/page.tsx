@@ -15,9 +15,9 @@ export default function page() {
   const [password, setPassword] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const {data: session, status: authStatus} = useSession();
-  const [isLoggedAsAdmin, setIsLoggedAsAdmin] = useState<boolean>(false);
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 900px)');
+  const isLoggedIn = localStorage.getItem("isLoggedIn")
 
   const [message, setMessage] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
@@ -45,7 +45,7 @@ export default function page() {
 
     if(response) {
       if (response.ok === true) {
-        setIsLoggedAsAdmin(true);
+        localStorage.setItem("isLoggedIn", "true")
       } else if(response.ok === false) {
         setIsLoading(false);
         handleOpenNotification('error', '', response.error as string)
@@ -54,20 +54,21 @@ export default function page() {
   };
 
   const handleSignInGoogle = async () => {
+    localStorage.setItem("isLoggedIn", "true")
     await signIn('google')
   }
 
   useEffect(() => {
-    if(isLoggedAsAdmin && session?.user?.isAdmin) {
+    if(isLoggedIn === "true" && session?.user?.isAdmin) {
       router.push('/admin');
-    } else if(isLoggedAsAdmin && !session?.user?.isAdmin) {
+    } else if(isLoggedIn === "true" && !session?.user?.isAdmin) {
       router.push('/');
     }
 
     return () => {
-      setIsLoggedAsAdmin(false);
+      localStorage.removeItem("isLoggedIn")
     }
-  },[isLoggedAsAdmin, session]);
+  },[isLoggedIn, session]);
 
   return (
     <Box 
