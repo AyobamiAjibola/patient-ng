@@ -64,12 +64,6 @@ export declare namespace appCommonTypes {
   }
 
   interface AppSettings {
-    termii: {
-      host: string;
-      key: string;
-      from: string;
-      message: string;
-    };
     paystack: {
       apiKey: string
     };

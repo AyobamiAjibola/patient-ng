@@ -1,6 +1,7 @@
 'use client'
 
 import { useActivateCrowdfunding, useGetSingleCrowdfunding, useLikeCrowdfunding, useMarkCrowdfundingDone } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
+import Footer from "@/app/components/Footer";
 import { FramerMotion3 } from "@/app/components/FramerMotion";
 import InputField from "@/app/components/InputField";
 import MModal from "@/app/components/Modal";
@@ -498,7 +499,7 @@ export default function CrowdFunding({params}: any) {
                                   : theme.palette.state.error}
                     hovercolor={getSingleCrowdMutation.data?.result && getSingleCrowdMutation.data?.result.likes.some((like: any) => like.user._id === session?.user.userId)
                                   ? theme.palette.border.main
-                                  : theme.palette.state.error}
+                                  : theme.palette.primary.main}
                     hoverbordercolor={getSingleCrowdMutation.data?.result && getSingleCrowdMutation.data?.result.likes.some((like: any) => like.user._id === session?.user.userId)
                       ? theme.palette.state.error
                       : theme.palette.border.main}
@@ -506,8 +507,8 @@ export default function CrowdFunding({params}: any) {
                     width={isMobile ? "100%" : "50%"}
                   >
                     {getSingleCrowdMutation.data?.result && getSingleCrowdMutation.data?.result?.likes.some((like: any) => like.user._id === session?.user.userId) 
-                      ? <Favorite sx={{color: theme.palette.state.error, fontSize: '16px', mr: 2}}/> 
-                      : <FavoriteBorder sx={{color: theme.palette.state.error, fontSize: '16px', mr: 2}}/>
+                      ? <Favorite sx={{color: theme.palette.primary.main, fontSize: '16px', mr: 2}}/> 
+                      : <FavoriteBorder sx={{color: theme.palette.primary.main, fontSize: '16px', mr: 2}}/>
                     }
                     Like {getSingleCrowdMutation.data?.result && getSingleCrowdMutation.data?.result.likes.length || 0}
                   </NButton>
@@ -739,6 +740,8 @@ export default function CrowdFunding({params}: any) {
             error={isError}
             success={isSuccess}
           />
+
+          <Footer/>
         </FramerMotion3>
     </>
   )

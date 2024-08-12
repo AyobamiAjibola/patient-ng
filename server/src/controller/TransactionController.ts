@@ -354,17 +354,13 @@ export default class TransactionController {
             const mail = mail_template({
                 message: `NGN${paymentReq.amountRequested} has been sent to your account.`
             });
-    
+
             await sendMailService.sendMail({
                 to: user?.email,
                 replyTo: process.env.SMTP_EMAIL_FROM,
-                from: {
-                    name: 'iPatient',
-                    address: process.env.SMTP_EMAIL_FROM || '',
-                },
-                subject: `iPatient has sent you money.`,
-                html: mail,
-                bcc: [process.env.SMTP_BCC || '']
+                from: `${process.env.APP_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+                subject: `Patientng has sent you money.`,
+                html: mail
             });
     
             const response: HttpResponse<any> = {

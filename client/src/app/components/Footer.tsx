@@ -128,6 +128,7 @@ export default function Footer() {
                     message: ''
                 })
                 setOpen2(false)
+                handleOpenNotification('error', 'Your message has been sent.')
             },
             onError: (error: any) => {
                 const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
@@ -365,7 +366,7 @@ export default function Footer() {
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
-                            backgroundImage: 'url(/contactus.png)',
+                            backgroundImage: 'url(/contactus.jpeg)',
                             borderRadius: theme.borderRadius.sm,
                             display: 'flex',
                             justifyContent: 'flex-end',
@@ -381,7 +382,7 @@ export default function Footer() {
                                 p: 2,
                                 border: `1px solid ${theme.palette.border.main}`,
                                 background: `rgba(255, 255, 255, 0)`,
-                                backdropFilter: 'blur(1px)',
+                                backdropFilter: 'blur(5px)',
                                 borderRadius: theme.borderRadius.sm,
                                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                                 top: '14em',
@@ -416,14 +417,14 @@ export default function Footer() {
                                     />
                                 </Box>
                                 <Box display={'flex'} flexDirection={'column'} width={'80%'}>
-                                    <Typography variant="paragraphxs" color={theme.palette.secondary.lighter}>
+                                    <Typography variant="labelxs" color={"white"}>
                                         Email
                                     </Typography>
-                                    <Typography variant="paragraphxs" color={theme.palette.secondary.lighter}>
+                                    <Typography variant="paragraphxs" color={"white"}>
                                         Get in touch by emailing
                                     </Typography>
-                                    <Typography variant="paragraphxs" color={theme.palette.border.main}>
-                                        info@patient.com
+                                    <Typography variant="labelxs" color={"white"}>
+                                        info@patient.ng 
                                     </Typography>
                                 </Box>
                             </Box>
@@ -456,11 +457,14 @@ export default function Footer() {
                                     />
                                 </Box>
                                 <Box display={'flex'} flexDirection={'column'} width={'80%'}>
-                                    <Typography variant="paragraphxs" color={theme.palette.secondary.lighter}>
+                                    <Typography variant="labelxs" color={"white"}>
                                         Phone
                                     </Typography>
-                                    <Typography variant="paragraphxs" color={theme.palette.secondary.lighter}>
-                                        Give us a call on 866 - 370 - 2996
+                                    <Typography variant="paragraphxs" color={"white"}>
+                                        Give us a call on
+                                    </Typography>
+                                    <Typography variant="labelxs" color="white">
+                                        07080603000
                                     </Typography>
                                 </Box>
                             </Box>
@@ -506,35 +510,6 @@ export default function Footer() {
                                 >
                                     <Instagram sx={{color: 'white'}}/>
                                 </IconButton>
-                                {/* <Box
-                                    sx={{
-                                        bgcolor: 'white',
-                                        p: 2,
-                                        borderRadius: theme.borderRadius.sm,
-                                        width: '20%',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignitems: 'center'
-                                    }}
-                                >
-                                    <LocationOn
-                                        sx={{
-                                            color: 'black',
-                                            fontSize: 'px'
-                                        }}
-                                    />
-                                </Box>
-                                <Box display={'flex'} flexDirection={'column'} width={'80%'}>
-                                    <Typography variant="paragraphxs" color={theme.palette.secondary.lighter}>
-                                        Location
-                                    </Typography>
-                                    <Typography variant="paragraphxs" color={theme.palette.secondary.lighter}>
-                                        Visit us at 1450 S Havana St, Aurora,
-                                    </Typography>
-                                    <Typography variant="paragraphxs" color={theme.palette.border.main}>
-                                        CO 80012
-                                    </Typography>
-                                </Box> */}
                             </Box>
                             
                         </Box>

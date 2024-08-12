@@ -370,20 +370,14 @@ export default class BlogController {
                     const mail = mail_template({
                         message: `Hi, a new webinar just dropped. Click on this link to watch: ${process.env.CLIENT_URL}/webinar/${webinar._id}`
                     });
-    
+                    
                     await sendMailService.sendMail({
                         to: emails,
                         replyTo: process.env.SMTP_EMAIL_FROM,
-                        // @ts-ignore
-                        'reply-to': process.env.SMTP_EMAIL_FROM,
-                        from: {
-                        name: 'iPatient',
-                        address: <string>process.env.SMTP_EMAIL_FROM,
-                        },
-                        subject: `iPatient has sent you a webinar.`,
-                        html: mail,
-                        bcc: [<string>process.env.SMTP_BCC]
-                    })
+                        from: `${process.env.APP_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+                        subject: `Patientng has sent you a webinar.`,
+                        html: mail
+                    });
                 };
 
                 return resolve(webinar)

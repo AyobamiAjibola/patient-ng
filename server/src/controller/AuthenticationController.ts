@@ -16,6 +16,7 @@ import mail_template from "../resources/template/email/password";
 import contact_us from "../resources/template/email/contactUs";
 import UserToken from "../models/UserToken";
 import { verify } from 'jsonwebtoken';
+import capitalize = require("capitalize");
 
 const redisService = new RedisService();
 const sendMailService = new SendMailService();
@@ -59,16 +60,10 @@ export default class AuthenticationController {
         await sendMailService.sendMail({
             to: value.email,
             replyTo: process.env.SMTP_EMAIL_FROM,
-            // @ts-ignore
-            'reply-to': process.env.SMTP_EMAIL_FROM,
-            from: {
-              name: 'iPatient',
-              address: <string>process.env.SMTP_EMAIL_FROM,
-            },
-            subject: `iPatient has sent you an otp.`,
-            html: mail,
-            bcc: [<string>process.env.SMTP_BCC]
-        })
+            from: `${process.env.APP_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+            subject: `Patientng has sent you an otp.`,
+            html: mail
+        });
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
@@ -95,19 +90,13 @@ export default class AuthenticationController {
             message: value.message,
             phone: value.phone,
         });
-
+   
         await sendMailService.sendMail({
-            to: 'ayurbarmi5@gmail.com',
+            to: process.env.SMTP_CUSTOMER_CARE_EMAIL,
             replyTo: value.email,
-            // @ts-ignore
-            'reply-to': value.email,
-            from: {
-              name: `${value.firstName} ${value.lastName}`,
-              address: value.email,
-            },
-            subject: `You have a contact us email from ${value.firstName}.`,
-            html: mail,
-            bcc: [<string>process.env.SMTP_BCC]
+            from: `${capitalize.words(value.firstName)} ${capitalize.words(value.lastName)} <${value.email}>`,
+            subject: `You have a contact us email from ${capitalize.words(value.firstName)}.`,
+            html: mail
         });
 
         const response: HttpResponse<any> = {
@@ -572,16 +561,10 @@ export default class AuthenticationController {
         await sendMailService.sendMail({
             to: value.email,
             replyTo: process.env.SMTP_EMAIL_FROM,
-            // @ts-ignore
-            'reply-to': process.env.SMTP_EMAIL_FROM,
-            from: {
-              name: 'iPatient',
-              address: <string>process.env.SMTP_EMAIL_FROM,
-            },
-            subject: `iPatient has sent a password reset otp.`,
-            html: mail,
-            bcc: [<string>process.env.SMTP_BCC]
-        })
+            from: `${process.env.APP_NAME} <${process.env.SMTP_EMAIL_FROM}>`,
+            subject: `Patientng has sent a password reset otp.`,
+            html: mail
+        });
 
         const response: HttpResponse<any> = {
             message: `Password reset link sent successfully.`,

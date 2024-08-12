@@ -30,12 +30,6 @@ const settings: AppSettings = {
     'MANAGER',
     'SUPERVISOR'
   ],
-  termii: {
-    host: <string>process.env.TERMII_HOST,
-    key: <string>process.env.TERMII_SECRET,
-    from: <string>process.env.TERMII_FROM,
-    message: <string>process.env.TERMII_MESSAGE
-  },
   queue: {
     development: {
       host: <string>process.env.QUEUE_CONN_URL,

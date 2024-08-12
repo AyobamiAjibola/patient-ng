@@ -150,82 +150,96 @@ export default function HomePage() {
               flexWrap: 'wrap'
             }}
           >
-            <Typography
-              sx={{
-                color: 'black',
-                fontSize: isMobile ? '28px' : '55px',
-                fontWeight: 600,
-                lineHeight: 1
+            <p
+              style={{
+                lineHeight: 1.3,
+                marginBottom: '20px'
               }}
             >
-              Empowering
-            </Typography>
-            <Typography
-              sx={{
-                color: theme.palette.primary.main,
-                fontSize: isMobile ? '28px' : '50px',
-                fontWeight: 600,
-                lineHeight: 1.3
-              }}
-            >
-              Patients
-            </Typography>
-            <Typography
-              sx={{
-                color: 'black',
-                fontSize: isMobile ? '28px' : '50px',
-                fontWeight: 600, lineHeight: 1.3
-              }}
-            >
-              towards
-            </Typography>
-            <Typography
-              sx={{
-                color: 'black',
-                fontSize: isMobile ? '28px' : '50px',
-                fontWeight: 600,
-                lineHeight: 1.3
-              }}
-            >
-              Better
-            </Typography>
-            <Typography
-              sx={{
-                color: theme.palette.primary.main,
-                fontSize: isMobile ? '28px' : '50px',
-                fontWeight: 600,
-                lineHeight: 1.3
-              }}
-            >
-              Health
-            </Typography>
-            <Typography 
-              sx={{
-                color: 'black',
-                fontSize: isMobile ? '28px' : '50px',
-                fontWeight: 600, lineHeight: 1.3
-              }}
-            >
-              Outcomes
-            </Typography>
+              &nbsp;
+              <span
+                style={{
+                  color: 'black',
+                  fontSize: isMobile ? '28px' : '55px',
+                  fontWeight: 700
+                }}
+              >
+                Empowering
+              </span>
+              &nbsp;
+              &nbsp;
+              <span
+                style={{
+                  color: theme.palette.primary.main,
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 700
+                }}
+              >
+                Patients
+              </span>
+              &nbsp;
+              &nbsp;
+              <span
+                style={{
+                  color: 'black',
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 700
+                }}
+              >
+                towards
+              </span>
+              &nbsp;
+              &nbsp;
+              <span
+                style={{
+                  color: 'black',
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 700
+                }}
+              >
+                Better
+              </span>
+              &nbsp;
+              &nbsp;
+              <span
+                style={{
+                  color: theme.palette.primary.main,
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 700
+                }}
+              >
+                Health
+              </span>
+              &nbsp;
+              &nbsp;
+              <span 
+                style={{
+                  color: 'black',
+                  fontSize: isMobile ? '28px' : '50px',
+                  fontWeight: 700
+                }}
+              >
+                Outcomes
+              </span>
+            </p>
           </Box>
           <Typography
             sx={{
               color: 'black',
               fontSize: '16px',
-              fontWeight: 400
+              fontWeight: 400,
+              pl: 3
             }}
           >
             {`We believe in putting patients at the Centre of their healthcare journey. Discover a community-driven platform dedicated to providing support for
             patients across Nigeria.`}
           </Typography>
 
-          <FramerMotion2
-            direction={true}
+          <Box
             sx={{
               display: 'flex',
               gap: isMobile ? 1 : 3,
-              mt: 5,
+              mt: 5, pl: 3,
               justifyContent: isMobile ? 'center' : 'flex-start'
             }}
           >
@@ -251,9 +265,9 @@ export default function HomePage() {
                 About us
               </Typography>
             </NButton>
-          </FramerMotion2>
+          </Box>
         </Box>
-        <FramerMotion2
+        <Box
           width={isMobile ? '100%' : '50%'} 
           mt={isMobile ? 5 : 0} 
           display={'flex'} justifyContent={isMobile ? 'center' : 'flex-end'} 
@@ -267,7 +281,7 @@ export default function HomePage() {
               height: 'auto',//isMobile ? '45%' : '75%'
             }}
           />
-        </FramerMotion2>
+        </Box>
       </Box>
 
       <FramerMotion
@@ -395,48 +409,40 @@ export default function HomePage() {
           >
             Patient Advocacy Service
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              mt: 1,
-              flexWrap: 'wrap', gap: 2
+          <p
+            style={{
+              marginTop: '4px',
+              lineHeight: 1.3
             }}
           >
-            <Typography
-              sx={{
+            <span
+              style={{
                 fontSize: isMobile ? '20px' : '32px',
-                fontWeight: 600
+                fontWeight: 700
               }}
             >
               Are you facing
-            </Typography>
-            <Typography
-              sx={{
+            </span>
+            &nbsp;&nbsp;
+            <span
+              style={{
                 fontSize: isMobile ? '20px' : '32px',
-                fontWeight: 600,
+                fontWeight: 700,
                 color: theme.palette.primary.main
               }}
             >
-              any challenge
-            </Typography>
-            <Typography
-              sx={{
+              any challenge with
+            </span>
+            &nbsp;&nbsp;
+            <span
+              style={{
                 fontSize: isMobile ? '20px' : '32px',
-                fontWeight: 600
-              }}
-            >
-              with
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: isMobile ? '20px' : '32px',
-                fontWeight: 600,
-                color: theme.palette.primary.main
+                fontWeight: 700
               }}
             >
               your hospital?
-            </Typography>
-          </Box>
+            </span>
+          </p>
           <Typography
             sx={{
               fontSize: '16px',
@@ -610,6 +616,87 @@ export default function HomePage() {
 
       <FramerMotion
         sx={{
+          display: 'flex',
+          px: isMobile ? '20px' : '90px',
+          backgroundColor: theme.palette.secondary.lighter,
+          gap: isMobile ? 4 : 4,
+          height: isMobile ? 'auto' : '100vh',
+          mt: isMobile ? '2em' : '3em',
+          py: '50px',
+          alignItems: 'center',
+          flexDirection: isMobile ? 'column' : 'row'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2, flex: 1
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: isMobile ? '40px' : '50px',
+                color: 'black',
+                fontWeight: 600,
+                lineHeight: 1
+              }}
+            >
+              Hospital Ratings
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: isMobile ? '40px' : '50px',
+                color: 'black',
+                fontWeight: 600,
+                lineHeight: 1
+              }}
+            >
+              and Reviews
+            </Typography>
+          </Box>
+          <Typography
+            sx={{
+              fontSize: '16px',
+              color: 'black',
+              fontWeight: 400,
+              lineHeight: 1.2,
+              my: 3
+            }}
+          >
+            Find data-driven insights based on patient experiences. Your ratings and reviews can help others make informed decisions about their healthcare provider.
+          </Typography>
+          <NButton
+            width='200px'
+            bkgcolor='transparent'
+            textcolor={theme.palette.primary.main}
+            bordercolor={theme.palette.primary.main}
+            hoverbordercolor={theme.palette.primary.main}
+            onClick={()=>router.push('/rating-and-review')}
+          >
+            See Ratings
+          </NButton>
+        </Box>
+        <Box flex={1}>
+          <img
+            src='/hospital-review.png'
+            alt='home page image'
+            style={{
+              width: '400px',//isMobile ? '50%' : '40%',
+              height: 'auto'//isMobile ? '60%' : '80%'
+            }}
+          />
+        </Box>
+      </FramerMotion>
+
+      <FramerMotion
+        sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
           display: 'flex',
@@ -752,87 +839,6 @@ export default function HomePage() {
 
       <FramerMotion
         sx={{
-          display: 'flex',
-          px: isMobile ? '20px' : '90px',
-          backgroundColor: theme.palette.secondary.lighter,
-          gap: isMobile ? 4 : 4,
-          height: isMobile ? 'auto' : '100vh',
-          mt: isMobile ? '2em' : '3em',
-          py: '50px',
-          alignItems: 'center',
-          flexDirection: isMobile ? 'column' : 'row'
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2, flex: 1
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: isMobile ? '40px' : '50px',
-                color: 'black',
-                fontWeight: 600,
-                lineHeight: 1
-              }}
-            >
-              Hospital Ratings
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: isMobile ? '40px' : '50px',
-                color: 'black',
-                fontWeight: 600,
-                lineHeight: 1
-              }}
-            >
-              and Reviews
-            </Typography>
-          </Box>
-          <Typography
-            sx={{
-              fontSize: '16px',
-              color: 'black',
-              fontWeight: 400,
-              lineHeight: 1.2,
-              my: 3
-            }}
-          >
-            Find data-driven insights based on patient experiences. Your ratings and reviews can help others make informed decisions about their healthcare provider.
-          </Typography>
-          <NButton
-            width='200px'
-            bkgcolor='transparent'
-            textcolor={theme.palette.primary.main}
-            bordercolor={theme.palette.primary.main}
-            hoverbordercolor={theme.palette.primary.main}
-            onClick={()=>router.push('/rating-and-review')}
-          >
-            Rate more
-          </NButton>
-        </Box>
-        <Box flex={1}>
-          <img
-            src='/hospital-review.png'
-            alt='home page image'
-            style={{
-              width: '400px',//isMobile ? '50%' : '40%',
-              height: 'auto'//isMobile ? '60%' : '80%'
-            }}
-          />
-        </Box>
-      </FramerMotion>
-
-      <FramerMotion
-        sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
           display: 'flex',
@@ -855,7 +861,7 @@ export default function HomePage() {
         </Typography>
         <Typography
           sx={{
-            fontSize: isMobile ? theme.typography.h5.fontSize : theme.typography.h4.fontSize,
+            fontSize: isMobile ? '40px' : '50px',
             color: '#FFCB00', alignSelf: 'center', textAlign: 'center'
           }}
         >
@@ -863,7 +869,7 @@ export default function HomePage() {
         </Typography>
         <Typography
           sx={{
-            fontSize: theme.typography.labelsm.fontSize,
+            fontSize: '16px',
             color: 'white', alignSelf: 'center', textAlign: 'center'
           }}
         >
