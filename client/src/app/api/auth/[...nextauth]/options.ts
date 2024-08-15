@@ -71,6 +71,11 @@ export const options: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       idToken: true,
+      authorization: {
+        params: {
+          redirect_uri: process.env.GOOGLE_REDIRECT_URI,  // Explicitly specifying redirect_uri
+        }
+      },
       async profile(profile) {
         try {
             const response = await axios.post('/sign-in-google', {

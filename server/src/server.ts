@@ -12,7 +12,7 @@ const server = http.createServer(app);
 async function startServer() {
   try {
     await startup();
-    await server.listen(port, () => logger.info(`Server running on port: ${port}`));
+    server.listen(port, () => logger.info(`Server running on port: ${port}`));
   } catch (error) {
     console.error('Error starting the server:', error);
   }

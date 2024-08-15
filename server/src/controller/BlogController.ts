@@ -643,7 +643,7 @@ export default class BlogController {
                 if (_bodyImage && blog.bodyImage) {
                     Generic.deleteExistingImage(blog.bodyImage, basePathBodyImage, imagePathbody);
                 }
-                console.log(_bodyImage, _titleImage, 'imgs')
+
                 const payload: Partial<IBlogModel> = {
                     title: value.title ? value.title : blog.title,
                     content: value.content ? value.content : blog.content,
