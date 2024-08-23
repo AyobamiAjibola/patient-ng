@@ -3,7 +3,7 @@
 import Navbar from "@/app/components/Navbar";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import PButton, { NButton } from "../components/PButton";
-import { HourglassEmpty } from "@mui/icons-material";
+import { CheckCircle, HourglassEmpty } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Mousewheel, Keyboard } from "swiper/modules";
@@ -67,23 +67,28 @@ const stories = [
 
 const crowdFundingWork = [
   {
-    title: 'Explore',
-    content: `Explore on-going patient crowdfunding campaigns to
-              find one that inspires you.`
+    title: 'Start your fundraising',
+    content: [
+      'Set your fundraising goal',
+      'Tell your story',
+      'Add on social media'
+    ]
   },
   {
-    title: 'Support',
-    content: `Make a donation or give a green heart to help the
-      fundraiser reach their goal.`
+    title: 'Share with your friends',
+    content: [
+      'Send emails',
+      'Send text messages',
+      'Send on social media'
+    ]
   },
   {
-    title: 'Monitor',
-    content: `Follow the campaign and track its progress daily.`
-  },
-  {
-    title: 'Share',
-    content: `Share the success of your contributions and celebrate
-            its impact.`
+    title: 'Manage donations',
+    content: [
+      'Accept donations',
+      'Thank donors',
+      'Withdraw funds'
+    ]
   }
 ]
 
@@ -152,12 +157,7 @@ export default function CrowdFundings() {
                 color: theme.palette.secondary.light
               }}
             >
-              With no fee to start, you can ask for help, whenever
-              you truly need help. Whether you are raising money
-              for yourself, friends or family, our team of patient
-              advocates can help your fundraiser for medical
-              emergencies, critical surgeries or life-saving
-              medications reach its goal.
+              You can start a Fundraiser or join a Green Heart Campaign to get the help you need, when you need it. Our platform is simple, trusted and free.
             </Typography>
             <Box
               sx={{
@@ -172,14 +172,16 @@ export default function CrowdFundings() {
               </PButton>
             </Box>
           </Box>
-          {!isMobile && (<img
-            src='/crowd.png'
-            alt='crowd funding image'
-            style={{
-              height: '80%',
-              width: 500
-            }}
-          />)}
+          {!isMobile && (<Box flex={1}>
+            <img
+              src='/crowd.png'
+              alt='crowd funding image'
+              style={{
+                height: 'auto',
+                width: 400
+              }}
+            />
+          </Box>)}
         </FramerMotion2>
 
         <FramerMotion
@@ -276,120 +278,6 @@ export default function CrowdFundings() {
 
         </FramerMotion>
 
-        {/* <FramerMotion
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 4, mt: '60px',
-            flexDirection: 'column',
-            backgroundColor: theme.palette.secondary.lighter,
-            height: 'auto', py: 6, px: isMobile ? '20px' : '90px'
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: theme.typography.h4.fontSize,
-              fontWeight: theme.typography.h4.fontWeight,
-              lineHeight: 1.3
-            }}
-          >
-            Impact Stories in Nigeria That Will Inspire You
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: theme.typography.labelsm.fontSize,
-              color: theme.palette.secondary.light,
-              mb: 2
-            }}
-          >
-            These stories remind us of the incredible impact that community support can have. Crowdfunding not only provides financial relief but also brings people
-            together, fostering a sense of hope and solidarity. If you’re facing medical challenges, consider starting your own crowdfunding campaign on patient.ng. Your
-            story could inspire others and bring you the support you need.
-          </Typography>
-          
-          <Swiper
-            slidesPerView={isMobile ? 2 : 4}
-            spaceBetween={isMobile ? 10 : 15}
-            mousewheel={true}
-            keyboard={true}
-            cssMode={true}
-            // navigation={isMobile ? false : true}
-            modules={[Navigation, Mousewheel, Keyboard]}
-            navigation={{
-              prevEl: '.swiper-button-prev',
-              nextEl: '.swiper-button-next',
-            }}
-            className="h-[auto] mySwiper gap-3 w-[100%]"
-          >
-            <div 
-              className="swiper-button-prev" 
-              style={{
-                color: theme.palette.primary.main
-              }}
-            />
-            <div className="swiper-button-next"
-              style={{
-                color: theme.palette.primary.main
-              }}
-            />
-              {
-                stories.map((story, index) => (
-                  <SwiperSlide key={`${index}`}
-                    className="bg-[white] shadow-md p-4 h-[auto] mb-6"
-                    style={{
-                      borderRadius: theme.borderRadius.sm,
-                      backgroundColor: 'white',
-                      display: 'flex', gap: 10,
-                      flexDirection: 'column',
-                      minWidth: '400px'
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelsm.fontSize,
-                        fontWeight: theme.typography.labelsm.fontWeight
-                      }}
-                    >
-                      {story.title}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: theme.typography.labelxs.fontSize,
-                        color: theme.palette.secondary.light
-                      }}
-                    >
-                      {story.story}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        gap: 2,
-                        alignItems: 'center'
-                      }}
-                    >
-                      <Avatar
-                        src={story.image}
-                        alt="story image"
-                        sx={{
-                          width: 30,
-                          height: 30
-                        }}
-                      />
-                        <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxxs.fontSize,
-                          fontWeight: theme.typography.labelsm.fontWeight
-                        }}
-                      >
-                        {story.name}
-                      </Typography>
-                    </Box>
-                  </SwiperSlide>
-                ))
-              }
-          </Swiper>
-        </FramerMotion> */}
-
         <FramerMotion
           sx={{
             display: 'flex',
@@ -476,14 +364,40 @@ export default function CrowdFundings() {
                         >
                           {data.title}
                         </Typography>
-                        <Typography
+                        <Box
                           sx={{
-                            fontSize: isMobile ? theme.typography.labelsm.fontSize : theme.typography.labellg.fontSize,
-                            color: theme.palette.secondary.light
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1
                           }}
                         >
-                          {data.content}
-                        </Typography>
+                          {
+                            data.content.map((item, index) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  display: 'flex',
+                                  gap: 1,
+                                  alignItems: 'center'
+                                }}
+                              >
+                                <CheckCircle 
+                                  sx={{
+                                    color: theme.palette.primary.main
+                                  }}
+                                />
+                                <Typography
+                                  sx={{
+                                    fontSize: isMobile ? theme.typography.labelsm.fontSize : theme.typography.labellg.fontSize,
+                                    color: theme.palette.secondary.light
+                                  }}
+                                >
+                                  {item}
+                                </Typography>
+                              </Box>
+                            ))
+                          }
+                        </Box>
                       </Box>
                     </Box>
                   ))

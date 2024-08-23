@@ -150,6 +150,7 @@ export default function HomePage() {
               flexWrap: 'wrap'
             }}
           >
+            {/* Empowering Patients, Transforming Healthcare */}
             <p
               style={{
                 lineHeight: 1.3,
@@ -175,7 +176,7 @@ export default function HomePage() {
                   fontWeight: 700
                 }}
               >
-                Patients
+                Patients,
               </span>
               &nbsp;
               &nbsp;
@@ -186,7 +187,7 @@ export default function HomePage() {
                   fontWeight: 700
                 }}
               >
-                towards
+                Transforming
               </span>
               &nbsp;
               &nbsp;
@@ -197,29 +198,7 @@ export default function HomePage() {
                   fontWeight: 700
                 }}
               >
-                Better
-              </span>
-              &nbsp;
-              &nbsp;
-              <span
-                style={{
-                  color: theme.palette.primary.main,
-                  fontSize: isMobile ? '28px' : '50px',
-                  fontWeight: 700
-                }}
-              >
-                Health
-              </span>
-              &nbsp;
-              &nbsp;
-              <span 
-                style={{
-                  color: 'black',
-                  fontSize: isMobile ? '28px' : '50px',
-                  fontWeight: 700
-                }}
-              >
-                Outcomes
+                Healthcare
               </span>
             </p>
           </Box>
@@ -228,18 +207,17 @@ export default function HomePage() {
               color: 'black',
               fontSize: '16px',
               fontWeight: 400,
-              pl: 3
+              pl: 1
             }}
           >
-            {`We believe in putting patients at the Centre of their healthcare journey. Discover a community-driven platform dedicated to providing support for
-            patients across Nigeria.`}
+            {`Discover a community-driven platform dedicated to providing patient support that actually works. Submit your complaints, share your story, start a fundraiser or find reliable hospital ratings & reviews from real patients online.`}
           </Typography>
 
           <Box
             sx={{
               display: 'flex',
               gap: isMobile ? 1 : 3,
-              mt: 5, pl: 3,
+              mt: 5, pl: 1,
               justifyContent: isMobile ? 'center' : 'flex-start'
             }}
           >
@@ -262,7 +240,7 @@ export default function HomePage() {
               width='200px'
             >
               <Typography variant='paragraphbase'>
-                About us
+                Our story
               </Typography>
             </NButton>
           </Box>
@@ -291,28 +269,14 @@ export default function HomePage() {
           width: '100%',
           height: 'auto',
           flexDirection: isMobile ? 'column' : 'row',
-          py: '50px'
+          py: '50px',
+          px: isMobile ? '20px' : '90px',
         }}
       >
         <Box
           sx={{
             display: 'flex',
-            height: '100%',
-            gap: isMobile ? 0 : 4
-          }}
-        >
-        {!isMobile && (<img
-          src='/left.png'
-          alt='home page image'
-          style={{
-            width: '300px',//isMobile ? '50%' : '25%',
-            height: 'auto'//isMobile ? '30%' : '60%'
-          }}
-        />)}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'center',
             flexDirection: 'column',
             gap: 3,
@@ -321,9 +285,9 @@ export default function HomePage() {
         >
           <Typography
             sx={{
-              fontSize: isMobile ? '32px' : '50px',
+              fontSize: isMobile ? '32px' : '40px',
               fontWeight: 600,
-              lineHeight: 0.7
+              lineHeight: 1
             }}
           >
             What We Do For You
@@ -331,15 +295,20 @@ export default function HomePage() {
           <Typography
             sx={{
               fontSize: '16px',
-              textAlign: 'center',
-              fontWeight: 400,
-              px: '20px'
+              textAlign: 'left',
+              fontWeight: 400
             }}
           >
-            {`Patient.ng is a public-health enterprise designed to deliver sustainable support systems for patients in Nigeria. We facilitate a patient community
-              where members feel supported, heard and empowered to take control of their own healthcare experience.
-              By providing patient advocacy and crowdfunding services, experience sharing, and hospital ratings & reviews mechanisms, Patient.ng aims to improve patient
-              healthcare outcomes.`}
+            {`Our dedicated team of advocates facilitate a patient community where members feel supported, heard and empowered to make informed decisions that improve their healthcare outcomes.`}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: '16px',
+              textAlign: 'left',
+              fontWeight: 400
+            }}
+          >
+            {`We collaborate with healthcare professionals, organizations and communities to drive sustainable solutions that enhance patient experiences in Nigeria.`}
           </Typography>
           <NButton
             bkgcolor={"white"}
@@ -352,14 +321,22 @@ export default function HomePage() {
             Learn More
           </NButton>
         </Box>
-        {!isMobile && (<img
-          src='/right.png'
-          alt='home page image'
-          style={{
-            width: '300px',//isMobile ? '50%' : '25%',
-            height: 'auto'//'30%'
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: isMobile ? 'center' : 'flex-end',
+            alignItems: isMobile ? 'center' : 'flex-end'
           }}
-        />)}
+        >
+          <img
+            src='/right.png'
+            alt='home page image'
+            style={{
+              width: '500px',
+              height: 'auto'
+            }}
+          />
         </Box>
       </FramerMotion>
 

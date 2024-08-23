@@ -326,7 +326,7 @@ export default function Footer() {
                                 cursor: 'pointer'
                             }}
                         >
-                            About us
+                            Our story
                         </Typography>
                         <FiberManualRecord sx={{color: theme.palette.secondary.light, fontSize: '10px'}}/>
                         <Typography
@@ -646,7 +646,7 @@ export default function Footer() {
                     }}
                 >
                     <Typography variant={isMobile ? "h6" : "h5"}>
-                        {type === 'contact' ? 'Contact Us' : 'About Us'}
+                        {type === 'contact' ? 'Contact Us' : 'Our Story'}
                     </Typography>
                     <Divider sx={{my: 3}} />
                     <Box
