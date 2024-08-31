@@ -3,9 +3,11 @@
 import { useGetSingleStory } from "@/app/admin/hooks/patientStoriesHook/usePatientStories";
 import { FramerMotion3 } from "@/app/components/FramerMotion";
 import Navbar from "@/app/components/Navbar";
+import Toastify from "@/app/components/ToastifySnack";
 import { Reply } from "@mui/icons-material";
 import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const socials = [
@@ -34,6 +36,35 @@ export default function PatientStory({ params }: any) {
   const [image, setImage] = useState<string>('');
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  const pathname = usePathname();
+
+  const [openNotification, setOpenNotification] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
+    setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
+    setIsError(type === 'error');
+    setIsSuccess(type === 'success');
+    setOpenNotification(true);
+  };
+
+  const shareData = {
+    url: `${process.env.NEXT_PUBLIC_CLIENT_URL}${pathname}`
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        handleOpenNotification('error', '', 'Error sharing content')
+      }
+    } else {
+      handleOpenNotification('error', '', 'Web Share API not supported in your browser')
+    }
+  };
 
   const fetchData = async (id: string) => {
     await getSingleStoryMuatation.mutateAsync(id, {
@@ -83,7 +114,7 @@ export default function PatientStory({ params }: any) {
             {content}
           </Typography>
 
-          <Box sx={{display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'center', mt: 8 }}>
+          {/* <Box sx={{display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'center', mt: 8 }}>
             {
                 socials.map((logo, index) => (
                   <IconButton
@@ -98,19 +129,19 @@ export default function PatientStory({ params }: any) {
                   </IconButton>
                 ))
             }
-          </Box>
+          </Box> */}
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1, my: 1
+              gap: 1, mt: 4
             }}
           >
-            <Box sx={{backgroundColor: theme.palette.secondary.lighter, height: '1px', width: '49%'}}/>
-            <Typography sx={{color: theme.palette.secondary.light, flex: 1, fontSize: theme.typography.labelxs.fontSize}}>
+            <Box sx={{backgroundColor: theme.palette.secondary.lighter, height: '1px', width: '100%'}}/>
+            {/* <Typography sx={{color: theme.palette.secondary.light, flex: 1, fontSize: theme.typography.labelxs.fontSize}}>
               OR
             </Typography>
-            <Box sx={{backgroundColor: theme.palette.secondary.lighter, height: '1px', width: '49%'}}/>
+            <Box sx={{backgroundColor: theme.palette.secondary.lighter, height: '1px', width: '49%'}}/> */}
           </Box>
           <Button
             sx={{
@@ -118,19 +149,28 @@ export default function PatientStory({ params }: any) {
               alignSelf: 'center',
               my: 2,
               borderRadius: theme.borderRadius.sm,
-              width: '120px',
+              width: '200px',
               color: theme.palette.secondary.main,
               border: `1px solid ${theme.palette.secondary.lighter}`,
               '&:hover': {
                 border: `1px solid ${theme.palette.secondary.main}`,
               },
-              px: theme.spacing(3),
+              px: theme.spacing(3)
             }}
+            onClick={handleShare}
           >
-            <Reply sx={{ mb: 1}}/> Share
+            <Reply sx={{ mb: 1}}/> Share your story
           </Button>
         </Box>
       </FramerMotion3>
+
+      <Toastify
+        open={openNotification}
+        onClose={() => setOpenNotification(false)}
+        message={message}
+        error={isError}
+        success={isSuccess}
+      />
     </>
   )
 }

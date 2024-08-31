@@ -11,6 +11,7 @@ interface IHospitalInfo {
     rating: number;
     state: string;
     lga: string;
+    verified: boolean;
 };
 
 const hospitalInfoSchema = new Schema<IHospitalInfo>({
@@ -23,7 +24,8 @@ const hospitalInfoSchema = new Schema<IHospitalInfo>({
     website: { type: String },
     rating: { type: Number, default: 0 },
     state: { type: String },
-    lga: { type: String }
+    lga: { type: String },
+    verified: { type: Boolean, default: false }
 }, { timestamps: true });
   
 export interface IHospitalInfoModel extends Document, IHospitalInfo {}

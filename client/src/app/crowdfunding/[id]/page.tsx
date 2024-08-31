@@ -67,14 +67,12 @@ export default function CrowdFunding({params}: any) {
       try {
         await navigator.share(shareData);
       } catch (error) {
-        console.error('Error sharing content:', error);
         handleOpenNotification('error', '', 'Error sharing content')
       }
     } else {
       handleOpenNotification('error', '', 'Web Share API not supported in your browser')
     }
   };
-
 
   const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
     setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');

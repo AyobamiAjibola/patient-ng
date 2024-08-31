@@ -699,7 +699,7 @@ export default function page() {
             {/* {session?.user ? 'Not an advocate? Become an advocate today' : 'Sign up as an advocate today'} */}
             Want to become a professional patient advocate?
           </Typography>
-          <Typography variant="paragraphbase" mb={4} color={'white'}>
+          <Typography variant="paragraphbase" mb={4} color={'white'} textAlign={'center'}>
             {/* Just {session?.user ? 'one click' : 'a few clicks'} can make a difference. {session?.user && 'Sign up now'}. */}
             You can make a difference. Join us to get started
             today

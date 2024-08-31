@@ -20,6 +20,7 @@ import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
 import CrowdCard from './components/CrowdCard';
 import FramerMotion, { FramerMotion2 } from './components/FramerMotion';
+import BlogCard from './components/BlogCard';
 
 const faq = [
   {
@@ -733,12 +734,17 @@ export default function HomePage() {
                         minWidth: '300px',
                         width: isMobile ? '100%' : '32%',
                         border: `1px solid ${theme.palette.secondary.lighter}`,
-                        borderRadius: theme.borderRadius.sm
+                        borderRadius: theme.borderRadius.sm,
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: theme.palette.secondary.lighter
+                        }
                       }}
+                      onClick={() => router.push(`/blog${blog.urlSlug }`)}
                     >
                       <Box
                         sx={{
-                          height: '50%'
+                          height: '60%'
                         }}
                       >
                         <img
@@ -773,17 +779,8 @@ export default function HomePage() {
                       <HtmlToText2
                         mx={3}
                         my={2}
-                        htmlString={isMobile ? wordBreaker(blog.content, 15) : wordBreaker(blog.content, 20)}
+                        htmlString={isMobile ? wordBreaker(blog.content, 25) : wordBreaker(blog.content, 30)}
                       />
-                      <Typography
-                        sx={{
-                          fontSize: theme.typography.labelxs.fontSize,
-                          color: theme.palette.primary.main, px: 3
-                        }}
-                        onClick={() => router.push(`/blog${blog.urlSlug }`)}
-                      >
-                        Learn more <ArrowForward sx={{fontSize: '16px'}}/>
-                      </Typography>
                     </Box>
                   ))
                 }

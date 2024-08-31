@@ -6,7 +6,7 @@ import MModal from "@/app/components/Modal";
 import { NButton } from "@/app/components/PButton";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useCreateHospital, useDeleteHospital, useGetHospitals } from "../hooks/userHook/useUser";
+import { useCreateHospital, useDeleteHospital, useGetHospitals, useGetSingleHospital, useToggleHospitalVerification, useUpdateHospital } from "../hooks/userHook/useUser";
 import Toastify from "@/app/components/ToastifySnack";
 import { useAtom } from "jotai";
 import { selectedImageArrayAtom } from "@/lib/atoms";
@@ -29,12 +29,17 @@ export default function page() {
     const getHospitalsMutation = useGetHospitals();
     const [hospitals, setHospitals] = useState<any>([]);
     const deleteHospitalMutation = useDeleteHospital();
-    const [image, _] = useAtom(selectedImageArrayAtom);
+    const getSingleMutation = useGetSingleHospital();
+    const updateHospitalMutation = useUpdateHospital();
+    const toggleHospitalVerificationMutation = useToggleHospitalVerification();
+    const [image, setImage] = useAtom(selectedImageArrayAtom);
     const [items, setItems] = useState<any>([]);
     const [state, setState] = useState([]); 
     const [selectedState, setSelectedState] = useState('');
     const [lga, setLga] = useState('');
     const [district, setDistrict] = useState<any[]>([]);
+    const [hospitalId, setHospitalId] = useState<string>('');
+
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -47,6 +52,52 @@ export default function page() {
         setIsSuccess(type === 'success');
         setOpenSnack(true);
     };
+
+    const handleUpdateHospital = async () => {
+        const phoneNumbers = /.*\d.*/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const websiteRegex = /^(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+        if(items.length > 4) {
+            handleOpenNotification('error', '', 'Services can not be more that 4.')
+            return;
+        }
+        if(phone.length > 11 || phone.length < 11 && !phoneNumbers.test(phone)) {
+            handleOpenNotification('error', '', 'Phone numbers should only contain 11 numbers.')
+            return;
+        }
+        if(!emailRegex.test(email)) {
+            handleOpenNotification('error', '', 'Invalid email address.')
+            return;
+        }
+        if(website && !websiteRegex.test(website)) {
+            handleOpenNotification('error', '', 'Invalid website.')
+            return;
+        }
+
+        await updateHospitalMutation.mutateAsync({
+            hospitalName: name,
+            address,
+            phone,
+            website: `https://${website}`,
+            image: image[0],
+            services: items,
+            email,
+            state: selectedState,
+            lga,
+            hospitalId
+        }, {
+            onSuccess: async () => {
+                handleOpenNotification('success', 'Successfully updated hospital.')
+                handleClose()
+                setImage([])
+                await handleGetHospitals()
+            },
+            onError: (error: any) => {
+                const errorMessage = error.response?.data?.message || 'An unexpected error occurred';
+                handleOpenNotification('error', '', errorMessage)
+            }
+        })
+    }
 
     const handleCreateHospital = async () => {
         const phoneNumbers = /.*\d.*/;
@@ -64,7 +115,7 @@ export default function page() {
             handleOpenNotification('error', '', 'Invalid email address.')
             return;
         }
-        if(!websiteRegex.test(website)) {
+        if(website && !websiteRegex.test(website)) {
             handleOpenNotification('error', '', 'Invalid website.')
             return;
         }
@@ -82,6 +133,15 @@ export default function page() {
             onSuccess: async () => {
                 handleOpenNotification('success', 'Successfully added hospital.')
                 setOpen(false)
+                setEmail('')
+                setPhone('')
+                setAddress('')
+                setWebsite('')
+                setSelectedState('')
+                setName('')
+                setLga('')
+                setImage([])
+                setItems([])
                 await handleGetHospitals()
             },
             onError: (error: any) => {
@@ -91,6 +151,20 @@ export default function page() {
         })
     }
 
+    const handleClose = () => {
+        setEmail('')
+        setPhone('')
+        setAddress('')
+        setWebsite('')
+        setSelectedState('')
+        setName('')
+        setLga('')
+        setImage([])
+        setItems([])
+        setHospitalId('')
+        setOpen(false)
+    }
+
     const handleGetHospitals = async () => {
         await getHospitalsMutation.mutateAsync({}, {
             onSuccess: (response: any) => {
@@ -98,6 +172,22 @@ export default function page() {
             }
         })
     };
+
+    const handleGetHospital = async () => {
+        await getSingleMutation.mutateAsync(hospitalId, {
+            onSuccess: (response: any) => {
+                const hospitalData = response.result
+                setEmail(hospitalData.email)
+                setPhone(hospitalData.phone)
+                setAddress(hospitalData.address)
+                setWebsite(hospitalData.website.split('//')[1] || '')
+                setSelectedState(hospitalData.state)
+                setName(hospitalData.hospitalName)
+                setLga(hospitalData.lga)
+                setItems(hospitalData.services)
+            }
+        })
+    }
 
     const handleDistrict = (value: any) => {
         if (!value) {
@@ -129,6 +219,14 @@ export default function page() {
         })
     }
 
+    const handleToggleHospitalVerification = async (id: string) => {
+        await toggleHospitalVerificationMutation.mutateAsync(id, {
+            onSuccess: async () => {
+                await handleGetHospitals()
+            }
+        })
+    }
+
     useEffect(() => {
         handleGetHospitals()
     },[]);
@@ -145,6 +243,12 @@ export default function page() {
         });
         setState(stateArray);
     }, []);
+
+    useEffect(() => {
+        if(hospitalId !== '' && open) {
+            handleGetHospital()
+        }
+    },[hospitalId, open]);
 
     return (
         <>
@@ -180,11 +284,15 @@ export default function page() {
                     data={hospitals}
                     handleDelete={handleDelete}
                     isLoading={deleteHospitalMutation.isLoading}
+                    handleToggleHospital={handleToggleHospitalVerification}
+                    isLoadingHospitalVerification={toggleHospitalVerificationMutation.isLoading}
+                    setOpen={setOpen}
+                    setHospitalId={setHospitalId}
                 />
             </Box>
 
             <MModal
-                onClose={() => setOpen(false)}
+                onClose={handleClose}
                 open={open}
                 width={isMobile ? '80%' : '60%'}
                 height='auto'
@@ -413,9 +521,15 @@ export default function page() {
                             bkgcolor={theme.palette.primary.main}
                             textcolor='white'
                             width='100%'
-                            onClick={handleCreateHospital}
+                            onClick={() => {
+                                if(hospitalId !== '') {
+                                    handleUpdateHospital()
+                                } else {
+                                    handleCreateHospital()
+                                }
+                            }}
                         >
-                            {createHospitalMutation.isLoading ? 'Loading...' : 'Submit'}
+                            {createHospitalMutation.isLoading || updateHospitalMutation.isLoading ? 'Loading...' : 'Submit'}
                         </NButton>
                     </Box>
                 </Box>

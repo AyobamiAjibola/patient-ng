@@ -484,6 +484,27 @@ export const useCreateHospital = () => {
   });
 };
 
+export const useUpdateHospital = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.updateHospital(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['update-hospital'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
 export const useGetHospitals = () => {
   const api = useUserApi();
   const queryClient = useQueryClient();
@@ -582,6 +603,48 @@ export const useDeleteHospital = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['delete-hospital'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useToggleHospitalVerification = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.toggleHospitalVerification(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['toggle-hospital-verification'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error:', error);
+    },
+  });
+};
+
+export const useGetSingleHospital = () => {
+  const api = useUserApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: string) => {
+      return api.getSingleHospital(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['get-single-hospital'] });
     },
     onError: (error: Error) => {
       console.error('Error:', error);

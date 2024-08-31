@@ -253,3 +253,18 @@ export const findUserHandler = async (req: Request, res: Response) =>  {
 
     res.status(response.code).json(response);
 };
+
+export const toggleHospitalVerificationHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.toggleHospitalVerification(req);
+    res.status(response.code).json(response);
+});
+
+export const updateHospitalHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.updateHospital(req);
+    res.status(response.code).json(response);
+});
+
+export const getSingleHospitalHandler = async (req: Request, res: Response) =>  {
+    const response = await userController.getSingleHospital(req);
+    res.status(response.code).json(response);
+};

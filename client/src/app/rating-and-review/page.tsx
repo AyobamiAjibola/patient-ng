@@ -297,7 +297,7 @@ export default function Insight() {
                         }}
                     />
 
-                    <Typography
+                    {/* <Typography
                         sx={{
                             fontSize: theme.typography.labelxs.fontSize,
                             fontWeight: theme.typography.labelsm.fontWeight,
@@ -328,7 +328,7 @@ export default function Insight() {
                         >
                             verified
                         </Typography>
-                    </Box>
+                    </Box> */}
 
                 </Box>
 
@@ -468,7 +468,7 @@ export default function Insight() {
                                                         gap: 1, mt: 1
                                                     }}
                                                 >
-                                                    <IconButton
+                                                    {review.hospital.website.split('//')[1] && (<IconButton
                                                         onClick={() => {
                                                             if(!review.hospital.website) return;
                                                             const newWindow = window?.open(`${review.hospital.website}`, '_blank');
@@ -480,8 +480,8 @@ export default function Insight() {
                                                                 color: theme.palette.primary.main
                                                             }}
                                                         />
-                                                    </IconButton>
-                                                    <IconButton
+                                                    </IconButton>)}
+                                                    {review.hospital.email && (<IconButton
                                                         component="a"
                                                         href={`mailto:${review.hospital.email}`}
                                                     >
@@ -490,8 +490,8 @@ export default function Insight() {
                                                                 color: theme.palette.primary.main
                                                             }}
                                                         />
-                                                    </IconButton>
-                                                    <IconButton
+                                                    </IconButton>)}
+                                                    {review.hospital.phone && (<IconButton
                                                         component="a"
                                                         href={`tel:${review.hospital.phone}`}                                        
                                                     >
@@ -500,7 +500,7 @@ export default function Insight() {
                                                                 color: theme.palette.primary.main
                                                             }}
                                                         />
-                                                    </IconButton>
+                                                    </IconButton>)}
                                                 </Box>
                                                 <Box sx={{height: '35px', width: '1px', bgcolor: theme.palette.secondary.lighter}}/>
                                             </Box>

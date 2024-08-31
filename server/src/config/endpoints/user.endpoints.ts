@@ -26,6 +26,7 @@ import {
     getInsightRatingsHandler, 
     getSingleAdvocateHandler, 
     getSingleAwardHandler, 
+    getSingleHospitalHandler, 
     getSingleInsightHandler, 
     getSingleReviewHandler, 
     getSingleUserHandler, 
@@ -35,9 +36,11 @@ import {
     postTAndCHandler, 
     reviewOnInsightHandler, 
     siteVisitCountHandler, 
+    toggleHospitalVerificationHandler, 
     updateAdvocacyHandler, 
     updateAdvocacyStatusHandler, 
     updateAwardHandler, 
+    updateHospitalHandler, 
     // updateInsightHandler, 
     updateUserOnboardingHandler, 
     updateUserProfileHandler,
@@ -293,6 +296,24 @@ const userEndpoints: RouteEndpoint  = [
         method: 'post',
         path: '/find-user',
         handler: findUserHandler
+    },
+    {
+        name: 'toggle hospital verification',
+        method: 'put',
+        path: '/toggle-verification/:hospitalId',
+        handler: toggleHospitalVerificationHandler
+    },
+    {
+        name: 'update hospital info',
+        method: 'put',
+        path: '/update-hospital-info/:hospitalId',
+        handler: updateHospitalHandler
+    },
+    {
+        name: 'get single hospital',
+        method: 'get',
+        path: '/get-single-hospital/:hospitalId',
+        handler: getSingleHospitalHandler
     }
 ]
 

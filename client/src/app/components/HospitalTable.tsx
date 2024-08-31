@@ -2,9 +2,10 @@
 
 import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Edit, ToggleOff, ToggleOn } from '@mui/icons-material';
 
-const HospitalTable: React.FC = ({data, handleDelete, isLoading}: any) => {
+const HospitalTable: React.FC = ({data, handleDelete, isLoading, handleToggleHospital, isLoadingHospitalVerification, setOpen, setHospitalId}: any) => {
   const theme = useTheme();
 
   const columns: TableProps<any>['columns'] = [
@@ -107,14 +108,40 @@ const HospitalTable: React.FC = ({data, handleDelete, isLoading}: any) => {
       render: (_, record) => {
         
         return (
-          <Typography variant='labelxs' color='red'
-            onClick={()=>handleDelete(record._id)}
+          <Box
             sx={{
-              cursor: 'pointer'
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 2
             }}
           >
-            {isLoading ? 'Deleting...' : 'Delete'}
-          </Typography>
+            <Typography variant='labelxs' color='red'
+              onClick={()=>handleDelete(record._id)}
+              sx={{
+                cursor: 'pointer'
+              }}
+            >
+              {isLoading ? 'Deleting...' : 'Delete'}
+            </Typography>
+            <IconButton
+              onClick={()=>handleToggleHospital(record._id)}
+              disabled={isLoadingHospitalVerification}
+            >
+              {
+                record.verified ? <ToggleOn sx={{fontSize: '1.5em', color: theme.palette.state.success }}/> : <ToggleOff sx={{fontSize: '1.5em', color: theme.palette.state.warning }} />
+              }
+            </IconButton>
+            <IconButton
+              onClick={()=>{
+                setHospitalId(record._id)
+                setOpen(true)
+              }}
+              disabled={isLoadingHospitalVerification}
+            >
+              <Edit sx={{fontSize: '0.8em'}}/>
+            </IconButton>
+          </Box>
       )},
     },
   ];

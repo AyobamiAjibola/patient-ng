@@ -251,6 +251,31 @@ export const useUserApi = () => {
     return response.data;
   };
 
+  const updateHospital = async (
+    data: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const formData = new FormData();
+
+    formData.append('email', data.email);
+    formData.append('address', data.address);
+    formData.append('phone', data.phone);
+    formData.append('website', data.website);
+    formData.append('image', data.image);
+    formData.append('hospitalName', data.hospitalName);
+    formData.append('state', data.state);
+    formData.append('lga', data.lga);
+
+    if(data.services) {
+      formData.append('services', JSON.stringify(data.services));
+    }
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      (`/update-hospital-info/${data.hospitalId}`, formData);
+    return response.data;
+  };
+
   const updateTermsAndCondition = async (
     requestParameters: any
   ): Promise<types.ApiResponseSuccess<any>> => {
@@ -278,6 +303,26 @@ export const useUserApi = () => {
     const response = await axiosAuth.delete<
       types.ApiResponseSuccess<any>>
       (`/delete-hospital/${id}`);
+    return response.data;
+  };
+
+  const toggleHospitalVerification = async (
+    id: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.put<
+      types.ApiResponseSuccess<any>>
+      (`/toggle-verification/${id}`);
+    return response.data;
+  };
+
+  const getSingleHospital = async (
+    id: any
+  ): Promise<types.ApiResponseSuccess<any>> => {
+
+    const response = await axiosAuth.get<
+      types.ApiResponseSuccess<any>>
+      (`/get-single-hospital/${id}`);
     return response.data;
   };
 
@@ -360,7 +405,10 @@ export const useUserApi = () => {
   return {
     deleteAward,
     changeReviewState,
+    updateHospital,
     insightsRatingsData,
+    toggleHospitalVerification,
+    getSingleHospital,
     contactUs,
     getFiles,
     uploadAdvocacyFile,
