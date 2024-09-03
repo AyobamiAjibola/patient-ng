@@ -10,6 +10,15 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Tag } from "antd";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Select from "react-select";
+import { customStyles } from "@/constant/customStyles";
+
+const category = [
+    { value: "Health Insurance", label: "Health Insurance" },
+    { value: "Medical Billing", label: "Medical Billing" },
+    { value: "Medical Errors/Negligence", label: "Medical Errors/Negligence" },
+    { value: "Patient Rights", label: "Patient Rights" }
+]
 
 export default function page({ params }: any) {
     const theme = useTheme();
@@ -25,7 +34,8 @@ export default function page({ params }: any) {
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const [isError, setIsError] = useState(false);
-    const [status, setStatus] = useState<string>('')
+    const [status, setStatus] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     const handleOpenNotification = (type: 'success' | 'error', successMsg?: string, errorMsg?: string) => {
         setMessage(type === 'success' ? successMsg || 'Operation was successful!' : errorMsg || 'There was an error!');
@@ -37,6 +47,7 @@ export default function page({ params }: any) {
     const handleUpdateAdvocacy = async () => {
         await updateAdvocacyMutation.mutateAsync({
             complaints,
+            category: selectedCategory,
             advocacyId: id
         }, {
             onSuccess: async () => {
@@ -55,6 +66,7 @@ export default function page({ params }: any) {
                 setRef(response.result.reference)
                 setComplaints(response.result.complaints)
                 setStatus(response.result.status)
+                setSelectedCategory(response.result.category)
             }
         })
     }
@@ -127,6 +139,30 @@ export default function page({ params }: any) {
                         width: '100%'
                     }}
                 >
+                    <Box mb={3}>
+                        <Typography
+                            sx={{
+                                fontSize: theme.typography.labellg.fontSize,
+                                mb: 2
+                            }}
+                        >
+                            Category
+                        </Typography>
+                        <Select
+                            className="w-full h-10 font-light"
+                            options={category}
+                            styles={customStyles}
+                            placeholder="Choose category"
+                            name="category"
+                            onChange={(item) => {
+                                setSelectedCategory(String(item?.value));
+                            }}
+                            value={{
+                                value: selectedCategory,
+                                label: selectedCategory,
+                            }}
+                        />
+                        </Box>
                     <Box
                         sx={{
                             width: '100%'

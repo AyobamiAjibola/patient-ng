@@ -877,7 +877,8 @@ export default class UserController {
         const { error, value } = Joi.object<any>({
             hospitalName: Joi.string().label('hospital name'),
             hospitalAddress: Joi.string().required().label('hospital address'),
-            complaints: Joi.string().label('Complain')
+            complaints: Joi.string().label('Complain'),
+            category: Joi.string().required().label('Category'),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -910,7 +911,8 @@ export default class UserController {
         const advocacyId = req.params.advocacyId;
 
         const { error, value } = Joi.object<any>({
-            complaints: Joi.string().label('Complaints')
+            complaints: Joi.string().label('Complaints'),
+            category: Joi.string().label('Category'),
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 

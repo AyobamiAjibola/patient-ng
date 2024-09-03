@@ -7,6 +7,7 @@ interface IAdvocacy {
     user: mongoose.Types.ObjectId;
     status: string;
     reference: string;
+    category: string;
 };
 
 const advocacySchema = new Schema<IAdvocacy>({
@@ -15,7 +16,8 @@ const advocacySchema = new Schema<IAdvocacy>({
     reference: { type: String },
     complaints: { type: String },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
-    status: { type: String, default: "pending" }
+    status: { type: String, default: "pending" },
+    category: { type: String },
 }, { timestamps: true });
 
 advocacySchema.pre(['findOne', 'find'], function (next) {

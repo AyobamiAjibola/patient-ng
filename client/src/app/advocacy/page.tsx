@@ -15,12 +15,21 @@ import { useCreateComplain } from "../admin/hooks/advocacyHook/useAdvocacy";
 import Toastify from "../components/ToastifySnack";
 import { useRouter } from "next/navigation";
 import FramerMotion, { FramerMotion2 } from "../components/FramerMotion";
+import Select from "react-select";
+import { customStyles } from "@/constant/customStyles";
 
 type FormValues = {
   nameOfHospital: string;
   addressOfHospital: string;
   complaints: string;
 }
+
+const category = [
+  { value: "Health Insurance", label: "Health Insurance" },
+  { value: "Medical Billing", label: "Medical Billing" },
+  { value: "Medical Errors/Negligence", label: "Medical Errors/Negligence" },
+  { value: "Patient Rights", label: "Patient Rights" }
+]
 
 export default function page() {
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -31,6 +40,7 @@ export default function page() {
   const createComplainMutation = useCreateComplain();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -48,7 +58,8 @@ export default function page() {
     const payload = {
       hospitalName: data.nameOfHospital,
       hospitalAddress: data.addressOfHospital,
-      complaints: data.complaints
+      complaints: data.complaints,
+      category: selectedCategory
     }
 
     await createComplainMutation.mutateAsync(payload, {
@@ -655,6 +666,31 @@ export default function page() {
               error={!!errors.addressOfHospital}
               register={register('addressOfHospital')}
             />
+            <Box mb={3}>
+              <Typography
+                sx={{
+                    fontSize: theme.typography.labelxs.fontSize,
+                    fontWeight: theme.typography.labelsm.fontWeight,
+                    mb: 2
+                }}
+              >
+                  Category
+              </Typography>
+              <Select
+                className="w-full h-10 font-light"
+                options={category}
+                styles={customStyles}
+                placeholder="Choose category"
+                name="category"
+                onChange={(item) => {
+                  setSelectedCategory(String(item?.value));
+                }}
+                value={{
+                  value: selectedCategory,
+                  label: selectedCategory,
+                }}
+              />
+            </Box>
             <InputField
               label="Complaints"
               placeholder="Your complain"
@@ -667,7 +703,7 @@ export default function page() {
               error={!!errors.complaints}
               register={register('complaints')}
               multiline={true}
-              rows={10}
+              rows={7}
             />
             <PButton transBg={false} bg={true} width="100%" type="submit">
               {createComplainMutation.isLoading ? 'Submitting...' : 'Submit Complaint'}

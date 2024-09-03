@@ -20,7 +20,7 @@ export const useAdvocacyApi = () => {
   
       const response = await axiosAuth.put<
         types.ApiResponseSuccess<any>>
-        (`/update-advocacy/${requestParameters.advocacyId}`, {complaints: requestParameters.complaints});
+        (`/update-advocacy/${requestParameters.advocacyId}`, {complaints: requestParameters.complaints, category: requestParameters.category });
       return response.data;
     };
 
