@@ -22,85 +22,112 @@ export default function CrowdCard({fundraiser, percent}: any) {
     }));
     
     return (
-        <>
-            
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '550px',
-                    minWidth: '300px',
-                    width: isMobile ? '100%' : '32%',
-                    border: `1px solid ${theme.palette.secondary.lighter}`,
-                    borderRadius: theme.borderRadius.sm
-                }}
-            >
-                <img
-                    src={fundraiser.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${fundraiser.image}` : '/crowd2.png'}
-                    alt='crowd funding image'
-                    style={{
-                    height: '50%',
+        <Box
+            key={fundraiser._id}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '500px',
+                minWidth: '300px',
+                width: isMobile ? '100%' : '32%',
+                border: `1px solid ${theme.palette.secondary.lighter}`,
+                borderRadius: theme.borderRadius.sm,
+                cursor: 'pointer',
+                '&:hover': {
+                    bgcolor: theme.palette.secondary.lightest
+                }
+            }}
+            onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
+        >
+            <img
+                src={fundraiser.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${fundraiser.image}` : '/crowd2.png'}
+                alt='crowd funding image'
+                style={{
+                    height: '60%',
                     width: '100%',
                     borderTopLeftRadius: theme.borderRadius.sm,
                     borderTopRightRadius: theme.borderRadius.sm
-                    }}
-                    crossOrigin="anonymous"
-                />
-                <Box
-                    sx={{
+                }}
+                crossOrigin="anonymous"
+            />
+            <Box
+                sx={{
                     px: '10px',
-                    pt: '10px',
                     display: 'flex',
                     flexDirection: 'column',
-                    height: '70%', justifyContent: 'space-evenly'
-                    }}
-                >
-                    <Box>
-                        <Typography
-                            sx={{
-                                fontSize: theme.typography.labelxs.fontSize,
-                                fontWeight: theme.typography.labelxs.fontWeight,
-                                ml: -1
-                            }}
-                            className="capitalize"
-                        >
-                            <LocationOn
-                                sx={{
-                                    color: theme.palette.primary.main, 
-                                    fontSize: '14px'
-                                }}
-                            /> { `${fundraiser.location.lga ? fundraiser.location.lga : 'Ikeja'}, ${fundraiser.location.state ? fundraiser.location.state : 'Lagos'}` }
-                        </Typography>
-                        <Typography
-                            sx={{
-                                fontSize: theme.typography.labelxl.fontSize,
-                                fontWeight: theme.typography.labelxs.fontWeight,
-                                my: 1
-                            }}
-                            className="capitalize"
-                        >
-                            { characterBreaker(fundraiser.fundraisingFor, 20)}
-                        </Typography>
-                    </Box>
-
+                    height: '40%', justifyContent: 'space-evenly'
+                }}
+            >
+                <Box>
                     <Typography
                         sx={{
-                            fontSize: theme.typography.labelbase.fontSize,
-                            lineHeight: theme.typography.labelxs.lineHeight,
-                            color: theme.palette.secondary.light,
-                            whiteSpace: 'pre-wrap'
+                            fontSize: theme.typography.labelxs.fontSize,
+                            fontWeight: theme.typography.labelxs.fontWeight,
+                            ml: -1
                         }}
+                        className="capitalize"
                     >
-                        {wordBreaker(fundraiser.description, 10) }...
+                        <LocationOn
+                            sx={{
+                                color: theme.palette.primary.main, 
+                                fontSize: '14px'
+                            }}
+                        /> { `${fundraiser.location.lga ? fundraiser.location.lga : 'Ikeja'}, ${fundraiser.location.state ? fundraiser.location.state : 'Lagos'}` }
                     </Typography>
-                
-                    <Box>
-                        {/* {fundraiser.donations.length > 0
-                            ? (<Box
+                    <Typography
+                        sx={{
+                            fontSize: theme.typography.labelxl.fontSize,
+                            fontWeight: theme.typography.labelxs.fontWeight,
+                            my: 1
+                        }}
+                        className="capitalize"
+                    >
+                        { characterBreaker(fundraiser.fundraisingFor, 20)}
+                    </Typography>
+                </Box>
+
+                <Typography
+                    sx={{
+                        fontSize: theme.typography.labelbase.fontSize,
+                        lineHeight: theme.typography.labelxs.lineHeight,
+                        color: theme.palette.secondary.light,
+                        whiteSpace: 'pre-wrap'
+                    }}
+                >
+                    {wordBreaker(fundraiser.description, 10) }...
+                </Typography>
+            
+                <Box>
+                    {/* {fundraiser.donations.length > 0
+                        ? (<Box
+                            sx={{
+                                display: 'flex',
+                                gap: 1, mt: 3,
+                                alignItems: 'center'
+                            }}
+                        >
+                            <Typography
+                                sx={{
+                                    color: theme.palette.secondary.light,
+                                    fontSize: theme.typography.labelsm.fontSize
+                                }}
+                            >
+                                Last donation
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: theme.typography.labelxs.fontSize,
+                                    fontWeight: theme.typography.labelsm.fontWeight
+                                }}
+                            >
+                                { moment(fundraiser.donations[0].date).fromNow() }
+                            </Typography>
+                        </Box>
+                        ) : (
+                            <Box
                                 sx={{
                                     display: 'flex',
-                                    gap: 1, mt: 3,
-                                    alignItems: 'center'
+                                    gap: 1, mt: 3
                                 }}
                             >
                                 <Typography
@@ -109,97 +136,71 @@ export default function CrowdCard({fundraiser, percent}: any) {
                                         fontSize: theme.typography.labelsm.fontSize
                                     }}
                                 >
-                                    Last donation
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: theme.typography.labelxs.fontSize,
-                                        fontWeight: theme.typography.labelsm.fontWeight
-                                    }}
-                                >
-                                    { moment(fundraiser.donations[0].date).fromNow() }
+                                    No donations yet.
                                 </Typography>
                             </Box>
-                            ) : (
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        gap: 1, mt: 3
-                                    }}
-                                >
-                                    <Typography
-                                        sx={{
-                                            color: theme.palette.secondary.light,
-                                            fontSize: theme.typography.labelsm.fontSize
-                                        }}
-                                    >
-                                        No donations yet.
-                                    </Typography>
-                                </Box>
-                            )
-                        } */}
-                        <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                            }}
-                        >
-                            <Box width={'90%'} display={'flex'} gap={1}>
-                                <Typography
-                                    sx={{
-                                        fontSize: theme.typography.labelsm.fontSize
-                                    }}
-                                >
-                                    {formAmount(+fundraiser.amountRaised)} raised
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: theme.typography.labelsm.fontSize,
-                                        color: theme.palette.secondary.light
-                                    }}
-                                >
-                                    of {formAmount(+fundraiser.amountNeeded)}
-                                </Typography>
-                            </Box>
-                            {fundraiser.likes.length > 0 && (<Box display={'flex'} alignItems={'center'} width={'10%'}>
-                                <Favorite sx={{color: theme.palette.primary.main, fontSize: '16px'}}/> 
-                                <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
-                            </Box>)}
+                        )
+                    } */}
+                    <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}
+                    >
+                        <Box width={'90%'} display={'flex'} gap={1}>
+                            <Typography
+                                sx={{
+                                    fontSize: theme.typography.labelsm.fontSize
+                                }}
+                            >
+                                {formAmount(+fundraiser.amountRaised)} raised
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontSize: theme.typography.labelsm.fontSize
+                                }}
+                            >
+                                of {formAmount(+fundraiser.amountNeeded)}
+                            </Typography>
+                        </Box>
+                        <Box display={'flex'} alignItems={'center'} width={'10%'}>
+                            <Favorite sx={{color: theme.palette.primary.main, fontSize: '16px'}}/> 
+                            <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
                         </Box>
                     </Box>
                 </Box>
-                <Box
-                    sx={{
+            </Box>
+            {/* <Box
+                sx={{
                     height: '30%', mt: 3,
                     backgroundColor: theme.palette.secondary.lightest,
                     borderBottomRightRadius: theme.borderRadius.sm,
                     borderBottomLeftRadius: theme.borderRadius.sm,
                     borderTop: `1px solid ${theme.palette.secondary.lighter}`
+                }}
+            >
+                <Box 
+                    sx={{
+                        display: 'flex', 
+                        alignItems: 'center',
+                        height: '100%',
+                        px: '10px'
                     }}
                 >
-                    <Box 
+                    <Typography onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
                         sx={{
-                            display: 'flex', 
-                            alignItems: 'center',
-                            height: '100%',
-                            px: '10px'
+                        cursor: 'pointer',
+                        color: theme.palette.primary.main,
+                        fontSize: theme.typography.labelbase.fontSize,
+                        fontWeight: theme.typography.labelxs.fontWeight,
                         }}
                     >
-                        <Typography onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
-                            sx={{
-                            cursor: 'pointer',
-                            color: theme.palette.primary.main,
-                            fontSize: theme.typography.labelbase.fontSize,
-                            fontWeight: theme.typography.labelxs.fontWeight,
-                            }}
-                        >
-                            See Details
-                        </Typography>
-                    </Box>
+                        See Details
+                    </Typography>
                 </Box>
-            </Box>
-        </>
+            </Box> */}
+        </Box>
     )
 }

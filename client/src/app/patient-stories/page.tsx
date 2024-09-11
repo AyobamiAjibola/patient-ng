@@ -266,7 +266,7 @@ export default function PatientStories() {
                                     }} key={index}
                                 >
                                     <img
-                                        src={story.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${story.image}` : '/p_patient.png'}
+                                        src={story.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${story.image}` : '/person.png'}
                                         alt='story'
                                         style={{
                                             width: '100%',
