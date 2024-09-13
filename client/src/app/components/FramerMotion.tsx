@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import { Box } from '@mui/material';
+import { forwardRef } from 'react';
 
-const MotionBox = motion(Box);
+const MotionBox = motion(
+  forwardRef(function BoxWithRef(props, ref) {
+    return <Box ref={ref} {...props} />;
+  })
+);
 
 const FramerMotion = ({ children, sx, threshold = 0.3, ...props }: any) => {
   const controls = useAnimation();

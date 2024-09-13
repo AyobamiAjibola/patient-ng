@@ -5,7 +5,7 @@ import ImageUploader from "@/app/components/ImageUploader";
 import Navbar from "@/app/components/Navbar"
 import { NButton, PButton2 } from "@/app/components/PButton";
 import StepperVertical from "@/app/components/Stepper";
-import { Avatar, Box, CircularProgress, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Box, CircularProgress, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAtom } from 'jotai';
@@ -23,7 +23,6 @@ import Toastify from "@/app/components/ToastifySnack";
 import { useCreateCrowdfunding } from "@/app/admin/hooks/crowdFuncdingHook/useCrowdFunding";
 import { useSession } from "next-auth/react";
 import { useFetchSingleUser } from "@/app/admin/hooks/userHook/useUser";
-import { motion } from "framer-motion";
 import { FramerMotion3 } from "@/app/components/FramerMotion";
 
 interface IProps {
@@ -69,8 +68,6 @@ export default function page() {
     const { data: session } = useSession();
     const singleUserMutation = useFetchSingleUser();
     const [userImg, setUserImg] = useState<string>('');
-
-    const MotionBox = motion(Box);
 
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');

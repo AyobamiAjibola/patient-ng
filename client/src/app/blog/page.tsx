@@ -1,10 +1,8 @@
 'use client';
 
-import Navbar from '@/app/components/Navbar'
-import { characterBreaker, wordBreaker } from '@/lib/helper';
+import Navbar from '@/app/components/Navbar';
 import Footer from '@/app/components/Footer';
-import { Box, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
-import { Tag } from 'antd';
+import { Box, Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Search from 'antd/es/input/Search';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -12,7 +10,6 @@ import Pagination from '../components/Pagination';
 import { HourglassEmpty } from '@mui/icons-material';
 import { useGetBlogCategories, useGetBlogs } from '../admin/hooks/blogHook/useBlog';
 import { useSession } from 'next-auth/react';
-import HtmlToText from '../components/HtmlToText';
 import FramerMotion, { FramerMotion2 } from '../components/FramerMotion';
 import BlogCard from '../components/BlogCard';
 

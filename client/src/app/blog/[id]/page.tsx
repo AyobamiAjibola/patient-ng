@@ -219,7 +219,7 @@ export default function Blog({ params }: any) {
                             }}
                         >
                             <Typography sx={{color: theme.palette.primary.main}}>
-                                1% OF THE INDUSTRY
+                                SUPPORT STARTS HERE
                             </Typography>
                             <Typography variant={ isMobile ? 'h5' : 'h3' }
                                 sx={{

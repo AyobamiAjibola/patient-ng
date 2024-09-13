@@ -19,8 +19,7 @@ import { useGetWebinars } from './admin/hooks/webinarHook/useWebinar';
 import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
 import CrowdCard from './components/CrowdCard';
-import FramerMotion, { FramerMotion2 } from './components/FramerMotion';
-import BlogCard from './components/BlogCard';
+import FramerMotion from './components/FramerMotion';
 
 const faq = [
   {
