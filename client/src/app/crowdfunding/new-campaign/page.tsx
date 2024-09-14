@@ -442,7 +442,10 @@ export default function page() {
                                         allowMultiple={false}
                                     />
                                     ) : (
-                                        <ImagePreviewSingle image={campaignImg[0]} />
+                                        <ImagePreviewSingle 
+                                            image={campaignImg[0]} 
+                                            height={isMobile ? '60%' : '100%'}
+                                        />
                                     )}
                             </Box>
                         </Box>
