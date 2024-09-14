@@ -444,7 +444,7 @@ export default function page() {
                                     ) : (
                                         <ImagePreviewSingle 
                                             image={campaignImg[0]} 
-                                            height={isMobile ? '60%' : '100%'}
+                                            height={isMobile ? '250px' : '100%'}
                                         />
                                     )}
                             </Box>
