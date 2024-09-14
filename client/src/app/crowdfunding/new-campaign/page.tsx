@@ -367,7 +367,8 @@ export default function page() {
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',
-                            pl: isMobile ? '20px' : '40px', py: isMobile ? 4 : 0
+                            pl: isMobile ? '20px' : '40px', py: isMobile ? 4 : 0,
+                            mt: 4
                         }}
                     >
                         <Typography
