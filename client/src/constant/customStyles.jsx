@@ -36,7 +36,7 @@ export const customStyles = {
       ...base,
       // kill the white space on first and last option
       padding: 0,
-      height: '8em'
+      height: '10em'
     }),
   
     control: (provided, state) => ({

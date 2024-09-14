@@ -150,7 +150,6 @@ export default function HomePage() {
               flexWrap: 'wrap'
             }}
           >
-            {/* Empowering Patients, Transforming Healthcare */}
             <p
               style={{
                 lineHeight: 1.3,
@@ -210,7 +209,7 @@ export default function HomePage() {
               pl: 1
             }}
           >
-            {`Discover a community-driven platform dedicated to providing patient support that actually works. Submit your complaints, share your story, start a fundraiser or find reliable hospital ratings & reviews from real patients online.`}
+            {`Discover a community-driven platform, dedicated to providing patient support that actually works! You can submit your complaints, start a fundraiser or find verified patient feedback from real patients online.`}
           </Typography>
 
           <Box
@@ -398,7 +397,7 @@ export default function HomePage() {
                 fontWeight: 700
               }}
             >
-              Are you facing
+              Are you facing any
             </span>
             &nbsp;&nbsp;
             <span
@@ -408,7 +407,7 @@ export default function HomePage() {
                 color: theme.palette.primary.main
               }}
             >
-              any challenge with
+              challenge
             </span>
             &nbsp;&nbsp;
             <span
@@ -417,7 +416,7 @@ export default function HomePage() {
                 fontWeight: 700
               }}
             >
-              your hospital?
+              with your hospital?
             </span>
           </p>
           <Typography
@@ -623,9 +622,9 @@ export default function HomePage() {
                 lineHeight: 1
               }}
             >
-              Hospital Ratings
+              Patient Feedback
             </Typography>
-            <Typography
+            {/* <Typography
               sx={{
                 fontSize: isMobile ? '40px' : '50px',
                 color: 'black',
@@ -634,7 +633,7 @@ export default function HomePage() {
               }}
             >
               and Reviews
-            </Typography>
+            </Typography> */}
           </Box>
           <Typography
             sx={{
@@ -645,7 +644,7 @@ export default function HomePage() {
               my: 3
             }}
           >
-            Find data-driven insights based on patient experiences. Your ratings and reviews can help others make informed decisions about their healthcare provider.
+            {`Find data-driven insights based on patient experiences. Your feedback can help others make informed decisions about their healthcare provider.`}
           </Typography>
           <NButton
             width='200px'
@@ -653,7 +652,7 @@ export default function HomePage() {
             textcolor={theme.palette.primary.main}
             bordercolor={theme.palette.primary.main}
             hoverbordercolor={theme.palette.primary.main}
-            onClick={()=>router.push('/rating-and-review')}
+            onClick={()=>router.push('/patient-feedback')}
           >
             See Ratings
           </NButton>

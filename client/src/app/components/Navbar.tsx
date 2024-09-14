@@ -76,8 +76,8 @@ const resources = [
     link: "/award"
   },
   {
-    name: 'Ratings and Reviews',
-    link: '/rating-and-review',
+    name: 'Patient Feedback',
+    link: '/patient-feedback',
   }
 ]
 
@@ -141,7 +141,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
       setIndx(0)
     } else if (pathname.includes('/crowdfunding')) {
       setIndx(1)
-    } else if (pathname.includes('/rating-and-review')) {
+    } else if (pathname.includes('/patient-feedback')) {
       setIndx(2)
     } else if(pathname === '/') {
       setIndx(-1)

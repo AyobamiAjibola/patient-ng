@@ -316,7 +316,8 @@ export default function page() {
                 sx={{
                     display: 'flex',
                     height: screenHeight,
-                    pt: 8
+                    pt: 8,
+                    flexDirection: isMobile ? 'column' : 'row'
                 }}
             >
                 {!isMobile && (<Box
@@ -332,6 +333,21 @@ export default function page() {
                         setActiveStep={setActiveStep}
                     />
                 </Box>)}
+
+                {isMobile && (
+                    <Box
+                        sx={{
+                            pl: 2,
+                            pr: 2
+                        }}
+                    >
+                        <StepperVertical
+                            activeStep={activeStep}
+                            setActiveStep={setActiveStep}
+                            isShowLabel={false}
+                        />
+                    </Box>
+                )}
 
                 <Box
                     sx={{
@@ -376,7 +392,7 @@ export default function page() {
                     {steps && steps === '0' && (<FramerMotion3
                         sx={{
                             display: 'flex',
-                            height: '70vh', //isMobile ? 'auto' : '70%',
+                            height: 'auto', //isMobile ? 'auto' : '70%',
                             width: '100%',
                             flexDirection: 'column',
                             py: 4,

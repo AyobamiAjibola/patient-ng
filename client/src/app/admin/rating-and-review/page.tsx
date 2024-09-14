@@ -65,7 +65,7 @@ export default function page() {
       >
         { insightCurrentData.map((review: any, index: number) => (
             <Box key={index}
-              onClick={() => router.push(`/rating-and-review/${review._id}`)}
+              onClick={() => router.push(`/patient-feedback/${review._id}`)}
               sx={{
                 borderRadius: theme.borderRadius.sm,
                 border: `1px solid ${theme.palette.secondary.lighter}`,

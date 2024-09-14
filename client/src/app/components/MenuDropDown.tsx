@@ -211,7 +211,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
             </Box>
           </Box>
         </MenuItem>
-        <MenuItem onClick={() => handleClose('/rating-and-review')}>
+        <MenuItem onClick={() => handleClose('/patient-feedback')}>
           <Box className='flex flex-col'>
             <Box className='flex gap-4 justify-start'>
               <Insights
@@ -227,7 +227,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
                   fontWeight: 500
                 }}
               >
-                Ratings and reviews
+                Patient Feedback
               </Typography>
             </Box>
             <Box className='flex gap-5 justify-start'>

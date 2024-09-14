@@ -117,9 +117,20 @@ export default function Blog() {
             }}
           >
             {`We are trusted source for information, support, and advocacy on patient care in Nigeria.
-                Here, we empower patient caregivers and advocates with valuable insights on navigating 
-                healthcare systems, raising funds for medical expenses, and amplifying patient voices 
-                through stories of hope and inspiration.
+            `}
+          </Typography>
+          <Typography 
+            sx={{
+              fontSize: isMobile ? theme.typography.labelsm.fontSize : theme.typography.labellg.fontSize,
+              color: theme.palette.secondary.light,
+              textAlign: 'center',
+              width: isMobile ? '100%' : '70%'
+            }}
+          >
+            {`
+              Here, we empower patient caregivers and advocates with valuable insights on navigating 
+              healthcare systems, raising funds for medical expenses, and amplifying patient voices 
+              through stories of hope and inspiration.
             `}
           </Typography>
         </Box>

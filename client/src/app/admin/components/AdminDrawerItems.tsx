@@ -34,7 +34,7 @@ const items = {
         },
         {
             title: 'Rating and review',
-            link: '/admin/rating-and-review',
+            link: '/admin/patient-feedback',
             iconName: MedicationOutlined
         },
         {

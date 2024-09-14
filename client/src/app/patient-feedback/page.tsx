@@ -179,9 +179,9 @@ export default function Insight() {
                     Find a hospital in your area
                 </Typography>
                 <Typography variant="paragraphlg">
-                    Hospitals rated and reviewed by patients offer
-                    insights towards patient experiences for better
-                    health outcomes
+                    {`Hospital feedback provided by real patients offer 
+                    insights towards best patient experiences for improved 
+                    healthcare outcomes.`}
                 </Typography>
             </Box>
 
@@ -540,7 +540,7 @@ export default function Insight() {
 
                                             <Typography variant="labelsm"
                                                 component={'button'}
-                                                onClick={() => router.push(`/rating-and-review/${review._id}`)}
+                                                onClick={() => router.push(`/patient-feedback/${review._id}`)}
                                                 onMouseEnter={()=>localStorage.setItem('rating', review.rating)}
                                                 sx={{
                                                     mr: 2, mt: 1,

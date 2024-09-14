@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import FramerMotion, { FramerMotion2 } from "../components/FramerMotion";
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
+import DropdownField from "../components/Dropdown";
 
 type FormValues = {
   nameOfHospital: string;
@@ -676,19 +677,11 @@ export default function page() {
               >
                   Category
               </Typography>
-              <Select
-                className="w-full h-10 font-light"
+              <DropdownField
                 options={category}
-                styles={customStyles}
-                placeholder="Choose category"
-                name="category"
-                onChange={(item) => {
-                  setSelectedCategory(String(item?.value));
-                }}
-                value={{
-                  value: selectedCategory,
-                  label: selectedCategory,
-                }}
+                label=""
+                value={selectedCategory}
+                onChange={(event: any) => setSelectedCategory(event.target.value)}
               />
             </Box>
             <InputField
