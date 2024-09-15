@@ -11,6 +11,19 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "patient.ng",
   description: "Find patient support that actually works!",
+  openGraph: {
+    title: "patient.ng",
+    description: "Find patient support that actually works!",
+    url: "https://patient.ng",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 627,
+        alt: "Patient.ng logo",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

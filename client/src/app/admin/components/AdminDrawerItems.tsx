@@ -33,7 +33,7 @@ const items = {
             iconName: FavoriteBorderOutlined
         },
         {
-            title: 'Rating and review',
+            title: 'Patient Feedback',
             link: '/admin/patient-feedback',
             iconName: MedicationOutlined
         },
