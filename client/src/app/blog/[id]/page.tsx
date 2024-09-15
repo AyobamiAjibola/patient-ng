@@ -345,9 +345,7 @@ export default function Blog({ params }: any) {
                             flexDirection: 'column',
                             width: isMobile ? '90%' : '70%',
                             height: 'auto',
-                            gap: 3,
-                            overflow: 'scroll',
-                            maxHeight: '700px'
+                            gap: 3
                         }}
                     >
                         {blog.content && <RenderParsedContent htmlContent={blog.content} />}
@@ -439,7 +437,7 @@ export default function Blog({ params }: any) {
                                                 : theme.palette.primary.main
                                     }}
                                 >
-                                    like blog
+                                    like
                                 </Typography>
                             </Box>
                             <Box sx={{display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer'}}
