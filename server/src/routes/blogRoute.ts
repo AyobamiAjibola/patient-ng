@@ -100,6 +100,12 @@ export const singleBlogHandler = async (req: Request, res: Response) =>  {
     res.status(response.code).json(response);
 };
 
+export const singleBlogAdminHandler = async (req: Request, res: Response) =>  {
+    const response = await blogController.singleBlogAdmin(req);
+
+    res.status(response.code).json(response);
+};
+
 export const changeBlogStatusToDraftHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await blogController.changeBlogStatusToDraft(req);
 

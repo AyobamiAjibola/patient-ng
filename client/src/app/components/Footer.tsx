@@ -10,12 +10,13 @@ import Link from "next/link";
 import MModal from "./Modal";
 import { useAtom } from "jotai";
 import { openModal, openModal2, openType } from "@/lib/atoms";
-import HTMLReactParser from 'html-react-parser';
+import parse from 'html-react-parser';
 import { useEffect, useState } from "react";
 import { useContactUs, useGetDocs } from "../admin/hooks/userHook/useUser";
 import InputField from "./InputField";
 import { NButton } from "./PButton";
 import Toastify from "./ToastifySnack";
+import RenderParsedContent from "../admin/components/HtmlParse/ParseHtml";
 
 const links = [
     {name: "Advocacy", link: '/advocacy'},
@@ -652,14 +653,16 @@ export default function Footer() {
                     <Box
                         sx={{
                             bgcolor: 'white',
-                            width: 'white',
                             p: 3,
                             height: 'auto',
                             borderBottomLeftRadius: theme.borderRadius.sm,
                             borderBottomRightRadius: theme.borderRadius.sm
                         }}
                     >
-                        {type === 'contact' ? HTMLReactParser(data.contactUs) : HTMLReactParser(data.aboutUs)}
+                        {type === 'contact' 
+                            ? parse(data.contactUs) 
+                            : <RenderParsedContent htmlContent={data.aboutUs} />
+                        }
                     </Box>
                 </Box>
             </MModal>

@@ -1,7 +1,7 @@
 'use client';
 import InputField from '@/app/components/InputField';
 import Navbar from '@/app/components/Navbar';
-import { characterBreaker, wordBreaker } from '@/lib/helper';
+import { wordBreaker } from '@/lib/helper';
 import Footer from '@/app/components/Footer';
 import { ChatBubble, ChatBubbleOutline, Favorite, HourglassEmpty, Share, ThumbUp, ThumbUpOffAlt } from '@mui/icons-material';
 import { Avatar, Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -16,6 +16,7 @@ import MModal from '@/app/components/Modal';
 import HtmlToText from '@/app/components/HtmlToText';
 import { useRouter } from 'next/navigation';
 import { FramerMotion3 } from '@/app/components/FramerMotion';
+import RenderParsedContent from '@/app/admin/components/HtmlParse/ParseHtml';
 
 const socials = [
     {
@@ -344,25 +345,21 @@ export default function Blog({ params }: any) {
                             flexDirection: 'column',
                             width: isMobile ? '90%' : '70%',
                             height: 'auto',
-                            gap: 3
-
+                            gap: 3,
+                            overflow: 'scroll',
+                            maxHeight: '700px'
                         }}
                     >
-                         <Box
-                            sx={{
-                                overflow: 'scroll'
-                            }}
-                            dangerouslySetInnerHTML={{ __html: blog.content }}
-                        />
-                        <img
-                            src={blog.bodyImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.bodyImage}` : '/logo.jpg'}
+                        {blog.content && <RenderParsedContent htmlContent={blog.content} />}
+                        {blog.bodyImage && (<img
+                            src={`${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.bodyImage}`}
                             alt='blog image'
                             crossOrigin='anonymous'
                             style={{
                                 width: '100%',
                                 height: isMobile ? 250 : 350
                             }}
-                        />
+                        />)}
                     </Box>
                     <Box
                         sx={{

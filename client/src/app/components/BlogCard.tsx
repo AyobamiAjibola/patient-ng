@@ -60,7 +60,7 @@ export default function BlogCard({blog}: any) {
             </Typography>
             <HtmlToText
                 mx={isMobile ? 2 : 3}
-                htmlString={isMobile ? wordBreaker(blog.content, 25) : wordBreaker(blog.content, 30)}
+                htmlString={isMobile ? wordBreaker(blog.content, 25) : wordBreaker(blog.content, 25)}
             />
             </Box>
     )

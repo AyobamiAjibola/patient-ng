@@ -14,6 +14,7 @@ import {
     fetchBlogsByCategoryHandler, 
     fetchBlogsHandler, fetchUserBlogsHandler, likeBlogCommentHandler, likeBlogHandler, 
     replyBlogCommentHandler, 
+    singleBlogAdminHandler, 
     singleBlogHandler, updateBlogCategoryHandler, updateBlogHandler 
 } from '../../routes/blogRoute';
 
@@ -113,6 +114,12 @@ const blogEndpoints: RouteEndpoint  = [
         method: 'get',
         path: '/get-single-blog/:blogId',
         handler: singleBlogHandler
+    },
+    {
+        name: 'get single blog admin',
+        method: 'get',
+        path: '/get-single-blog-admin/:blogId',
+        handler: singleBlogAdminHandler
     },
     {
         name: 'change blog draft',

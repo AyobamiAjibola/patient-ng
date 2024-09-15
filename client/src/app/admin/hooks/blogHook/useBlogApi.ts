@@ -169,6 +169,15 @@ export const useBlogApi = () => {
         return response.data;
     };
 
+    const getSingleBlogAdmin = async (
+        data: any
+    ): Promise<types.ApiResponseSuccess<any>> => {
+        const response = await axiosAuth.get<
+        types.ApiResponseSuccess<any>>
+        (`/get-single-blog-admin/${data}`);
+        return response.data;
+    };
+
     const changeBlogToDraft = async (
         data: any
     ): Promise<types.ApiResponseSuccess<any>> => {
@@ -211,6 +220,7 @@ export const useBlogApi = () => {
         getUsersBlogs,
         getBlogsWithCategory,
         getSingleBlog,
+        getSingleBlogAdmin,
         changeBlogToDraft,
         likeBlogComment,
         replyBlogComment,

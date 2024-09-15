@@ -493,6 +493,28 @@ export default class BlogController {
 
     }
 
+    @TryCatch
+    public async singleBlogAdmin (req: Request) {
+ 
+        const blogId = req.params.blogId;
+
+        const blog = await datasources.blogDAOService.findById(blogId);
+        if(!blog)
+            return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
+
+        const commentIds = blog.comments;
+        const comments = await Promise.all(commentIds.map(commentId => datasources.blogCommentsDAOService.findById(commentId)));
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully retrieved blog and comments.',
+            result: { blog, comments }
+        };
+      
+        return Promise.resolve(response);
+
+    }
+
     private async doCreateBlog(req: Request): Promise<HttpResponse<IBlogModel>> {
         return new Promise((resolve, reject) => {
            
@@ -589,7 +611,7 @@ export default class BlogController {
 
                 const [user, blog] = await Promise.all([
                     datasources.userDAOService.findById(loggedInUser),
-                    datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`})
+                    datasources.blogDAOService.findById(blogId)
                 ]);
 
                 const allowedUser = await Generic.handleAllowedBlogUser(user?.userType);

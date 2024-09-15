@@ -36,13 +36,13 @@ export const HtmlToText2 = ({ htmlString, mx, my }: any) => {
 
   return (
     <Typography
-        sx={{
-          mx: mx,
-          color: theme.palette.secondary.light,
-          fontSize: theme.typography.labelsm.fontSize,
-          whiteSpace: 'pre-wrap',
-          my: my
-        }}
+      sx={{
+        mx: mx,
+        color: theme.palette.secondary.light,
+        fontSize: theme.typography.labelsm.fontSize,
+        whiteSpace: 'pre-wrap',
+        my: my
+      }}
     >{textContent}</Typography>)
 };
 

@@ -7,7 +7,7 @@ const TextEditor = ({ preference, setPreference }: any) => {
   
   var modules = {
     toolbar: [
-      [{ size: ["small", false, "large", "huge"] }],
+      [{ size: ["small", true, "large", "huge"] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["link", "image"],

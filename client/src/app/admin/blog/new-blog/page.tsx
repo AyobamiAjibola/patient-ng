@@ -16,12 +16,8 @@ import { customStyles } from '@/constant/customStyles';
 import Toastify from '@/app/components/ToastifySnack';
 import capitalize from 'capitalize';
 import ImageUploader2 from '@/app/components/ImageUploader2';
-import HTMLReactParser from 'html-react-parser';
-import dynamic from 'next/dynamic';
- 
-const DynamicHeader = dynamic(() => import('../../components/TextEditor'), {
-  ssr: false,
-})
+import MyEditor from '../../components/JoditEditor/MyEditor';
+import RenderParsedContent from '../../components/HtmlParse/ParseHtml';
 
 export default function page() {
     const theme = useTheme();
@@ -334,9 +330,9 @@ export default function page() {
                         </Box>
 
                         <Box mt={4} mb={3}>
-                            <DynamicHeader
-                                preference={content}
-                                setPreference={setContent}
+                            <MyEditor
+                                content={content}
+                                setContent={setContent}
                             />
                         </Box>
                     </Box>
@@ -419,14 +415,8 @@ export default function page() {
                         Preview
                     </Typography>
                     <Divider sx={{mb: 4}} />
-                    {/* <Box
-                        sx={{
-                            overflow: 'scroll'
-                        }}
-                        dangerouslySetInnerHTML={{ __html: content }}
-                    /> */}
                     <Box overflow={'scroll'}>
-                        {HTMLReactParser(content)}
+                        <RenderParsedContent htmlContent={content} />
                     </Box>
                 </Box>
             </MModal>

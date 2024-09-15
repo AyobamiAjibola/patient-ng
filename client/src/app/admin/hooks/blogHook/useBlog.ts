@@ -275,6 +275,27 @@ export const useGetSingleBlog = () => {
   });
 };
 
+export const useGetSingleBlogAdmin = () => {
+  const api = useBlogApi();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    types.ApiResponseSuccess<any>,
+    Error,
+    any
+  >({
+    mutationFn: (requestParameters: any) => {
+      return api.getSingleBlogAdmin(requestParameters);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['delete_blog'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error creating user:', error);
+    },
+  });
+};
+
 export const useChangeToDraft = () => {
   const api = useBlogApi();
   const queryClient = useQueryClient();

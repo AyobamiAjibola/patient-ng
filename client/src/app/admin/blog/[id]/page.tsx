@@ -9,16 +9,16 @@ import { ArrowBackRounded, ChatBubbleOutlineSharp, DeleteOutlineOutlined, Descri
 import { Box, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useChangeToArchive, useChangeToDraft, useChangeToPublish, useCreateBlogCategory, useGetBlogCategories, useGetSingleBlog, useUpdateBlog } from '../../hooks/blogHook/useBlog';
+import { useEffect, useMemo, useState } from 'react';
+import { useChangeToArchive, useChangeToDraft, useChangeToPublish, useCreateBlogCategory, useGetBlogCategories, useGetSingleBlog, useGetSingleBlogAdmin, useUpdateBlog } from '../../hooks/blogHook/useBlog';
 import { useSession } from 'next-auth/react';
-import TextEditor from '../../components/TextEditor';
 import Toastify from '@/app/components/ToastifySnack';
-import HTMLReactParser from 'html-react-parser';
 import Select from "react-select";
 import { customStyles } from '@/constant/customStyles';
 import capitalize from 'capitalize';
 import ImageUploader2 from '@/app/components/ImageUploader2';
+import MyEditor from '../../components/JoditEditor/MyEditor';
+import RenderParsedContent from '../../components/HtmlParse/ParseHtml';
 
 type FormValues = {
     title: string;
@@ -34,7 +34,7 @@ export default function page({params}: any) {
     const [content, setContent] = useState("");
     const [openModal, setOpenModal] = useState<boolean>(false);
     const router = useRouter();
-    const getSingleBlogMutation = useGetSingleBlog();
+    const getSingleBlogMutation = useGetSingleBlogAdmin();
     const {data: session} = useSession();
     const [headerImage, setHeaderImage] = useAtom(selectedImageArrayAtom);
     const [bodyImage, setBodyImage] = useAtom(selectedImageArrayAtom2);
@@ -180,11 +180,14 @@ export default function page({params}: any) {
         setOpen(true)
     }
 
-    // const config = useMemo(() => ({
-    //     readonly: false,
-    //     height: 400,
-    //     placeholder: 'Start typing...'
-    // }), []);
+    const config = useMemo(() => ({
+        readonly: false,
+        height: 400,
+        placeholder: 'Start typing...',
+        cleanHTML: {
+            fillEmptyParagraph: false, // Allow empty <li> elements
+          },
+    }), []);
 
     useEffect(() => {
         fetchBlog()
@@ -478,17 +481,10 @@ export default function page({params}: any) {
                         </Box>
 
                         <Box my={4}>
-                            <TextEditor
-                                preference={content}
-                                setPreference={setContent}
+                            <MyEditor
+                                content={content}
+                                setContent={setContent}
                             />
-                            {/* <JoditEditor
-                                ref={editor}
-                                value={content}
-                                onChange={(newContent) => {}}
-                                config={config}
-                                onBlur={newContent => setContent(newContent)}
-                            /> */}
                         </Box>
                         <Box width={'100%'} mt={'4em'} mb={'2em'}>
                             <NButton
@@ -644,14 +640,8 @@ export default function page({params}: any) {
                     </Typography>
                     <Divider sx={{mb: 4}} />
                     <Box overflow={'scroll'}>
-                        {HTMLReactParser(content)}
+                        <RenderParsedContent htmlContent={content} />
                     </Box>
-                    {/* <Box
-                        sx={{
-                            overflow: 'scroll'
-                        }}
-                        dangerouslySetInnerHTML={{ __html: content }}
-                    /> */}
                 </Box>
             </MModal>
 

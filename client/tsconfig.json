@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/admin/dashboard/page.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/admin/dashboard/page.tsx", "src/app/admin/components/DraftJs.jsx", "src/app/admin/components/Tiptap/Toolbar.jsx", "src/app/admin/components/Tiptap/MyEditor.jsx"],
   "exclude": ["node_modules"]
 }

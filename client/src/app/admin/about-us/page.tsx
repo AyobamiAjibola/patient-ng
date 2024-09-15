@@ -2,14 +2,10 @@
 
 import { Box, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import dynamic from 'next/dynamic';
 import { useAboutUs, useGetDocs } from "../hooks/userHook/useUser";
 import { NButton } from "@/app/components/PButton";
 import Toastify from "@/app/components/ToastifySnack";
- 
-const DynamicHeader = dynamic(() => import('../components/TextEditor'), {
-  ssr: false,
-})
+import MyEditor from "../components/JoditEditor/MyEditor";
 
 export default function page() {
   const [aboutUs, setAboutUs] = useState<string>('');
@@ -67,10 +63,11 @@ export default function page() {
         <Typography variant="labellg">
           About Us
         </Typography>
-        <DynamicHeader
-          preference={aboutUs}
-          setPreference={setAboutUs}
+        <MyEditor
+          content={aboutUs}
+          setContent={setAboutUs}
         />
+
       </Box>
 
       {/* <Box mt={4} mb={6}>

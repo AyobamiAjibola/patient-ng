@@ -256,7 +256,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
           ) : null}
           {/* Desktop navigation links */}
           {isMobile ? null : (
-            <ul style={{ display: 'flex', gap: theme.spacing(4) }}>
+            <ul style={{ display: 'flex', gap: theme.spacing(4), listStyleType: 'none' }}>
               {pages.map((item, index) => (
                 <li key={index}>
                   <Link href={item.href} className='flex flex-row items-center' 
@@ -400,6 +400,7 @@ export default function Navbar({ showSearchBar = false }: NavbarProps) {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: theme.spacing(3),
+                listStyleType: 'none'
               }}
             >
               {pages.map((item, ind) => (

@@ -479,7 +479,8 @@ export default function page() {
             {currentStep === 3 && (<ul
               style={{
                 margin: '10px',
-                padding: '10px'
+                padding: '10px',
+                listStyleType: 'none'
               }}
             >
               <li className="text-sm"><FiberManualRecord sx={{fontSize: '10px'}}/> Your name, Phone number and Email address.</li>

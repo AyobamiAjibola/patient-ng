@@ -110,7 +110,7 @@ const BlogAdminTable: React.FC = ({data}: any) => {
       render: (_, record) => {
         const handleUser = () => {
           if(session?.user.userType.includes('blogger') || session?.user.userType.includes('admin')) {
-            router.push(`/admin/blog${record.urlSlug}`)
+            router.push(`/admin/blog/${record._id}`)
           } else {
             return;
           }

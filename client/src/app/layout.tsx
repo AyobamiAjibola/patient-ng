@@ -9,12 +9,13 @@ import CustomThemeWrapper from "./components/CustomThemeWrapper";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "patient.ng",
-  description: "Find patient support that actually works!",
+  metadataBase: new URL(`${process.env.NEXT_PUBLIC_CLIENT_URL}`),
+  title: `${process.env.NEXT_PUBLIC_TITLE}`,
+  description: `${process.env.NEXT_PUBLIC_DESC}`,
   openGraph: {
-    title: "patient.ng",
-    description: "Find patient support that actually works!",
-    url: "https://patient.ng",
+    title: `${process.env.NEXT_PUBLIC_TITLE}`,
+    description: `${process.env.NEXT_PUBLIC_DESC}`,
+    url: `${process.env.NEXT_PUBLIC_CLIENT_URL}`,
     images: [
       {
         url: "/logo.png",

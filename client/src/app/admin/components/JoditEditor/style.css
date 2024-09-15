@@ -1,0 +1,9 @@
+.jodit-wysiwyg ol {
+    padding-left: 1.5rem;
+    list-style-type: disc; /* Ensure list markers are shown */
+  }
+  
+  .jodit-wysiwyg ul li,
+  .jodit-wysiwyg ol li {
+    margin-left: 1rem; /* Adjust margins for list items */
+  }
