@@ -389,7 +389,7 @@ export default class BlogController {
         const userType = req.user.userType;
         const blogId = req.params.blogId;
 
-        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
+        const blog = await datasources.blogDAOService.findById(blogId);
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
         
@@ -418,7 +418,7 @@ export default class BlogController {
         const userType = req.user.userType;
         const blogId = req.params.blogId;
 
-        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
+        const blog = await datasources.blogDAOService.findById(blogId);
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
 
@@ -447,7 +447,7 @@ export default class BlogController {
         const userType = req.user.userType;
         const blogId = req.params.blogId;
 
-        const blog = await datasources.blogDAOService.findByAny({urlSlug: `/${blogId}`});
+        const blog = await datasources.blogDAOService.findById(blogId);
         if(!blog)
             return Promise.reject(CustomAPIError.response("Blog not found", HttpStatus.NOT_FOUND.code));
 
@@ -596,7 +596,7 @@ export default class BlogController {
             form.parse(req, async (err, fields, files) => {
                 const loggedInUser = req.user._id;
                 const blogId = req.params.blogId;
-
+                console.log(blogId, 'blogId')
                 const { error, value } = Joi.object<IBlogModel>({
                     title: Joi.string().label('Title'),
                     urlSlug: Joi.string().label('Url slug'),
