@@ -73,30 +73,30 @@ export default function Footer() {
             </Link>
           ),
         },
-        {
-          key: '3',
-          label: (
-            <Link href={'webinar'}>
-                Webinar
-            </Link>
-          ),
-        },
-        {
-            key: '4',
-            label: (
-              <Link href={'podast'}>
-                  Podcast
-              </Link>
-            ),
-        },
-        {
-            key: '5',
-            label: (
-              <Link href={'award'}>
-                  Award
-              </Link>
-            ),
-        },
+        // {
+        //   key: '3',
+        //   label: (
+        //     <Link href={'webinar'}>
+        //         Webinar
+        //     </Link>
+        //   ),
+        // },
+        // {
+        //     key: '4',
+        //     label: (
+        //       <Link href={'podast'}>
+        //           Podcast
+        //       </Link>
+        //     ),
+        // },
+        // {
+        //     key: '5',
+        //     label: (
+        //       <Link href={'award'}>
+        //           Award
+        //       </Link>
+        //     ),
+        // },
         {
             key: '6',
             label: (

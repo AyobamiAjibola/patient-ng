@@ -65,7 +65,7 @@ export default function page() {
 
     await createComplainMutation.mutateAsync(payload, {
       onSuccess: (response) => {
-        handleOpenNotification('success', response.message)
+        handleOpenNotification('success', 'Successfully submitted complaint.')
         reset()
       },
       onError: (error: any) => {
@@ -738,10 +738,11 @@ export default function page() {
             bkgcolor={theme.palette.primary.main}
             textcolor="white"
             width='200px'
-            onClick={() => session?.user ? null : router.push('/signup')}
+            onClick={() => session?.user 
+                            ? router.push('/account')
+                            : router.push('/signup')}
           >
-            {/* {session?.user ? 'Continue' : 'Sign up'} */}
-            Sign up
+            {session?.user ? 'Start learning' : 'Sign up'}
           </NButton>
         </Box>
       </FramerMotion>

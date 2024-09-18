@@ -168,7 +168,7 @@ export default function CrowdFundings() {
               }}
             >
               <PButton bg={true} transBg={false} width='200px' onClick={() => router.push('/crowdfunding/new-campaign')}>
-                Start a Fundraiser
+                Start your campaign
               </PButton>
             </Box>
           </Box>

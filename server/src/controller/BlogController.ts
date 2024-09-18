@@ -672,7 +672,9 @@ export default class BlogController {
                     publisher: value.publisher ? value.publisher : blog.publisher,
                     category: value.category ? category?._id : blog.category,
                     titleImage: _titleImage ? _titleImage as string : blog.titleImage,
-                    bodyImage: _bodyImage ? _bodyImage as string : blog.bodyImage,
+                    bodyImage: _bodyImage 
+                                ? _bodyImage as string 
+                                : value.bodyImage === 'undefined' ? '' : value.bodyImage,
                     // hot: value.hot ? value.hot : blog.hot,
                     urlSlug: value.urlSlug ? value.urlSlug : blog.urlSlug
                 }

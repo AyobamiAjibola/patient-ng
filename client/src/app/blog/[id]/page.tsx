@@ -407,7 +407,7 @@ export default function Blog({ params }: any) {
                             color: theme.palette.secondary.light
                         }}
                     >
-                        Like or share your thoughts
+                        Leave a comment
                     </Typography>
                     <Box sx={{display: 'flex', gap: 5, mt: 4, flexDirection: 'column'}}>
                         <Box sx={{display: 'flex', gap: 5}}>
@@ -437,7 +437,7 @@ export default function Blog({ params }: any) {
                                                 : theme.palette.primary.main
                                     }}
                                 >
-                                    like
+                                    Like
                                 </Typography>
                             </Box>
                             <Box sx={{display: 'flex', gap: 1, alignItems: 'center', cursor: 'pointer'}}

@@ -11,6 +11,9 @@ export default function MyEditor({ content, setContent }: any) {
         readonly: false,
         height: 400,
         placeholder: 'Start typing...',
+        uploader: {
+            insertImageAsBase64URI: true 
+        }
     }), []);
 
     return (

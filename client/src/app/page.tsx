@@ -46,7 +46,7 @@ const faq = [
             to others.`
   },
   {
-    title: 'How do hospital ratings and reviews work?',
+    title: 'How does the Patient feedback work?',
     summary: `Patients can rate and review hospitals based on their experiences, helping others make
               informed decisions about their healthcare providers.`,
     id: 3
@@ -504,7 +504,7 @@ export default function HomePage() {
         <Box 
           sx={{
             display: 'flex', justifyContent: 'center',
-            mt: 4, mb: 4
+            mt: 4, mb: 4, gap: 3
           }}
         >
           <NButton
@@ -514,6 +514,14 @@ export default function HomePage() {
             onClick={() => router.push('/crowdfunding/campaigns')}
           >
             See all campaigns <ArrowForward/>
+          </NButton>
+          <NButton transBg={true} bg={false}
+            bordercolor={theme.palette.primary.main}
+            hoverbordercolor={theme.palette.primary.main}
+            onClick={() => router.push('/crowdfunding/new-campaign')}
+            width='250px'
+          >
+            Start your campaign
           </NButton>
         </Box>
       </FramerMotion>

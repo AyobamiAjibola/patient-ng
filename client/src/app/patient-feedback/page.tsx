@@ -24,9 +24,11 @@ import { FramerMotion3 } from "../components/FramerMotion";
 
 const rates = [
     "All",
-    "3.0",
-    "4.4",
-    "4.5"
+    "1",
+    "2",
+    "3",
+    "4",
+    "5"
 ];
 
 export default function Insight() {
@@ -81,7 +83,7 @@ export default function Insight() {
 
         setSearchQuery(cleanedInput);
     };
-
+    console.log(searchQuery, 'query')
     const handlePageChange = (newPage: any) => {
         setCurrPage(newPage);
     };
@@ -179,9 +181,7 @@ export default function Insight() {
                     Find a hospital in your area
                 </Typography>
                 <Typography variant="paragraphlg">
-                    {`Hospital feedback provided by real patients offer 
-                    insights towards best patient experiences for improved 
-                    healthcare outcomes.`}
+                    {`Trusted feedback and reviews from verified patients.`}
                 </Typography>
             </Box>
 
@@ -236,12 +236,11 @@ export default function Insight() {
                         }}
                     >
                         {
-                            rates.map((rating, index) => (
+                            rates.map((rating: any, index) => (
                                 <Box key={index}
                                     sx={{
                                         display: 'flex',
-                                        gap: 1,
-                                        borderRight: index === 3 ? 'none' : `1px solid ${theme.palette.secondary.lighter}`,
+                                        borderRight: index === 5 ? 'none' : `1px solid ${theme.palette.secondary.lighter}`,
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                         p: 1,
@@ -254,18 +253,18 @@ export default function Insight() {
                                         width:'100%'
                                     }}
                                     onClick={()=>{
-                                        setSearchQuery(rating)
+                                        // setSearchQuery(rating)
                                         setRate(rating)}}
                                 >
-                                    <Star sx={{color: '#FFCB00', fontSize: '14px'}}/>
                                     <Typography
                                         sx={{
                                             fontSize: theme.typography.labelxs.fontSize,
                                             fontWeight: theme.typography.labelsm.fontWeight
                                         }}
                                     >
-                                        {rating === "All" ? `${rating}` : `${rating}+`}
+                                        {rating === "All" ? `${rating}` : `${rating}`}
                                     </Typography>
+                                    <Star sx={{color: '#FFCB00', fontSize: '14px'}}/>
                                 </Box>
                             ))
                         }

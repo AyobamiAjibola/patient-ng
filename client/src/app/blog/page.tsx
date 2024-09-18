@@ -116,7 +116,7 @@ export default function Blog() {
               width: isMobile ? '100%' : '70%'
             }}
           >
-            {`We are trusted source for information, support, and advocacy on patient care in Nigeria.
+            {`We are a trusted source for information, support and patient advocacy in Nigeria.
             `}
           </Typography>
           <Typography 
@@ -128,9 +128,7 @@ export default function Blog() {
             }}
           >
             {`
-              Here, we empower patient caregivers and advocates with valuable insights on navigating 
-              healthcare systems, raising funds for medical expenses, and amplifying patient voices 
-              through stories of hope and inspiration.
+              Here, we empower patients, caregivers and advocates with valuable insights on navigating healthcare systems, raising funds for medical expenses, and amplifying patient voices through stories of hope and inspiration.
             `}
           </Typography>
         </Box>

@@ -30,8 +30,8 @@ export default function layout({ children }: any) {
     const menu = [
         'Account Information',
         'Crowdfunding',
-        'Insights',
-        'Advocacy',
+        'Patient Feedback',
+        'Advocacy Learning',
     ];
 
     const fetchSingleUser = async (id: any) => {
@@ -135,7 +135,7 @@ export default function layout({ children }: any) {
                                     menu.map((item, index) => (
                                         <Box key={index}
                                             onClick={() => {
-                                                if(pathname.includes('/crowdfunding/') || pathname.includes('/reviews/') || pathname.includes('/advocacy/')){
+                                                if(pathname.includes('/crowdfunding/') || pathname.includes('/patient-feedback/') || pathname.includes('/advocacy/')){
                                                     router.push('/account')
                                                 }
                                                 setCurrentIndex(index)

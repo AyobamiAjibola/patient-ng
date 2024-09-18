@@ -139,6 +139,10 @@ export default function Page() {
                     alt="logo"
                     width={60}
                     height={60}
+                    onClick={()=>router.push('/')}
+                    style={{
+                        cursor: 'pointer',
+                    }}
                 />
                 <Typography variant='h5' mt={2}>
                     Reset Your Password

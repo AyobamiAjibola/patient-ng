@@ -5,8 +5,8 @@ import InputField from '@/app/components/InputField';
 import MModal from '@/app/components/Modal';
 import { NButton } from '@/app/components/PButton';
 import { selectedImageArrayAtom, selectedImageArrayAtom2 } from '@/lib/atoms';
-import { ArrowBackRounded, ChatBubbleOutlineSharp, DeleteOutlineOutlined, DescriptionOutlined, Favorite, FavoriteBorderOutlined, RemoveRedEyeOutlined, SendOutlined } from '@mui/icons-material';
-import { Box, Divider, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { ArrowBackRounded, ChatBubbleOutlineSharp, Close, DeleteOutlineOutlined, DescriptionOutlined, Favorite, FavoriteBorderOutlined, Remove, RemoveRedEyeOutlined, SendOutlined } from '@mui/icons-material';
+import { Box, Divider, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -53,6 +53,7 @@ export default function page({params}: any) {
     const upateBlogMutation = useUpdateBlog();
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
+    const [removeImage, setRemoveImage] = useState(false);
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -79,7 +80,11 @@ export default function page({params}: any) {
 
         const payload = {
             titleImage: headerImage[0],
-            bodyImage: bodyImage[0],
+            bodyImage: removeImage 
+                        ? undefined 
+                        : !removeImage && bodyImage[0] 
+                            ? bodyImage[0] 
+                            : image2 && image2,
             urlSlug: link,
             body: content,
             title: title,
@@ -87,7 +92,7 @@ export default function page({params}: any) {
             publisher: author,
             blogId: params.id
         }
-
+    
         await upateBlogMutation.mutateAsync(payload, {
             onSuccess: async (response) => {
                 await fetchBlog()
@@ -441,6 +446,7 @@ export default function page({params}: any) {
                                     sx={{
                                         display: 'flex',
                                         width: '50%',
+                                        position: 'relative',
                                         m: 3
                                     }}
                                 >
@@ -455,6 +461,27 @@ export default function page({params}: any) {
                                             height: '200px'
                                         }}
                                     />
+                                    <Box 
+                                        onClick={()=>{setImage2(''), setBodyImage([]), setRemoveImage(true)}}
+                                        sx={{
+                                            display: image2 ? 'flex' : 'none',
+                                            left: '95%',
+                                            top: '-12px',
+                                            position: 'absolute',
+                                            bgcolor: 'red',
+                                            width: '1.8em',
+                                            height: '1.8em',
+                                            '&:hover': {
+                                                bgcolor: 'red'
+                                            },
+                                            borderRadius: '50%',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <Close sx={{color: 'white', fontSize: '16px'}}/>
+                                    </Box>
                                 </Box>
                                 <Box
                                     sx={{

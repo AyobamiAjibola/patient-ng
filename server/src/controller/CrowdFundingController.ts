@@ -286,7 +286,7 @@ export default class CrowdFundingontroller {
                     address: Joi.string().required().label('address'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-                console.log(value, 'val')
+
                 const [user] = await Promise.all([
                     datasources.userDAOService.findById(loggedInUser),
                 ]);
@@ -367,47 +367,37 @@ export default class CrowdFundingontroller {
     private async doUpdateCrowdFunding(req: Request): Promise<HttpResponse<ICrowdFundingModel>> {
         return new Promise((resolve, reject) => {
             form.parse(req, async (err, fields, files) => {
-                const loggedInUser = req.user._id;
                 const crowdFundingId = req.params.crowdFundingId;
 
                 const { error, value } = Joi.object<any>({
                     title: Joi.string().label('Title'),
-                    description: Joi.string().label('Content'),
-                    amountNeeded: Joi.string().label('Amount raised'),
+                    description: Joi.string().label('Description'),
+                    fundraisingFor: Joi.string().label('Fundraiser'),
+                    accountNumber: Joi.string().label('Account Number'),
+                    accountName: Joi.string().label('Account Name'),
+                    bankCode: Joi.string().label('Bank Code'),
+                    bank: Joi.string().label('Bank'),
+                    state: Joi.string().label('State'),
+                    lga: Joi.string().label('LGA'),
+                    amountNeeded: Joi.string().label('Amount needed'),
                     image: Joi.any().label('Image'),
-                    // video: Joi.any().label('Video'),
-                    // fundraisingFor: Joi.string().label('Fundraiser'),
-                    // accountNumber: Joi.string().label('Account Number'),
-                    // bank: Joi.string().label('Bank'),
-                    address: Joi.string().label('Address'),
+                    address: Joi.string().label('address'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-                const [user, crowdFunding] = await Promise.all([
-                    datasources.userDAOService.findById(loggedInUser),
-                    datasources.crowdFundingDAOService.findById(crowdFundingId)
+                const [crowdFund] = await Promise.all([
+                    datasources.crowdFundingDAOService.findById(crowdFundingId),
                 ]);
 
-                if(!crowdFunding) 
-                    return reject(CustomAPIError.response("Crowd funding not found.", HttpStatus.NOT_FOUND.code));
+                if(!crowdFund) 
+                    return reject(CustomAPIError.response("Campaign not found.", HttpStatus.NOT_FOUND.code));
 
-                if(crowdFunding.status !== 'pending')
-                    return reject(CustomAPIError.response("You can not edit this fundraiser as it is eigther active or rejected.", HttpStatus.NOT_FOUND.code));
-
-                if(!user)
-                    return reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
-
-                // const allowedUser = Generic.handleAllowedCrowdFundUser(user.userType);
-                // if(!allowedUser) 
-                //     return reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+                if(crowdFund && crowdFund.status === "inactive" || crowdFund.status === "done")
+                    return reject(CustomAPIError.response("You can not update an inactive or done campaign.", HttpStatus.FORBIDDEN.code))
 
                 const basePath = `${UPLOAD_BASE_PATH}/photo`;
                 const basePathVid = `${UPLOAD_BASE_PATH}/video`;
-                
-                // const [_image, _video] = await Promise.all([
-                //     Generic.handleImage(files.image as File, basePath),
-                //     Generic.handleVideo(files.video as File, basePathVid)
-                // ]);
+
                 const { result: _image, error: imageError } = await Generic.handleImage(files.image as File, basePath);
                 if (imageError) {
                     return reject(CustomAPIError.response(imageError, HttpStatus.BAD_REQUEST.code));
@@ -419,28 +409,27 @@ export default class CrowdFundingontroller {
                 }
 
                 const payload = {
-                    title: value.title ? value.title : crowdFunding.title,
-                    description: value.description ? value.description : crowdFunding.description,
-                    amountNeeded: value.amountNeeded ? value.amountNeeded : crowdFunding.amountNeeded,
-                    image: _image ? _image : crowdFunding.image,
-                    address: value.address ? value.address : crowdFunding.address,
-                    // video: _video ? _video : crowdFunding.video,
-                    // fundraisingFor: value.fundraisingFor ? value.fundraisingFor : crowdFunding.fundraisingFor,
-                    // account: {
-                    //     accountName: value.accountName ? value.accountName : crowdFunding.account.accountName,
-                    //     accountNumber: value.accountNumber ? value.accountNumber : crowdFunding.account.accountNumber,
-                    //     bank: value.bank ? value.bank : crowdFunding.account.bank
-                    // },
-                    // location: {
-                    //     state: value.state ? value.state : crowdFunding.location.state,
-                    //     lga: value.lga ? value.lga : crowdFunding.location.lga
-                    // }
+                    title: value.title ? value.title : crowdFund.title,
+                    description: value.description ? value.description : crowdFund.description,
+                    amountNeeded: value.amountNeeded ? value.amountNeeded : crowdFund.amountNeeded,
+                    image: _image ? _image : crowdFund.image,
+                    address: value.address ? value.address : crowdFund.address,
+                    fundraisingFor: value.fundraisingFor ? value.fundraisingFor : crowdFund.fundraisingFor,
+                    account: {
+                        accountName: value.accountName ? value.accountName : crowdFund.account.accountName,
+                        accountNumber: value.accountNumber ? value.accountNumber : crowdFund.account.accountNumber,
+                        bank: value.bank ? value.bank : crowdFund.account.bank
+                    },
+                    location: {
+                        state: value.state ? value.state : crowdFund.location.state,
+                        lga: value.lga ? value.lga : crowdFund.location.lga
+                    }
                 }
 
-                const updatedCrowdFunding = await datasources.crowdFundingDAOService.updateByAny({_id: crowdFunding._id}, payload as ICrowdFundingModel);
+                const crowdFunding = await datasources.crowdFundingDAOService.update({ _id: crowdFund._id }, payload);
 
                 //@ts-ignore
-                return resolve(updatedCrowdFunding)
+                return resolve(crowdFunding)
 
             })
         })

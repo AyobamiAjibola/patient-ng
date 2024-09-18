@@ -38,13 +38,13 @@ export const useCrowdFundingApi = () => {
 
         formData.append('title', data.title);
         formData.append('description', data.description);
-        // formData.append('fundraisingFor', `${data.firstName} ${data.lastName}`);
-        // formData.append('accountNumber', data.accountNumber);
-        // formData.append('accountName', data.accountName);
-        // formData.append('bankCode', data.bankCode);
-        // formData.append('bank', data.bank);
-        // formData.append('state', data.state);
-        // formData.append('lga', data.lga);
+        formData.append('fundraisingFor', `${data.fundraisingFor}`);
+        formData.append('accountNumber', data.accountNumber);
+        formData.append('accountName', data.accountName);
+        formData.append('bankCode', data.bankCode);
+        formData.append('bank', data.bank);
+        formData.append('state', data.state);
+        formData.append('lga', data.lga);
         formData.append('amountNeeded', data.amountNeeded);
         formData.append('image', data.image);
         formData.append('address', data.address);

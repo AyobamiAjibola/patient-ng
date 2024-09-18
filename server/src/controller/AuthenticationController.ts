@@ -328,7 +328,7 @@ export default class AuthenticationController {
         const password = value.password as string;
 
         const isMatch = await this.passwordEncoder?.match(password.trim(), hash ? hash.trim() : '');
-        if(!isMatch) return Promise.reject(CustomAPIError.response(`${HttpStatus.UNAUTHORIZED.value}. Invalid Password.`, HttpStatus.UNAUTHORIZED.code));
+        if(!isMatch) return Promise.reject(CustomAPIError.response(`Unauthorized. Invalid Password.`, HttpStatus.UNAUTHORIZED.code));
 
         if(!user.active)
             return Promise.reject(

@@ -63,18 +63,18 @@ const resources = [
     name: "Patient stories",
     link: "/patient-stories"
   },
-  {
-    name: "Webinar",
-    link: "/webinar"
-  },
-  {
-    name: "Podcast",
-    link: "/podcast"
-  },
-  {
-    name: "Award",
-    link: "/award"
-  },
+  // {
+  //   name: "Webinar",
+  //   link: "/webinar"
+  // },
+  // {
+  //   name: "Podcast",
+  //   link: "/podcast"
+  // },
+  // {
+  //   name: "Award",
+  //   link: "/award"
+  //},
   {
     name: 'Patient Feedback',
     link: '/patient-feedback',

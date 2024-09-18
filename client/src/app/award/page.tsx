@@ -107,7 +107,7 @@ export default function Award() {
                             color: 'white', mb: isMobile ? -2 : -3
                         }}
                     >
-                        Health &
+                        Patient.ng
                     </Typography>
                     <Typography
                         sx={{
@@ -116,7 +116,7 @@ export default function Award() {
                             color: 'white'
                         }}
                     >
-                        Wellness Awards
+                        Awards
                     </Typography>
                 </FramerMotion2>
             </Box>

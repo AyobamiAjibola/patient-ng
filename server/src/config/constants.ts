@@ -7,7 +7,7 @@ import QueueEvents = appCommonTypes.QueueEvents;
       201: 'Accepted',
       202: 'Created',
       400: 'Bad Request. Please Contact Support.',
-      401: 'You Are Not Authenticated. Please Contact Support.',
+      401: 'You are not logged in, please login or signup to continue.',
       403: 'You Are Forbidden From Accessing This Resource.',
       404: 'Not Found. Please Contact Support.',
       500: 'Something Went Wrong. Please Contact Support.',

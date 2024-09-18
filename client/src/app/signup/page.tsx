@@ -262,6 +262,10 @@ export default function page() {
                     alt="logo"
                     width={60}
                     height={60}
+                    onClick={()=>router.push('/')}
+                    style={{
+                        cursor: 'pointer',
+                    }}
                 />
                 <Typography variant='h5' mt={2}>
                     Create Your Account

@@ -2,14 +2,15 @@
 
 import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { characterBreaker, formAmount } from '@/lib/helper';
 import { useAtom } from 'jotai';
 import { useAdminUser, useCrowdStatus } from '@/lib/atoms';
 import moment from 'moment';
+import { Edit, Visibility } from '@mui/icons-material';
 
-const CrowdfundingAdminTable: React.FC = ({data}: any) => {
+const CrowdfundingAdminTable: React.FC = ({data, setOpenEditModal, setCampaignId}: any) => {
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -107,18 +108,21 @@ const CrowdfundingAdminTable: React.FC = ({data}: any) => {
           setIsAdmin(true)
           router.push(`/crowdfunding/${record._id}`)
         }
+
+        const handleEdit = () => {
+          setOpenEditModal(true)
+          setCampaignId(record._id)
+        }
+
         return (
-          <Typography variant='labelxs'
-            onClick={handleUser}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': {
-                color: theme.palette.primary.main
-              }
-            }}
-          >
-            Open
-          </Typography>
+          <Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+            <IconButton onClick={handleUser}>
+              <Visibility sx={{ color: theme.palette.primary.main }}/>
+            </IconButton>
+           {record.status === 'pending' || record.status === 'active' && ( <IconButton onClick={handleEdit}>
+              <Edit sx={{ fontSize: '16px' }}/>
+            </IconButton>)}
+          </Box>
       )},
     },
   ];

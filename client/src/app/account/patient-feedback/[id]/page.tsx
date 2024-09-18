@@ -67,6 +67,7 @@ export default function page({ params }: any) {
   const handleGetInsight = async () => {
     await getInsightMutation.mutateAsync(params.id, {
         onSuccess: (response: any) => {
+            console.log(response.result, 'result')
             setData({
                 hospital: response.result.hospitalName,
                 reviews: response.result.comment,

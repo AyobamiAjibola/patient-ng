@@ -76,18 +76,18 @@ export default function Reviews() {
                 }}
               >
                 <Typography variant="labellg">
-                  {review.hospitalName}
+                  {capitalize.words(review.hospital.hospitalName)}
                 </Typography>
-                <Tag 
-                  color={review.status.toLowerCase() === 'approved'
+                {/* <Tag 
+                  color={ review.review.status.toLowerCase() === 'Approved'
                           ? 'success'
-                          : review.status.toLowerCase() === 'rejected'
+                          : review.review.status.toLowerCase() === 'Rejected'
                             ? 'error'
                             : 'warning'
                         }
                 >
-                  {capitalize.words(review.status)}
-                </Tag>
+                  {capitalize.words(review.review.status)}
+                </Tag> */}
               </Box>
 
               <Typography
@@ -97,7 +97,7 @@ export default function Reviews() {
                   color: theme.palette.secondary.light
                 }}
               >
-                {wordBreaker(review.comment, 40)}
+                {wordBreaker(review.review.review, 40)}
               </Typography>
 
               <Box
@@ -120,7 +120,7 @@ export default function Reviews() {
                       fontSize: theme.typography.labelxs.fontSize
                     }}
                   >
-                    {moment(review.createdAt).format('DD MMM YY')}
+                    {moment(review.review.createdAt).format('DD MMM YY')}
                   </Typography>
                 </Box>
 
@@ -134,7 +134,7 @@ export default function Reviews() {
                   <Rating
                     name="half-rating-read"
                     size={'small'}
-                    value={review.rating}
+                    value={review.review.rating}
                     precision={0.5}
                     readOnly
                     sx={{ color: theme.palette.state.warning }}
@@ -142,11 +142,11 @@ export default function Reviews() {
                 </Box> 
               </Box>
 
-              <PButton transBg={true} bg={false} width='10%'
-                onClick={() => router.push(`/account/reviews/${review._id}`)}
+              {/* <PButton transBg={true} bg={false} width='10%'
+                onClick={() => router.push(`/account/patient-feedback/${review.review._id}`)}
               >
                 Modify
-              </PButton>
+              </PButton> */}
             </Box>
             ))
           ) : (

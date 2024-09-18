@@ -111,7 +111,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
             </Box>
           </Box>
         </MenuItem>
-        <MenuItem onClick={() => handleClose('/webinar')}>
+        {/* <MenuItem onClick={() => handleClose('/webinar')}>
           <Box className='flex flex-col'>
             <Box className='flex gap-4 justify-start'>
               <Image
@@ -210,7 +210,7 @@ export default function MenuDropDown({ anchorEl, setAnchorEl, open, handleClick 
               </Typography> 
             </Box>
           </Box>
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={() => handleClose('/patient-feedback')}>
           <Box className='flex flex-col'>
             <Box className='flex gap-4 justify-start'>
