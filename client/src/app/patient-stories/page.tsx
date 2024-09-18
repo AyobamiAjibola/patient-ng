@@ -262,8 +262,13 @@ export default function PatientStories() {
                                         borderRadius: theme.borderRadius.sm,
                                         width: isMobile ? '100%' : '32%',
                                         minWidth: '300px',
-                                        height: isMobile ? 450 : 400
+                                        height: isMobile ? 450 : 400,
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            bgcolor: theme.palette.secondary.lighter,
+                                        }
                                     }} key={index}
+                                    onClick={() => router.push(`/patient-stories/${story._id}`)}
                                 >
                                     <img
                                         src={story.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${story.image}` : '/person.png'}
@@ -286,7 +291,7 @@ export default function PatientStories() {
                                     >
                                         by {story.user.firstName} {story.user.lastName}
                                     </Typography>
-                                    <Typography onClick={() => router.push(`/patient-stories/${story._id}`)} px={2}
+                                    {/* <Typography onClick={() => router.push(`/patient-stories/${story._id}`)} px={2}
                                         variant="paragraphxxs"
                                         sx={{
                                             mb: 1, cursor: 'pointer',
@@ -294,7 +299,7 @@ export default function PatientStories() {
                                         }}
                                     >
                                         Read story <ArrowForward sx={{fontSize: theme.typography.labelxs.fontSize}}/>
-                                    </Typography>
+                                    </Typography> */}
                                 </Box>
                             ))
                         ) : (

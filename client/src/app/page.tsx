@@ -504,24 +504,27 @@ export default function HomePage() {
         <Box 
           sx={{
             display: 'flex', justifyContent: 'center',
-            mt: 4, mb: 4, gap: 3
+            mt: 4, mb: 4, gap: 3,
+            flexDirection: isMobile ? 'column' : 'row'
           }}
         >
           <NButton
             bkgcolor={theme.palette.primary.main}
             textcolor='white'
-            width='250px'
+            width={isMobile ? '100%' : '250px'}
             onClick={() => router.push('/crowdfunding/campaigns')}
           >
-            See all campaigns <ArrowForward/>
+            <Typography variant='paragraphbase'>See all campaigns</Typography><ArrowForward/>
           </NButton>
           <NButton transBg={true} bg={false}
             bordercolor={theme.palette.primary.main}
             hoverbordercolor={theme.palette.primary.main}
             onClick={() => router.push('/crowdfunding/new-campaign')}
-            width='250px'
+            width={isMobile ? '100%' : '250px'}
           >
-            Start your campaign
+            <Typography variant='paragraphbase'>
+              Start your campaign
+            </Typography>
           </NButton>
         </Box>
       </FramerMotion>

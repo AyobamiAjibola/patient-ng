@@ -57,7 +57,7 @@ export default function page() {
                 pt: 8
             }}
         >
-            <Typography variant="h4">
+            <Typography variant="h4" mb={3}>
                 Campaigns
             </Typography>
             <Box sx={{width: isMobile ? '100%' : '30%', alignSelf: 'flex-end', mb: 5, mr: '3%'}}>
