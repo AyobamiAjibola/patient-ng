@@ -583,9 +583,9 @@ export default class BlogController {
                     publisherImage: user?.image || ''
                 }
 
-                const blog: any = await datasources.blogDAOService.create(payload as IBlogModel);
+                await datasources.blogDAOService.create(payload as IBlogModel);
 
-                return resolve(blog)
+                return resolve("blog" as any)
 
             })
         })
@@ -598,14 +598,14 @@ export default class BlogController {
                 const blogId = req.params.blogId;
                 console.log(blogId, 'blogId')
                 const { error, value } = Joi.object<IBlogModel>({
-                    title: Joi.string().label('Title'),
-                    urlSlug: Joi.string().label('Url slug'),
-                    content: Joi.string().label('Blog body'),
-                    category: Joi.string().label('Blog category'),
+                    title: Joi.string().optional().allow('').label('Title'),
+                    urlSlug: Joi.string().optional().allow('').label('Url slug'),
+                    content: Joi.string().optional().allow('').label('Blog body'),
+                    category: Joi.string().optional().allow('').label('Blog category'),
                     // hot: Joi.string().label('hot blog'),
                     titleImage: Joi.any().label('Title image'),
                     bodyImage: Joi.any().label('Body image'),
-                    publisher: Joi.string().label('Publisher'),
+                    publisher: Joi.string().optional().allow('').label('Publisher'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 

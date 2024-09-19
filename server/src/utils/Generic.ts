@@ -15,7 +15,7 @@ import { NextFunction, Request } from 'express';
 // import UserToken from '../models/UserToken';
 import * as Jimp from 'jimp';
 import UserToken from '../models/UserToken';
-import { ALLOWED_FILE_TYPES, ALLOWED_FILE_TYPES2, ALLOWED_FILE_TYPES_VID, MAX_SIZE_IN_BYTE_VID, MESSAGES } from '../config/constants';
+import { ALLOWED_FILE_TYPES, ALLOWED_FILE_TYPES2, ALLOWED_FILE_TYPES_VID, IMAGE_SIZE, MAX_SIZE_IN_BYTE_VID, MESSAGES } from '../config/constants';
 import { File } from 'formidable';
 const { promisify } = require('util');
 
@@ -170,19 +170,22 @@ export default class Generic {
 
   public static async handleImage(image: File, basePath: string): Promise<{ result?: string, error?: string }> {
     try {
-        if (!image) return { result: '' };
-        const allowedFileTypes = ALLOWED_FILE_TYPES;
-        if (!allowedFileTypes.includes(image.mimetype as string)) {
-            throw new CustomAPIError(MESSAGES.image_type_error, HttpStatus.BAD_REQUEST.code);
-        }
-        const outputPath = await Generic.compressImage(image.filepath, basePath);
-        const imagePath = await Generic.getImagePath({
-            tempPath: outputPath,
-            filename: image.originalFilename as string,
-            basePath,
-        });
-        
-        return { result: imagePath };
+      if (!image) return { result: '' };
+      const allowedFileTypes = ALLOWED_FILE_TYPES;
+      if (!allowedFileTypes.includes(image.mimetype as string)) {
+        throw new CustomAPIError(MESSAGES.image_type_error, HttpStatus.BAD_REQUEST.code);
+      }
+      if(image.size > IMAGE_SIZE) {
+        throw new CustomAPIError(MESSAGES.image_size_error, HttpStatus.BAD_REQUEST.code);
+      }
+      const outputPath = await Generic.compressImage(image.filepath, basePath);
+      const imagePath = await Generic.getImagePath({
+          tempPath: outputPath,
+          filename: image.originalFilename as string,
+          basePath,
+      });
+      
+      return { result: imagePath };
     } catch (error: any) {
       return { error: error.message };
     }

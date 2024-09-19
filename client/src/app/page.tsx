@@ -4,7 +4,7 @@ import Navbar from '@/app/components/Navbar'
 import { NButton } from '@/app/components/PButton';
 import { characterBreaker, wordBreaker } from '@/lib/helper';
 import { Add, ArrowForward, ArrowRight, DesktopWindows, HourglassEmpty, Mic, Remove } from '@mui/icons-material';
-import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Button, Divider, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -818,7 +818,7 @@ export default function HomePage() {
         </Box>
       </FramerMotion>
 
-      <FramerMotion
+      {/* <FramerMotion
         sx={{
           height: 'auto',
           px: isMobile ? '20px' : '90px',
@@ -1001,7 +1001,7 @@ export default function HomePage() {
             ))
           }
         </Box>
-      </FramerMotion>
+      </FramerMotion> 
 
       <FramerMotion
         sx={{
@@ -1152,8 +1152,8 @@ export default function HomePage() {
             ))
           }
         </Box>
-      </FramerMotion>
-
+      </FramerMotion>*/}
+      <Divider/>
       <FramerMotion
         sx={{
           display: 'flex',

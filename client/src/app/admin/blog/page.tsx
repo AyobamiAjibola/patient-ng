@@ -130,7 +130,7 @@ export default function page() {
             const filteredData = response.results?.filter((blog: any) => blog.status === "draft");
             setBlogs(filteredData)
           }else if(currentItem === "Archived") {
-            const filteredData = response.results?.filter((blog: any) => blog.status === "archived");
+            const filteredData = response.results?.filter((blog: any) => blog.status === "archive");
             setBlogs(filteredData)
           }
         }

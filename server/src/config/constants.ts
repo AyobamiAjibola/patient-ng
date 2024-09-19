@@ -12,7 +12,7 @@ import QueueEvents = appCommonTypes.QueueEvents;
       404: 'Not Found. Please Contact Support.',
       500: 'Something Went Wrong. Please Contact Support.',
     },
-    image_size_error: 'Image size exceeds the allowed limit',
+    image_size_error: 'The image size exceeds the allowed limit of 850KB.',
     image_type_error: 'Invalid image format. Only JPEG, PNG, and JPG images are allowed',
     file_type_error: 'Invalid file format. Only mp4 and pdf are allowed',
     vid_size_error: 'File size exceeds the allowed limit.',
@@ -56,6 +56,7 @@ import QueueEvents = appCommonTypes.QueueEvents;
 
   export const MAX_SIZE_IN_BYTE = 10000 * 1024; // 10MB
   export const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
+  export const IMAGE_SIZE = 900000
 
   export const ALLOWED_FILE_TYPES2 = ['application/pdf', 'video/mp4']
 
