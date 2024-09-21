@@ -3,8 +3,8 @@ import InputField from '@/app/components/InputField';
 import Navbar from '@/app/components/Navbar';
 import { wordBreaker } from '@/lib/helper';
 import Footer from '@/app/components/Footer';
-import { ChatBubble, ChatBubbleOutline, Favorite, HourglassEmpty, Share, ThumbUp, ThumbUpOffAlt } from '@mui/icons-material';
-import { Avatar, Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { ChatBubble, ChatBubbleOutline, Favorite, HourglassEmpty, Reply, Share, ThumbUp, ThumbUpOffAlt } from '@mui/icons-material';
+import { Avatar, Box, Button, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Image from 'next/image';
 import { useCommentOnBlog, useGetBlogs, useGetSingleBlog, useLikeBlog, useReplyBlogComment } from '@/app/admin/hooks/blogHook/useBlog';
 import { useEffect, useRef, useState } from 'react';
@@ -14,7 +14,7 @@ import { useSession } from 'next-auth/react';
 import { NButton } from '@/app/components/PButton';
 import MModal from '@/app/components/Modal';
 import HtmlToText from '@/app/components/HtmlToText';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FramerMotion3 } from '@/app/components/FramerMotion';
 import RenderParsedContent from '@/app/admin/components/HtmlParse/ParseHtml';
 
@@ -57,6 +57,7 @@ export default function Blog({ params }: any) {
     const [hotBlog, setHotBlog] = useState<any>({});
     const getBlogsMutation = useGetBlogs();
     const router = useRouter();
+    const pathname = usePathname();
 
     const [openSnack, setOpenSnack] = useState(false);
     const [message, setMessage] = useState('');
@@ -68,6 +69,22 @@ export default function Blog({ params }: any) {
         setIsError(type === 'error');
         setIsSuccess(type === 'success');
         setOpenSnack(true);
+    };
+
+    const shareData = {
+        url: `${process.env.NEXT_PUBLIC_CLIENT_URL}${pathname}`
+      };
+    
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+            await navigator.share(shareData);
+            } catch (error) {
+            handleOpenNotification('error', '', 'Error sharing content')
+            }
+        } else {
+            handleOpenNotification('error', '', 'Web Share API not supported in your browser')
+        }
     };
 
     const handleClickContent = () => {
@@ -322,22 +339,14 @@ export default function Blog({ params }: any) {
                             Comments
                         </Typography>
                         <hr/>
-                        <Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
-                            {
-                                socials.map((logo, index) => (
-                                    <IconButton
-                                        key={index}
-                                    >
-                                        <Image
-                                            src={logo.logo}
-                                            alt='social media logo'
-                                            width={20}
-                                            height={20}
-                                        />
-                                    </IconButton>
-                                ))
-                            }
-                        </Box>
+                        <NButton
+                            bkgcolor={theme.palette.primary.main}
+                            width='200px'
+                            onClick={handleShare}
+                            textcolor='#fff'
+                        >
+                            <Reply sx={{ mb: 1}}/> Share blog
+                        </NButton>
                     </Box>)}
                     <Box ref={contentRef}
                         sx={{

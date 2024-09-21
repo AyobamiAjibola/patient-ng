@@ -5,8 +5,7 @@ import { FramerMotion3 } from "@/app/components/FramerMotion";
 import Navbar from "@/app/components/Navbar";
 import Toastify from "@/app/components/ToastifySnack";
 import { Reply } from "@mui/icons-material";
-import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
-import Image from "next/image";
+import { Box, Button, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 

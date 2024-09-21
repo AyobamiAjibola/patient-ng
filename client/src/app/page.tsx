@@ -105,7 +105,8 @@ export default function HomePage() {
   const fetchBlogs = async () => {
     await getBlogsMutation.mutateAsync({}, {
       onSuccess: (response: any) => {
-        setBlogs(response.results)
+        const filtered = response.results.filter((blog: any) => blog.status === 'publish')
+        setBlogs(filtered)
       }
     })
   }
