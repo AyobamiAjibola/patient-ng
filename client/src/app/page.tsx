@@ -732,65 +732,72 @@ export default function HomePage() {
                 }}
               >
                 {
-                  blogs.length > 0 && blogs.slice(0, 3).map((blog: any) => (
-                    <Box key={blog._id}
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 1,
-                        height: '500px',
-                        minWidth: '300px',
-                        width: isMobile ? '100%' : '32%',
-                        border: `1px solid ${theme.palette.secondary.lighter}`,
-                        borderRadius: theme.borderRadius.sm,
-                        cursor: 'pointer',
-                        '&:hover': {
-                          backgroundColor: theme.palette.secondary.lighter
-                        }
-                      }}
-                      onClick={() => router.push(`/blog${blog.urlSlug }`)}
-                    >
-                      <Box
+                  blogs.length > 0 && blogs.slice(0, 3).map((blog: any) => {
+                    const plainText = blog.content
+                      .replace(/<\/?[^>]+(>|$)/g, '')
+                      .replace(/&nbsp;/g, ' ');
+                    return ( 
+                      <Box key={blog._id}
                         sx={{
-                          height: '60%'
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 1,
+                          height: '500px',
+                          minWidth: '300px',
+                          width: isMobile ? '100%' : '32%',
+                          border: `1px solid ${theme.palette.secondary.lighter}`,
+                          borderRadius: theme.borderRadius.sm,
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: theme.palette.secondary.lighter
+                          }
                         }}
+                        onClick={() => router.push(`/blog${blog.urlSlug }`)}
                       >
-                        <img
-                          src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
-                          alt='blog image'
-                          crossOrigin='anonymous'
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            borderTopLeftRadius: theme.borderRadius.sm,
-                            borderTopRightRadius: theme.borderRadius.sm
+                        <Box
+                          sx={{
+                            height: '60%'
                           }}
+                        >
+                          <img
+                            src={blog.titleImage ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${blog.titleImage}` : '/logo.png'}
+                            alt='blog image'
+                            crossOrigin='anonymous'
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderTopLeftRadius: theme.borderRadius.sm,
+                              borderTopRightRadius: theme.borderRadius.sm
+                            }}
+                          />
+                        </Box>
+                        <Typography variant='paragraphsm' className='capitalize'
+                          sx={{
+                            color: theme.palette.primary.main, px: 3,
+                            my: 3
+                          }}
+                        >
+                          {`[${blog.category.name}]`}
+                        </Typography>
+                        <Typography className='capitalize'
+                          sx={{
+                            fontSize: theme.typography.labellg.fontSize,
+                            fontWeight: theme.typography.labelxl.fontWeight,
+                            whiteSpace: 'pre-wrap', px: 3, lineHeight: 1.3
+                          }}
+                        >
+                          {blog.title.length > 50 ? `${characterBreaker(blog.title, 50)}...` : blog.title}
+                        </Typography>
+                        <HtmlToText2
+                          mx={3}
+                          my={2}
+                          htmlString={isMobile 
+                              ? plainText.length > 25 ? `${wordBreaker(plainText, 25)}...` : wordBreaker(plainText, 25)
+                              : plainText.length > 30 ? `${wordBreaker(plainText, 30)}...` : wordBreaker(plainText, 30)
+                            }
                         />
                       </Box>
-                      <Typography variant='paragraphsm' className='capitalize'
-                        sx={{
-                          color: theme.palette.primary.main, px: 3,
-                          my: 3
-                        }}
-                      >
-                        {`[${blog.category.name}]`}
-                      </Typography>
-                      <Typography className='capitalize'
-                        sx={{
-                          fontSize: theme.typography.labellg.fontSize,
-                          fontWeight: theme.typography.labelxl.fontWeight,
-                          whiteSpace: 'pre-wrap', px: 3, lineHeight: 1.3
-                        }}
-                      >
-                        {blog.title.length > 50 ? `${characterBreaker(blog.title, 50)}...` : blog.title}
-                      </Typography>
-                      <HtmlToText2
-                        mx={3}
-                        my={2}
-                        htmlString={isMobile ? wordBreaker(blog.content, 25) : wordBreaker(blog.content, 30)}
-                      />
-                    </Box>
-                  ))
+                  )})
                 }
               </Box>
             </Box>)

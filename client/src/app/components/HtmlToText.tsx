@@ -1,17 +1,12 @@
 import { useMediaQuery, useTheme, Typography } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import React, { useState, useEffect, useRef } from 'react';
+// const Jodit = dynamic(() => import('jodit-react'), { ssr: false });
 
 const HtmlToText = ({ htmlString, mx }: any) => {
-  const [textContent, setTextContent] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
-
-  useEffect(() => {
-    const tempElement = document.createElement('div');
-    tempElement.innerHTML = htmlString;
-    setTextContent(tempElement.textContent || tempElement.innerText || '');
-  }, [htmlString]);
-
+  
   return (
     <Typography
         sx={{
@@ -20,19 +15,11 @@ const HtmlToText = ({ htmlString, mx }: any) => {
           fontSize: theme.typography.labelsm.fontSize,
           whiteSpace: isMobile ? 'pre-wrap' : 'none',
         }}
-    >{textContent}</Typography>)
+    >{htmlString}</Typography>)
 };
 
 export const HtmlToText2 = ({ htmlString, mx, my }: any) => {
-  const [textContent, setTextContent] = useState('');
   const theme = useTheme();
-  const isMobile = useMediaQuery('(max-width: 900px)');
-
-  useEffect(() => {
-    const tempElement = document.createElement('div');
-    tempElement.innerHTML = htmlString;
-    setTextContent(tempElement.textContent || tempElement.innerText || '');
-  }, [htmlString]);
 
   return (
     <Typography
@@ -43,7 +30,7 @@ export const HtmlToText2 = ({ htmlString, mx, my }: any) => {
         whiteSpace: 'pre-wrap',
         my: my
       }}
-    >{textContent}</Typography>)
+    > {htmlString}</Typography>)
 };
 
 export default HtmlToText;

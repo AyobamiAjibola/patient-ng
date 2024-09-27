@@ -8,7 +8,9 @@ export default function BlogCard({blog}: any) {
     const isMobile = useMediaQuery('(max-width: 900px)');
     const theme = useTheme();
     const router = useRouter();
-
+    const plainText = blog.content
+        .replace(/<\/?[^>]+(>|$)/g, '')  // Removes HTML tags
+        .replace(/&nbsp;/g, ' ');
     return (
         <Box
             key={blog._id}
@@ -60,7 +62,7 @@ export default function BlogCard({blog}: any) {
             </Typography>
             <HtmlToText
                 mx={isMobile ? 2 : 3}
-                htmlString={isMobile ? wordBreaker(blog.content, 25) : wordBreaker(blog.content, 25)}
+                htmlString={plainText.length > 25 ? `${wordBreaker(plainText, 25)}...` : wordBreaker(plainText, 25)}
             />
             </Box>
     )
