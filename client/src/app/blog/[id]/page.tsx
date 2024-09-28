@@ -71,9 +71,7 @@ export default function Blog({ params }: any) {
         setOpenSnack(true);
     };
 
-    const plainText = hotBlog.content
-        .replace(/<\/?[^>]+(>|$)/g, '')
-        .replace(/&nbsp;/g, ' ');
+    const plainText = hotBlog?.content?.replace(/<\/?[^>]+(>|$)/g, '').replace(/&nbsp;/g, ' ');
 
     const shareData = {
         url: `${process.env.NEXT_PUBLIC_CLIENT_URL}${pathname}`
@@ -700,8 +698,8 @@ export default function Blog({ params }: any) {
                             </Typography>
                             <HtmlToText
                                 htmlString={isMobile 
-                                    ? plainText.length > 20 ? `${wordBreaker(plainText, 20)}...` : wordBreaker(plainText, 20)
-                                    : plainText.length > 40 ? `${wordBreaker(plainText, 40)}...` : wordBreaker(plainText, 40)
+                                    ? plainText?.length > 20 ? `${wordBreaker(plainText, 20)}...` : wordBreaker(plainText, 20)
+                                    : plainText?.length > 40 ? `${wordBreaker(plainText, 40)}...` : wordBreaker(plainText, 40)
                                 }
                             />
                             <Box
