@@ -1192,7 +1192,8 @@ export default class UserController {
                     userType: userType && userType.length > 0 ? userType : user.userType,
                     state: value.state ? value.state : user.state,
                     lga: value.lga ? value.lga : user.lga,
-                    image: _image ? _image : user.image
+                    image: _image ? _image : user.image,
+                    isAdmin: userType && userType.length > 0 ? true : user.isAdmin
                 }
 
                 const updatedUser: any = await datasources.userDAOService.updateByAny({_id: user._id}, payload as IUserModel);
