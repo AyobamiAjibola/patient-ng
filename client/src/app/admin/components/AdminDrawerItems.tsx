@@ -106,17 +106,20 @@ export const items2 = {
         {
             title: 'Blog',
             link: '/admin/blog',
-            iconName: EventNoteOutlined
+            iconName: EventNoteOutlined,
+            type: 'blogger'
         },
         {
             title: 'Webinar',
             link: '/admin/webinar',
-            iconName: DynamicFeedOutlined
+            iconName: DynamicFeedOutlined,
+            type: 'webinar'
         },
         {
             title: 'Podcast',
             link: '/admin/podcast',
-            iconName: KeyboardVoiceOutlined
+            iconName: KeyboardVoiceOutlined,
+            type: 'podcast'
         }
     ]
 }

@@ -307,8 +307,8 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
                     justifyContent: isDrawerClosed ? 'center' : 'start',
                   }}
                 >
-                  {items.map(({ link, title, iconName }) => (
-                    <li
+                  {items.map(({ link, title, iconName, type }: any) =>
+                    session?.user.userType.includes(type) && (<li
                       key={title}
                       style={{
                         width: '100%',
@@ -371,8 +371,8 @@ const DrawerComponent = ({ open, drawerClose }: any) => {
                           </Box>
                         </Box>
                       </Link>
-                    </li>
-                  ))}
+                    </li>)
+                  )}
                 </ul>
               </Box>
             ))

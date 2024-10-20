@@ -163,7 +163,7 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Blog
         </Typography>
-        {session?.user.userType.includes('blogger') || session?.user.userType.includes('admin') && (
+        {(session?.user.userType.includes('blogger') || session?.user.userType.includes('admin')) && (
           <Box
             sx={{
               display: 'flex',

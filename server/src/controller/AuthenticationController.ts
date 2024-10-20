@@ -284,7 +284,7 @@ export default class AuthenticationController {
         if(existingUser)
             return Promise.reject(CustomAPIError.response("User with this email already exist.", HttpStatus.FORBIDDEN.code));
 
-        const password = await this.passwordEncoder?.encode("Password12@" as string);
+        const password = await this.passwordEncoder?.encode(process.env.DEFAULT_PASSWORD as string);
 
         const payload: Partial<IUserModel> = {
             ...value,
