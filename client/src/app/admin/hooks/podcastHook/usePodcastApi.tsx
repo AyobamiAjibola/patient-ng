@@ -101,7 +101,7 @@ export const usePodcastApi = () => {
         ): Promise<types.ApiResponseSuccess<any>> => {
             const response = await axiosAuth.get<
             types.ApiResponseSuccess<any>>
-            (`/get-users-podcasts/${data}`);
+            (`/get-user-podcasts`);
             return response.data;
     };
 

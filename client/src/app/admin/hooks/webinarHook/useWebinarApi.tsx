@@ -116,7 +116,7 @@ export const useWebinarApi = () => {
         ): Promise<types.ApiResponseSuccess<any>> => {
             const response = await axiosAuth.get<
             types.ApiResponseSuccess<any>>
-            (`/get-user-webinars/${data}`);
+            (`/get-user-webinars`);
             return response.data;
     };
 

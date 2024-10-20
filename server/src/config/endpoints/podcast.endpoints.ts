@@ -53,7 +53,7 @@ const podcastEndpoints: RouteEndpoint  = [
     {
         name: 'fetch users podcasts',
         method: 'get',
-        path: '/get-users-podcasts',
+        path: '/get-user-podcasts',
         handler: fetchUsersPodcastsHandler
     },
     {

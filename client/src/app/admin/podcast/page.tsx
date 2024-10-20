@@ -17,7 +17,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
-import { useGetPodcastCategories, useGetPodcasts, useGetSinglePodcast, usePostPodcast, usePostPodcastCategory, useUpdatePodcast, useUpdatePodcastStatus } from "../hooks/podcastHook/usePodcast";
+import { useGetPodcastCategories, useGetPodcasts, useGetSinglePodcast, useGetUsersPodcasts, usePostPodcast, usePostPodcastCategory, useUpdatePodcast, useUpdatePodcastStatus } from "../hooks/podcastHook/usePodcast";
 import Toastify from "@/app/components/ToastifySnack";
 import capitalize from "capitalize";
 import { useSession } from "next-auth/react";
@@ -49,7 +49,7 @@ export default function page() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const postPodcastMutation = usePostPodcast();
   const updatePodcastMutation = useUpdatePodcast();
-  const getPodcastsMutation = useGetPodcasts();
+  const getPodcastsMutation = useGetUsersPodcasts();
   const [status, setStatus] = useState('');
   const [activeStatus, setActiveStatus] = useState('');
   const [podcastCategories, setPodcastCategories] = useState<any>([]);
@@ -513,7 +513,7 @@ export default function page() {
                             label: capitalize.words(selectedCategory),
                         }}
                     />
-                    {session?.user.isAdmin && (<Typography 
+                    {session?.user.userType.includes('admin') && (<Typography 
                         onClick={()=>setOpen(true)}
                         variant='labelxs' color={theme.palette.primary.main}
                         sx={{cursor: 'pointer'}}

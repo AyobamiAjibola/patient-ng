@@ -87,11 +87,16 @@ export default class PodcastController {
     public async fetchUsersPodcasts (req: Request) {
         const userId = req.user._id;
 
-        const user = datasources.userDAOService.findById(userId);
+        const user = await datasources.userDAOService.findById(userId);
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
-        
-        const podcasts = await datasources.podcastDAOService.findAll({ user: userId })
+
+        let podcasts;
+        if(user.userType.includes('admin')) {
+            podcasts = await datasources.podcastDAOService.findAll({});
+        } else {
+            podcasts = await datasources.podcastDAOService.findAll({ user: user._id });
+        }
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,

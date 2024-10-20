@@ -352,11 +352,16 @@ export default class BlogController {
     public async fetchUserBlogs (req: Request) {
         const userId = req.user._id;
 
-        const user = datasources.userDAOService.findById(userId);
+        const user = await datasources.userDAOService.findById(userId);
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
-        
-        const blogs = await datasources.blogDAOService.findAll({ user: userId })
+
+        let blogs;
+        if(user.userType.includes('admin')) {
+            blogs = await datasources.blogDAOService.findAll({});
+        } else {
+            blogs = await datasources.blogDAOService.findAll({ user: user._id });
+        }
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
@@ -580,7 +585,8 @@ export default class BlogController {
                     titleImage: _titleImage ? _titleImage : '',
                     bodyImage: _bodyImage ? _bodyImage : '',
                     hot: value.hot,
-                    publisherImage: user?.image || ''
+                    publisherImage: user?.image || '',
+                    user: user?._id
                 }
 
                 await datasources.blogDAOService.create(payload as IBlogModel);

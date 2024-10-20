@@ -128,13 +128,18 @@ export default class BlogController {
 
     @TryCatch
     public async fetchUsersWebinars (req: Request) {
-        const userId = req.params.userId;
+        const userId = req.user._id;
 
-        const user = datasources.userDAOService.findById(userId);
+        const user = await datasources.userDAOService.findById(userId);
         if(!user)
             return Promise.reject(CustomAPIError.response("User not found.", HttpStatus.NOT_FOUND.code));
-        
-        const webinars = await datasources.webinarDAOService.findAll({ user: userId })
+
+        let webinars;
+        if(user.userType.includes('admin')) {
+            webinars = await datasources.webinarDAOService.findAll({});
+        } else {
+            webinars = await datasources.webinarDAOService.findAll({ user: user._id });
+        }
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,

@@ -7,7 +7,7 @@ import { Box, IconButton, Typography, useMediaQuery, useTheme } from "@mui/mater
 import { Input } from "antd";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useCreateBlogCategory, useDeleteBlogCategory, useGetBlogCategories, useGetBlogs, useUpdateBlogCategory } from "../hooks/blogHook/useBlog";
+import { useCreateBlogCategory, useDeleteBlogCategory, useGetBlogCategories, useGetUserBlogs, useUpdateBlogCategory } from "../hooks/blogHook/useBlog";
 import { useSession } from "next-auth/react";
 import MModal from "@/app/components/Modal";
 import InputField from "@/app/components/InputField";
@@ -28,7 +28,7 @@ export default function page() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [blogs, setBlogs] =  useState<any>([]);
   const router = useRouter();
-  const getBlogsMutation = useGetBlogs();
+  const getBlogsMutation = useGetUserBlogs();
   const {data: session} = useSession();
   const [open, setOpen] = useState<boolean>(false);
   const [bcategory, setBCategory] = useState<string>('');
@@ -163,7 +163,7 @@ export default function page() {
         <Typography variant={ md ? "h5" : "h4" }>
           Blog
         </Typography>
-        {(session?.user.userType.includes('blogger') || session?.user.userType.includes('admin')) && (
+        
           <Box
             sx={{
               display: 'flex',
@@ -171,25 +171,28 @@ export default function page() {
               alignItems: 'center'
             }}
           >
-            <NButton 
-              textcolor="white" 
-              bkgcolor={'black'} 
-              onClick={() => setOpen(true)}
-              bordercolor="black"
-              hoverbordercolor="black"
-              hovercolor="black"
-            >
-              <Add/> Blog category
-            </NButton>
-            <NButton 
-              textcolor="white" 
-              bkgcolor={theme.palette.primary.main} 
-              onClick={() => router.push('/admin/blog/new-blog')}
-            >
-              <Add/> New blog post
-            </NButton>
+            {(session?.user.userType.includes('admin')) && (
+              <NButton 
+                textcolor="white" 
+                bkgcolor={'black'} 
+                onClick={() => setOpen(true)}
+                bordercolor="black"
+                hoverbordercolor="black"
+                hovercolor="black"
+              >
+                <Add/> Blog category
+              </NButton>
+            )}
+            {(session?.user.userType.includes('blogger') || session?.user.userType.includes('admin')) && (
+              <NButton 
+                textcolor="white" 
+                bkgcolor={theme.palette.primary.main} 
+                onClick={() => router.push('/admin/blog/new-blog')}
+              >
+                <Add/> New blog post
+              </NButton>
+            )}
           </Box>
-        )}
       </Box>
 
       <Box

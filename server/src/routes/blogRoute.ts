@@ -82,11 +82,11 @@ export const fetchBlogsHandler = async (req: Request, res: Response) =>  {
     res.status(response.code).json(response);
 };
 
-export const fetchUserBlogsHandler = async (req: Request, res: Response) =>  {
+export const fetchUserBlogsHandler = authenticateRouteWrapper(async (req: Request, res: Response) =>  {
     const response = await blogController.fetchUserBlogs(req);
 
     res.status(response.code).json(response);
-};
+});
 
 export const fetchBlogsByCategoryHandler = async (req: Request, res: Response) =>  {
     const response = await blogController.fetchBlogsByCategory(req);

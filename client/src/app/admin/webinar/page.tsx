@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import Select from "react-select";
 import { customStyles } from "@/constant/customStyles";
 import capitalize from "capitalize";
-import { useChangeWebinarStatus, useGetSingleWebinar, useGetWebinarCategories, useGetWebinars, usePostWebinar, usePostWebinarCategory, useUpdateWebinar } from "../hooks/webinarHook/useWebinar";
+import { useChangeWebinarStatus, useGetSingleWebinar, useGetUsersWebinars, useGetWebinarCategories, useGetWebinars, usePostWebinar, usePostWebinarCategory, useUpdateWebinar } from "../hooks/webinarHook/useWebinar";
 import Toastify from "@/app/components/ToastifySnack";
 import { useSession } from "next-auth/react";
 
@@ -53,7 +53,7 @@ export default function page() {
   const {data: session} = useSession();
   const [status, setStatus] = useState<string>('');
   const postWebinarMutation = usePostWebinar();
-  const fetchWebinarsMutation = useGetWebinars();
+  const fetchWebinarsMutation = useGetUsersWebinars();
   const [webinarId, setWebinarId] = useState('');
   const singleWebinarMutattion = useGetSingleWebinar();
   const [isStatus, setIsStatus] = useState<boolean>(false);
@@ -589,7 +589,7 @@ export default function page() {
                             label: capitalize.words(selectedCategory),
                         }}
                     />
-                    {session?.user.isAdmin && (<Typography 
+                    {session?.user.userType.includes('admin') && (<Typography 
                         onClick={handleModalOpen}
                         variant='labelxs' color={theme.palette.primary.main}
                         sx={{cursor: 'pointer'}}
@@ -812,7 +812,7 @@ export default function page() {
                     bordercolor={theme.palette.border.main}
                     onMouseEnter={()=>setStatus('draft')}
                   >
-                    {status === 'draft' && postWebinarMutation.isLoading 
+                    {(status === 'draft' && postWebinarMutation.isLoading) 
                       ? 'Saving...' 
                       : 'Save as draft'}
                   </NButton>
@@ -823,7 +823,7 @@ export default function page() {
                     textcolor="white"
                     onMouseEnter={()=>setStatus('published')}
                   >
-                    {status === 'publish' && postWebinarMutation.isLoading ? 'Publishing...' : 'Publish'}
+                    {(status === 'publish' && postWebinarMutation.isLoading) ? 'Publishing...' : 'Publish'}
                   </NButton>
                 </>)}
                 {isEdit && (<NButton

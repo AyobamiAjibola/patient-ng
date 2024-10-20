@@ -56,7 +56,7 @@ const webinarEndpoints: RouteEndpoint  = [
     {
         name: 'fetch users webinars',
         method: 'get',
-        path: '/get-users-webinars/:userId',
+        path: '/get-user-webinars',
         handler: fetchUsersWebinarsHandler
     },
     {
