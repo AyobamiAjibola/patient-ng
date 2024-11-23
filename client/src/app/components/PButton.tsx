@@ -11,7 +11,8 @@ interface PButtonProps extends ButtonProps {
   hovercolor?: string;
   hoverbordercolor?: string;
   textcolor?: string;
-  styling?: any
+  styling?: any;
+  height?: string
 }
 
 const PButton: React.FC<React.PropsWithChildren<PButtonProps>> = (props) => {
@@ -56,6 +57,7 @@ export const NButton: React.FC<React.PropsWithChildren<PButtonProps>> = (props) 
           border: `1px solid ${props.hoverbordercolor || props.bkgcolor}`,
         },
         px: theme.spacing(3),
+        height: props.height
       }}
       {...props}
     >

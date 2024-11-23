@@ -24,7 +24,8 @@ const items = [
   "Pending",
   "Active",
   "Inactive",
-  "Done"
+  "Done",
+  "Most Liked"
 ]
 
 interface IProps {
@@ -206,6 +207,12 @@ export default function page() {
       } else if(currentItem === "Inactive") {
         const filteredData = getCrowedFundingMutation.data?.results?.filter((crowdCampaign) => crowdCampaign.status === "inactive");
         setCrowdfunding(filteredData)
+      } else if(currentItem === "Most Liked") {
+          const filteredData = getCrowedFundingMutation.data?.results
+          ?.filter((crowdCampaign) => crowdCampaign.status === "active")
+          ?.sort((a, b) => b.likes.length - a.likes.length);
+        
+          setCrowdfunding(filteredData);
       } else {
         const filteredData = getCrowedFundingMutation.data?.results?.filter((crowdCampaign) => crowdCampaign.status === "done");
         setCrowdfunding(filteredData)
@@ -678,6 +685,7 @@ export default function page() {
           data={filteredData}
           setOpenEditModal={setOpenEditModal}
           setCampaignId={setCampaignId}
+          currentItem={currentItem}
         />
 
         <Toastify

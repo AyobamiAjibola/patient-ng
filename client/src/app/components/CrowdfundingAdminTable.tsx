@@ -8,9 +8,9 @@ import { characterBreaker, formAmount } from '@/lib/helper';
 import { useAtom } from 'jotai';
 import { useAdminUser, useCrowdStatus } from '@/lib/atoms';
 import moment from 'moment';
-import { Edit, Visibility } from '@mui/icons-material';
+import { Edit, Favorite, Visibility } from '@mui/icons-material';
 
-const CrowdfundingAdminTable: React.FC = ({data, setOpenEditModal, setCampaignId}: any) => {
+const CrowdfundingAdminTable: React.FC = ({data, setOpenEditModal, setCampaignId, currentItem}: any) => {
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery('(max-width: 900px)');
@@ -90,13 +90,33 @@ const CrowdfundingAdminTable: React.FC = ({data, setOpenEditModal, setCampaignId
       )},
     },
     {
-      title: 'Location',
-      key: 'location',
+      title: currentItem === 'Most Liked' ? 'Likes' : 'Location',
+      key: currentItem === 'Most Liked' ? 'likes' : 'location',
       render: (_, record) => {
         return (
-          <Typography variant='labelxs' color={theme.palette.secondary.light}>
-            {record.address}
-          </Typography>
+          <>
+            {currentItem === 'Most Liked' 
+              ? (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Favorite sx={{color: theme.palette.primary.main, fontSize: '16px', mr: 1}}/> 
+                    <Typography 
+                        variant="labelsm"
+                        sx={{color: theme.palette.primary.main}}
+                    >{record.likes.length}</Typography>
+                  </Box>
+              ) : (
+                  <Typography variant='labelxs' color={theme.palette.secondary.light}>
+                    {record.address}
+                  </Typography>
+                )
+              }
+          </>
+          
       )},
     },
     {

@@ -3,7 +3,7 @@
 import Navbar from '@/app/components/Navbar'
 import { NButton } from '@/app/components/PButton';
 import { characterBreaker, wordBreaker } from '@/lib/helper';
-import { Add, ArrowForward, ArrowRight, DesktopWindows, HourglassEmpty, Mic, Remove } from '@mui/icons-material';
+import { Add, ArrowForward, ArrowRight, DesktopWindows, HighlightOff, HourglassEmpty, Mic, Remove } from '@mui/icons-material';
 import { Box, Button, Divider, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -20,6 +20,7 @@ import { useAtom } from 'jotai';
 import { openModal, openModal2, openType } from '@/lib/atoms';
 import CrowdCard from './components/CrowdCard';
 import FramerMotion from './components/FramerMotion';
+import MModal from './components/Modal';
 
 const faq = [
   {
@@ -70,6 +71,11 @@ export default function HomePage() {
   const [__, setOpen] = useAtom(openModal);
   const [___, setOpen2] = useAtom(openModal2);
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const handleCloseModal = () => {
+    setModalOpen(false)
+  };
 
   const handleExpand = (index: any) => {
     setExpandedIndex(index === expandedIndex ? null : index);
@@ -117,6 +123,15 @@ export default function HomePage() {
     fetchPodcasts()
     fetchWebinar()
   },[]);
+  
+  useEffect(() => {
+    const popupModal = sessionStorage.getItem('ad-modal');
+
+    if (!popupModal) {
+      setModalOpen(true);
+      sessionStorage.setItem('ad-modal', 'true');
+    }
+  }, []);
 
   return (
     <>
@@ -1222,6 +1237,98 @@ export default function HomePage() {
         </Box>
       </FramerMotion>
       <Footer/>
+
+      <MModal
+        onClose={handleCloseModal}
+        open={modalOpen}
+        width={isMobile ? '90%' : '70%'}
+        showCloseIcon={false}
+        height={isMobile ? '65vh' : 'auto'}
+        onClickOut={false}
+        padding = {0}
+      >
+        <Box className="flex"
+          sx={{
+            height: 'auto',
+          }}
+        >
+          {!isMobile && (<img
+            src='/campain-img.jpg'
+            alt='fundraiser image'
+            style={{
+                height: '100%',
+                width: '40%'
+            }}
+          />)}
+          <Box
+            sx={{
+              width: isMobile ? "100%" : "60%",
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'flex-end',
+                mr: 2, mt: 2
+              }}
+            >
+              <HighlightOff 
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontSize: '2rem',
+                  cursor: 'pointer'
+                }}
+                onClick={handleCloseModal}
+              />
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <img
+                src='/fav-symbol.png'
+                alt='fundraiser image'
+                style={{
+                    height: isMobile ? '6em' : '10em',
+                    width: isMobile ? '8em' : '12em',
+                    marginTop: '10px'
+                }}
+              />
+              <Typography variant={isMobile ? 'h5' : 'h4'} mt={4} px={isMobile ? '8px' : '0px'} textAlign={'center'}>
+                Join our Green Heart Initiative
+              </Typography>
+              <Typography 
+                variant={isMobile ? "paragraphsm" : "paragraphbase"}
+                sx={{textAlign: 'center', width: '90%'}} mt={ isMobile ? 3 : 4} mb={isMobile ? '2em' : '3em'}
+                px={isMobile ? '8px' : '0px'}
+              >
+                To participate, simply create an account to submit your valid doctors’ prescription and share your own patient story to be 1 of 30 patient selected to win daily all through December!
+              </Typography>
+              <NButton
+                bkgcolor={theme.palette.primary.main}
+                textcolor='white'
+                onClick={()=>authStatus === 'unauthenticated' 
+                            ? router.push('/signup') 
+                            : router.push('/crowdfunding/campaigns')
+                        }
+                width='200px'
+                height={isMobile ? '3em' : '4em'}
+              >
+                <Typography variant='labellg'>
+                  { authStatus === 'unauthenticated' ? 'Join Now' : 'Give heart' }
+                </Typography>
+              </NButton>
+            </Box>
+          </Box>
+        </Box>
+      </MModal>
     </>
   )
 }

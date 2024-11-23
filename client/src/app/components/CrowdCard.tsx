@@ -1,6 +1,6 @@
 import { characterBreaker, formAmount, wordBreaker } from "@/lib/helper";
 import { Favorite, LocationOn } from "@mui/icons-material";
-import { Box, LinearProgress, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
+import { Box, LinearProgress, Paper, Typography, linearProgressClasses, styled, useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 
@@ -27,7 +27,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                height: '500px',
+                height: '450px',//'500px',
                 minWidth: '300px',
                 width: isMobile ? '100%' : '32%',
                 border: `1px solid ${theme.palette.secondary.lighter}`,
@@ -39,17 +39,46 @@ export default function CrowdCard({fundraiser, percent}: any) {
             }}
             onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
         >
-            <img
-                src={fundraiser.image ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${fundraiser.image}` : '/crowd2.png'}
-                alt='crowd funding image'
-                style={{
+            <Box
+                sx={{
                     height: '60%',
-                    width: '100%',
-                    borderTopLeftRadius: theme.borderRadius.sm,
-                    borderTopRightRadius: theme.borderRadius.sm
+                    position: 'relative'
                 }}
-                crossOrigin="anonymous"
-            />
+            >
+                <img
+                    src={
+                            fundraiser.image 
+                                ? `${process.env.NEXT_PUBLIC_SERVER_URL}/${fundraiser.image}` 
+                                : '/crowd2.png'
+                        }
+                    alt='crowd funding image'
+                    style={{
+                        height: '100%',
+                        width: '100%',
+                        borderTopLeftRadius: theme.borderRadius.sm,
+                        borderTopRightRadius: theme.borderRadius.sm
+                    }}
+                    crossOrigin="anonymous"
+                />
+                <Paper
+                    sx={{
+                        position: 'absolute',
+                        py: 2, px: 3,
+                        borderRadius: '10px',
+                        backgroundColor: 'white',
+                        bottom: '-20px',
+                        left: '65%',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                >
+                    <Favorite sx={{color: theme.palette.primary.main, fontSize: '26px', mr: 2}}/> 
+                    <Typography 
+                        variant="labelsm"
+                        sx={{color: theme.palette.primary.main}}
+                    >{fundraiser.likes.length}</Typography>
+                </Paper>
+            </Box>
             <Box
                 sx={{
                     px: '10px',
@@ -141,7 +170,7 @@ export default function CrowdCard({fundraiser, percent}: any) {
                             </Box>
                         )
                     } */}
-                    <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
+                    {/* <BorderLinearProgress variant="determinate" value={percent} sx={{my: 2}}/>
                     <Box
                         sx={{
                             display: 'flex',
@@ -169,38 +198,9 @@ export default function CrowdCard({fundraiser, percent}: any) {
                             <Favorite sx={{color: theme.palette.primary.main, fontSize: '16px'}}/> 
                             <Typography variant="paragraphsm">{fundraiser.likes.length > 10 ? '10+' : fundraiser.likes.length}</Typography>
                         </Box>
-                    </Box>
+                    </Box> */}
                 </Box>
             </Box>
-            {/* <Box
-                sx={{
-                    height: '30%', mt: 3,
-                    backgroundColor: theme.palette.secondary.lightest,
-                    borderBottomRightRadius: theme.borderRadius.sm,
-                    borderBottomLeftRadius: theme.borderRadius.sm,
-                    borderTop: `1px solid ${theme.palette.secondary.lighter}`
-                }}
-            >
-                <Box 
-                    sx={{
-                        display: 'flex', 
-                        alignItems: 'center',
-                        height: '100%',
-                        px: '10px'
-                    }}
-                >
-                    <Typography onClick={() => router.push(`/crowdfunding/${fundraiser._id}`)}
-                        sx={{
-                        cursor: 'pointer',
-                        color: theme.palette.primary.main,
-                        fontSize: theme.typography.labelbase.fontSize,
-                        fontWeight: theme.typography.labelxs.fontWeight,
-                        }}
-                    >
-                        See Details
-                    </Typography>
-                </Box>
-            </Box> */}
         </Box>
     )
 }
