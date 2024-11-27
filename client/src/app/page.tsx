@@ -1314,10 +1314,13 @@ export default function HomePage() {
               <NButton
                 bkgcolor={theme.palette.primary.main}
                 textcolor='white'
-                onClick={()=>authStatus === 'unauthenticated' 
-                            ? router.push('/signup') 
-                            : router.push('/crowdfunding/campaigns')
-                        }
+                onClick={() => {
+                  if (authStatus === 'unauthenticated') {
+                    window.location.href = 'https://ghi.patient.ng';
+                  } else {
+                    router.push('/crowdfunding/campaigns');
+                  }
+                }}
                 width='200px'
                 height={isMobile ? '3em' : '4em'}
               >
