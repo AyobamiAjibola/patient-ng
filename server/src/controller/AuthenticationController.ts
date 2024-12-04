@@ -367,7 +367,7 @@ export default class AuthenticationController {
         }).validate(req.body);
         if(error) return Promise.reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
-        const user = await datasources.userDAOService.findByAny({email: value.emailOrPhone});
+        const user = await datasources.userDAOService.findByAny({email: value.email});
         if(!user) return Promise.reject(CustomAPIError.response("User with this email does not exist.", HttpStatus.BAD_REQUEST.code));
 
         if(user && !user.isAdmin)
