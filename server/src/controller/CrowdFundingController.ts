@@ -273,6 +273,8 @@ export default class CrowdFundingontroller {
 
                 const { error, value } = Joi.object<any>({
                     title: Joi.string().required().label('Title'),
+                    duration: Joi.string().optional().allow('').label('Duration'),
+                    category: Joi.string().optional().allow('').label('Category'),
                     description: Joi.string().required().label('Description'),
                     fundraisingFor: Joi.string().required().label('Fundraiser'),
                     accountNumber: Joi.string().required().label('Account Number'),
@@ -382,6 +384,8 @@ export default class CrowdFundingontroller {
                     amountNeeded: Joi.string().label('Amount needed'),
                     image: Joi.any().label('Image'),
                     address: Joi.string().label('address'),
+                    duration: Joi.string().label('Duration'),
+                    category: Joi.string().label('Category'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
 
@@ -410,6 +414,8 @@ export default class CrowdFundingontroller {
 
                 const payload = {
                     title: value.title ? value.title : crowdFund.title,
+                    duration: value.duration ? value.duration : crowdFund.duration,
+                    category: value.category ? value.category : crowdFund.category,
                     description: value.description ? value.description : crowdFund.description,
                     amountNeeded: value.amountNeeded ? value.amountNeeded : crowdFund.amountNeeded,
                     image: _image ? _image : crowdFund.image,

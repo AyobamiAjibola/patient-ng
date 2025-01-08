@@ -2,6 +2,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface ICrowdFunding {
     title: string,
+    duration: string | null,
+    category: string | null,
     description: string,
     status: string;
     address: string;
@@ -34,6 +36,8 @@ interface ICrowdFunding {
 
 const crowdFundingSchema = new Schema<ICrowdFunding>({
     title: { type: String },
+    duration: { type: String, allow: null },
+    category: { type: String, allow: null },
     description: { type: String },
     address: { type: String },
     image: { type: String },

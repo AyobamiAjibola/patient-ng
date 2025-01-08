@@ -320,7 +320,7 @@ export default class UserController {
 
         const user = await datasources.userDAOService.findById(loggedInUser);
         if(user && !user.isAdmin)
-            return Promise.reject(CustomAPIError.response("You are not authorised.", HttpStatus.UNAUTHORIZED.code));
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
 
         const userExist = await datasources.userDAOService.findById(userId);
         if(!userExist) return Promise.reject(CustomAPIError.response("User does not exist.", HttpStatus.NOT_FOUND.code));
@@ -333,6 +333,28 @@ export default class UserController {
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
             message: 'Successfully updated user status.'
+        };
+
+        return Promise.resolve(response);
+    }
+
+    @TryCatch
+    public async deleteUser (req: Request) {
+        const loggedInUser = req.user._id;
+        const userId = req.params.userId;
+
+        const user = await datasources.userDAOService.findById(loggedInUser);
+        if(user && !user.isAdmin)
+            return Promise.reject(CustomAPIError.response("You are not authorized.", HttpStatus.UNAUTHORIZED.code));
+
+        const userExist = await datasources.userDAOService.findById(userId);
+        if(!userExist) return Promise.reject(CustomAPIError.response("User does not exist.", HttpStatus.NOT_FOUND.code));
+
+        await datasources.userDAOService.deleteById( userExist._id )
+
+        const response: HttpResponse<any> = {
+            code: HttpStatus.OK.code,
+            message: 'Successfully deleted user.'
         };
 
         return Promise.resolve(response);
@@ -423,7 +445,7 @@ export default class UserController {
 
         const response: HttpResponse<any> = {
             code: HttpStatus.OK.code,
-            message: 'Successfully updated.',
+            message: 'Successful.',
             result: files
         };
       
@@ -1267,7 +1289,7 @@ export default class UserController {
                     website: Joi.string().optional().allow('').label('Website'),
                 }).validate(fields);
                 if(error) return reject(CustomAPIError.response(error.details[0].message, HttpStatus.BAD_REQUEST.code));
-                console.log('are you here')
+
                 const [hospital] = await Promise.all([
                     HospitalInfo.findOne({ hospitalName: value.hospitalName.toLowerCase() })
                 ]);
@@ -1292,7 +1314,7 @@ export default class UserController {
                     services: services,
                     image: _image ? _image : hospital?.image
                 }
-                console.log(payload, 'payload')
+
                 const newHospital = await HospitalInfo.create(payload as IHospitalInfoModel);
 
                 await datasources.insightDAOService.create({

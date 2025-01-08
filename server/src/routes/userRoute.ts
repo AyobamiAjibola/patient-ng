@@ -34,6 +34,12 @@ export const deactivateUserHandler = authenticateRouteWrapper(async (req, res) =
     res.status(response.code).json(response);
 });
 
+export const deleteUserHandler = authenticateRouteWrapper(async (req, res) =>  {
+    const response = await userController.deleteUser(req);
+
+    res.status(response.code).json(response);
+});
+
 //Award
 export const createAwardHandler = authenticateRouteWrapper(async (req, res) =>  {
     const response = await userController.createAward(req);

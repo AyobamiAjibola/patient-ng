@@ -14,6 +14,7 @@ import {
     deleteFileHandler, 
     deleteHospitalHandler, 
     deleteInsightHandler, 
+    deleteUserHandler, 
     fetchFilesHandler, 
     findUserHandler, 
     getAllAdvocaciesHandler, 
@@ -77,6 +78,12 @@ const userEndpoints: RouteEndpoint  = [
         method: 'put',
         path: '/toggle-user-status/:userId',
         handler: deactivateUserHandler
+    },
+    {
+        name: 'delete user',
+        method: 'delete',
+        path: '/delete-user/:userId',
+        handler: deleteUserHandler
     },
     //insight
     {
