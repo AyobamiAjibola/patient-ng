@@ -13,7 +13,17 @@ export const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://77.37.124.96:8081'
+    'http://77.37.124.96:8081',
+    'https://patient.ng/',
+    'https://patient.ng',
+    'https://patient.ng:8083/',
+    'https://patient.ng:8083',
+    'https://www.patient.ng/',
+    'https://www.patient.ng',
+    'https://www.patient.ng:8083/',
+    'https://www.patient.ng:8083',
+    'https://admin.patient.ng/',
+    'https://admin.patient.ng'
   ],
   credentials: true,
 };
