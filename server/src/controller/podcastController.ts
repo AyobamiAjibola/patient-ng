@@ -165,7 +165,7 @@ export default class PodcastController {
 
     @TryCatch
     public async podcasts (req: Request) {
-        const podcasts = await datasources.podcastDAOService.findAll({});
+        const podcasts = await datasources.podcastDAOService.findAll({}, { sort: { createdAt: -1 } });
 
         const response: HttpResponse<IPodcastModel> = {
             code: HttpStatus.OK.code,
