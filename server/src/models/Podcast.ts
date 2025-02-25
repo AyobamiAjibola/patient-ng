@@ -32,7 +32,7 @@ const podcastSchema = new Schema<IPodcast>({
     duration: { type: String },
     releaseDate: { type: Date },
     user: { type: Schema.Types.ObjectId, ref: 'User' }
-});
+}, { timestamps: true });
 
 export interface IPodcastModel extends Document, IPodcast {}
 
